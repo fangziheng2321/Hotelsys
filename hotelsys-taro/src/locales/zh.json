@@ -1,0 +1,10 @@
+{
+  "home": {
+    "search_tabs": {
+      "domestic": "国内",
+      "overseas": "海外",
+      "hourly": "钟点房",
+      "homestay": "民宿"
+    }
+  }
+}

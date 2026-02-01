@@ -1,0 +1,15 @@
+# 小程序项目忽略
+hotelsys-taro/dist/
+hotelsys-taro/deploy_versions/
+hotelsys-taro/.temp/
+hotelsys-taro/.rn_temp/
+hotelsys-taro/node_modules/
+hotelsys-taro/.swc/
+hotelsys-taro/*.local
+hotelsys-taro/.DS_Store
+
+# 通用忽略
+.DS_Store
+.vscode/
+.idea/
+*.log

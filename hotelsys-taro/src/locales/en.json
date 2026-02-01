@@ -1,0 +1,18 @@
+{
+  "home": {
+    "title": "Hotel Search",
+    "search_btn": "Search Now",
+    "check_in": "Check-in",
+    "check_out": "Check-out",
+    "search_tabs": {
+      "domestic": "Domestic",
+      "overseas": "overseas",
+      "hourly": "Hourly room",
+      "homestay": "Homestay"
+    }
+  },
+  "tabbar": {
+    "home": "Home",
+    "mine": "Me"
+  }
+}

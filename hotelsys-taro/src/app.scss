@@ -1,0 +1,17 @@
+/* Global Styles */
+@use 'tailwindcss/base';
+@use 'tailwindcss/components';
+@use 'tailwindcss/utilities';
+
+:root,
+page {
+  /* 品牌色 */
+  --brand-color: #0068f7;
+
+  /* 主色调 */
+  --nutui-color-primary: var(--brand-color);
+
+  /* 按钮样式 */
+  --nutui-color-primary-stop-1: var(--brand-color);
+  --nutui-color-primary-stop-2: var(--brand-color);
+}
