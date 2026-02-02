@@ -7,13 +7,13 @@ import tailwindcss from "tailwindcss";
 import { UnifiedViteWeappTailwindcssPlugin as uvtw } from "weapp-tailwindcss/vite";
 
 // https://taro-docs.jd.com/docs/next/config#defineconfig-辅助函数
-export default defineConfig<"vite">(async (merge, { command, mode }) => {
+export default defineConfig<"vite">(async (merge) => {
   const baseConfig: UserConfigExport<"vite"> = {
     projectName: "hotelsys-taro",
     date: "2026-2-1",
     designWidth(input) {
       // 配置 NutUI 375 尺寸
-      if (input?.file?.replace(/\\+/g, "/").indexOf("@nutui") > -1) {
+      if ((input as any)?.file?.replace(/\\+/g, "/").indexOf("@nutui") > -1) {
         return 375;
       }
       // 全局使用 Taro 默认的 750 尺寸
@@ -42,6 +42,9 @@ export default defineConfig<"vite">(async (merge, { command, mode }) => {
     },
     compiler: {
       type: "vite",
+      prebundle: {
+        enable: false,
+      },
       vitePlugins: [
         {
           // 通过 vite 插件加载 postcss,

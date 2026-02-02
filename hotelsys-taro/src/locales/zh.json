@@ -5,6 +5,27 @@
       "overseas": "海外",
       "hourly": "钟点房",
       "homestay": "民宿"
+    },
+    "location_bar": {
+      "myLocation": "我的位置",
+      "searchTextPlaceholder": "位置/品牌/酒店",
+      "nights": "晚"
+    },
+    "search_button": "查 询",
+    "filter_bar": {
+      "placeholder": "价格/星级"
+    },
+    "header": {
+      "easeStay": "易宿酒店",
+      "slogan": "发现属于您的理想下榻之所"
     }
+  },
+  "language": {
+    "languageChange": "切换语言"
+  },
+  "time": {
+    "sameDay": "今天",
+    "nextDay": "明天",
+    "yesterday": "昨天"
   }
 }

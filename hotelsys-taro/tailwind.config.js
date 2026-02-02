@@ -13,7 +13,9 @@ module.exports = {
         extend: {
             colors: {
                 primary: "var(--brand-color)",
+                secondary: "var(--brand-color-secondary)",
                 "custom-gray": "#e9edf0",
+                "custom-placeholder": "#d0d0d0"
             },
         }
     }

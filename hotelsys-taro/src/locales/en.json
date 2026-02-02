@@ -1,18 +1,31 @@
 {
   "home": {
-    "title": "Hotel Search",
-    "search_btn": "Search Now",
-    "check_in": "Check-in",
-    "check_out": "Check-out",
     "search_tabs": {
-      "domestic": "Domestic",
-      "overseas": "overseas",
-      "hourly": "Hourly room",
-      "homestay": "Homestay"
+      "domestic": "Dome",
+      "overseas": "Over",
+      "hourly": "Hourly",
+      "homestay": "Home"
+    },
+    "location_bar": {
+      "myLocation": "My Location",
+      "searchTextPlaceholder": "Location/Brand/Hotel",
+      "nights": "Night"
+    },
+    "search_button": "Query",
+    "filter_bar": {
+      "placeholder": "Price/star rating"
+    },
+    "header": {
+      "easeStay": "Ease Stay",
+      "slogan": "Discover your ideal place to stay"
     }
   },
-  "tabbar": {
-    "home": "Home",
-    "mine": "Me"
+  "language": {
+    "languageChange": "switch language"
+  },
+  "time": {
+    "sameDay": "Today",
+    "nextDay": "Tomorrow",
+    "yesterday": "Yesterday"
   }
 }

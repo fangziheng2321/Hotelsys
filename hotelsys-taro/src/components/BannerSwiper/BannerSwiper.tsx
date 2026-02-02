@@ -3,25 +3,31 @@ import {
   Image,
   CommonEventFunction,
   SwiperProps as TaroSwiperProps,
+  ITouchEvent,
 } from "@tarojs/components";
-import { Swiper } from "@nutui/nutui-react-taro";
+import { pxTransform, Swiper } from "@nutui/nutui-react-taro";
 
 interface IProps {
   imgList: string[];
   autoplay?: boolean;
+  customImgClassName?: string;
   showIndicators?: boolean;
   onChange?: CommonEventFunction<TaroSwiperProps.onChangeEventDetail>;
+  onClick?: (index: number) => void;
 }
 
 const BannerSwiper: FC<IProps> = ({
   imgList,
   autoplay = true,
+  customImgClassName = "",
   showIndicators = true,
   onChange = () => void 0,
+  onClick = () => void 0,
 }) => {
   return (
     <>
       <Swiper
+        width={pxTransform(200)}
         autoplay={autoplay}
         indicator={showIndicators}
         onChange={onChange}
@@ -29,8 +35,8 @@ const BannerSwiper: FC<IProps> = ({
         {imgList.map((item, index) => (
           <Swiper.Item key={item}>
             <Image
-              className="w-full object-fit"
-              onClick={() => console.log(index)}
+              className="w-full h-full"
+              onClick={() => onClick(index)}
               src={item}
             />
           </Swiper.Item>

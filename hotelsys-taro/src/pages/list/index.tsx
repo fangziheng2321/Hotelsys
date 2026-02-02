@@ -17,7 +17,7 @@ const Home = () => {
         易宿酒店预订
       </View>
 
-      <View className="bg-white rounded-lg p-4 shadow-md">
+      <View className="bg-white rounded-xl p-4 shadow-md">
         <View className="mb-4">这里放城市选择组件</View>
         <View className="mb-4">这里放日期选择组件</View>
 

@@ -38,12 +38,12 @@ const SearchTabs: FC<IProps> = (props) => {
   ];
 
   return (
-    <View className="flex justify-between items-center">
+    <View className="px-4 flex justify-between items-center">
       {searchTypes.map((item) => (
         <Text
           className={[
             item.value === props.activeType ? "text-primary font-bold" : "",
-            "text-base",
+            "text-lg",
           ].join(" ")}
           key={item.value}
           onClick={() => props.onChange(item.value)}

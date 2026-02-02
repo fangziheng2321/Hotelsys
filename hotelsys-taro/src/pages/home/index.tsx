@@ -1,33 +1,133 @@
 // src/pages/home/index.tsx
 import React, { useState } from "react";
-import { View, Text } from "@tarojs/components";
-import { Button } from "@nutui/nutui-react-taro";
-import Taro from "@tarojs/taro";
-import BannerSwiper from "@/components/BannerSwiper";
+import { View, Text, Button, Image } from "@tarojs/components";
 import SearchTabs from "./components/SearchTabs";
+import { BannerType, dateFormType } from "./types/index";
+import Banner from "./components/Banner";
 import { SearchTabType } from "@/enum/home";
-import { bannerList } from "@/constant/banner";
+import LocationBar from "./components/LocationBar";
+import Divide from "./components/Divide";
+import { useTranslation } from "react-i18next";
+import LanguageChange from "@/components/LanguageChange/LanguageChange";
+import DateRangeDisplay from "./components/DateRangeDisplay";
+import dayjs from "dayjs";
+import CustomButton from "@/components/CustomButton/CustomButton";
+import FilterBar from "./components/FilterBar";
+import HotelHotTags from "./components/HotelHotTags";
+import Header from "./components/Header";
+import SubBanner from "./components/SubBanner";
 
 const Home = () => {
+  const { t } = useTranslation();
+  /* 顶部Tab筛选选中类型 */
   const [activeTabType, setActiveTabType] = useState<SearchTabType>(
     SearchTabType.DOMESTIC,
   );
+  const [city, setCity] = useState<string | null>(null);
+  const [searchText, setSearchText] = useState<string | null>(null);
+  const [dateForm, setDateForm] = useState<dateFormType>({
+    startDate: dayjs(),
+    endDate: dayjs().add(1, "day"),
+  });
+  const [filterLabel, setFilterLabel] = useState<string | null>(null);
+
+  /* 点击轮播图 */
+  const handleClickBanner = (banner: BannerType) => {
+    console.log(banner);
+  };
 
   /* 修改选中搜索Tabs */
   const handleChangeTab = (type: SearchTabType) => {
     setActiveTabType(type);
   };
 
+  /* 点击城市选择器 */
+  const handleClickCity = () => {
+    console.log("跳转修改城市页面");
+  };
+
+  /* 点击定位器器 */
+  const handleClickLocation = () => {
+    console.log("进行定位，获取当前位置");
+  };
+
+  /* 点击搜索栏 */
+  const handleClickSearch = () => {
+    console.log("点击搜索栏");
+  };
+
+  /* 点击日期选择器 */
+  const handleClickDateRange = () => {
+    console.log("点击日期选择器");
+  };
+
+  /* 点击筛选器 */
+  const handleClickFilterBar = () => {
+    console.log("点击筛选器");
+  };
+
+  /* 点击查询按钮 */
+  const handleClickSearchButton = () => {
+    console.log("点击查询按钮");
+  };
+
   return (
     <View className="bg-custom-gray min-h-screen">
-      {/* 轮播图 */}
-      <BannerSwiper imgList={bannerList} showIndicators={false} />
-      {/*  */}
+      {/* 头部背景图与Slogan */}
+      <Header />
 
-      {/* 查询区域 */}
-      <View className="bg-white w-[95%] rounded-md mx-auto -translate-y-5 py-4 px-6">
-        <SearchTabs activeType={activeTabType} onChange={handleChangeTab} />
+      {/* 剩余部分 */}
+      <View className="translate-y-32">
+        {/* 轮播图 */}
+        {/* <Banner onClick={handleClickBanner}></Banner> */}
+        <SubBanner />
+
+        {/* 查询区域 */}
+        <View className="bg-white w-[95%] rounded-xl mx-auto p-6 flex flex-col gap-6 mt-4">
+          {/* 顶部Tab筛选 */}
+          <SearchTabs activeType={activeTabType} onChange={handleChangeTab} />
+          {/* 分隔线 */}
+          <Divide></Divide>
+          {/* 位置筛选 */}
+          <LocationBar
+            cityName={city}
+            searchText={searchText}
+            onCityClick={handleClickCity}
+            onSearchClick={handleClickSearch}
+            onLocateClick={handleClickLocation}
+          />
+          {/* 分隔线 */}
+          <Divide></Divide>
+          {/* 日期选择器 */}
+          <DateRangeDisplay
+            startDate={dateForm.startDate}
+            endDate={dateForm.endDate}
+            onClick={handleClickDateRange}
+          />
+          {/* 分隔线 */}
+          <Divide></Divide>
+
+          {/* 筛选器 */}
+          <FilterBar label={filterLabel} onClick={handleClickFilterBar} />
+
+          {/* 分隔线 */}
+          <Divide></Divide>
+
+          {/* 热门标签 */}
+          <HotelHotTags />
+
+          {/* 查询按钮 */}
+          <CustomButton
+            onClick={handleClickSearchButton}
+            useAnimation={true}
+            customClassName="rounded-xl w-full text-white text-xl py-3 font-bold tracking-widest"
+          >
+            {t("home.search_button")}
+          </CustomButton>
+        </View>
       </View>
+
+      <LanguageChange customClassName="fixed bottom-4 right-4" />
     </View>
   );
 };
