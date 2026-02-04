@@ -29,7 +29,7 @@ export const useTime = () => {
       nextWeek: "dddd", // 下周显示星期几
       lastDay: `[${t("time.yesterday")}]`, // 昨天
       lastWeek: "dddd", // 上周显示星期几
-      sameElse: sameElseFormat, // 其他情况显示日期
+      sameElse: sameElseFormat, // 其他情况不显示
     });
   };
 

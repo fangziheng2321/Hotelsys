@@ -6,7 +6,7 @@ module.exports = {
     // 其他配置项
     // ...
     corePlugins: {
-        // 小程序不需要 preflight，因为这主要是给 h5 的，如果你要同时开发小程序和 h5 端，你应该使用环境变量来控制它
+        // 小程序不需要 preflight
         preflight: false
     },
     theme: {

@@ -1,4 +1,3 @@
-// src/pages/home/index.tsx
 import React, { useState } from "react";
 import { View, Text, Button, Image } from "@tarojs/components";
 import SearchTabs from "./components/SearchTabs";
@@ -16,6 +15,7 @@ import FilterBar from "./components/FilterBar";
 import HotelHotTags from "./components/HotelHotTags";
 import Header from "./components/Header";
 import SubBanner from "./components/SubBanner";
+import Taro from "@tarojs/taro";
 
 const Home = () => {
   const { t } = useTranslation();
@@ -68,7 +68,9 @@ const Home = () => {
 
   /* 点击查询按钮 */
   const handleClickSearchButton = () => {
-    console.log("点击查询按钮");
+    Taro.navigateTo({
+      url: "/pages/list/index",
+    });
   };
 
   return (

@@ -2,7 +2,7 @@ import React, { FC, useState, useMemo } from "react";
 import { View, Text } from "@tarojs/components";
 import { useTranslation } from "react-i18next";
 import { useTime } from "@/utils/date";
-import { timeType } from "../types";
+import { timeType } from "@/types";
 
 interface IProps {
   startDate: timeType;
@@ -31,21 +31,35 @@ const DateRangeDisplay: FC<IProps> = ({
 
   return (
     <View className="flex items-center justify-between" onClick={onClick}>
-      <View className="flex items-center gap-2 text-lg font-bold">
+      <View className="flex items-center gap-2">
         {/* 开始时间 */}
-        <View className="flex items-center gap-1">
-          <Text>{dateInfo.startText}</Text>
-          <Text className="text-sm font-normal">{dateInfo.startLabel}</Text>
+        <View className="flex flex-wrap items-baseline gap-1">
+          <Text className="text-lg font-bold whitespace-nowrap">
+            {dateInfo.startText}
+          </Text>
+          <Text className="text-sm font-normal whitespace-nowrap text-gray-500">
+            {dateInfo.startLabel}
+          </Text>
         </View>
-        {/* 到 */}
-        <View className="w-4 h-[1px] bg-custom-gray"></View>
+
+        {/* 分隔线 */}
+        <View className="w-3 h-[1px] bg-gray-300 mx-1 flex-shrink-0"></View>
+
         {/* 结束时间 */}
-        <View className="flex items-center gap-1">
-          <Text>{dateInfo.endText}</Text>
-          <Text className="text-sm font-normal">{dateInfo.endLabel}</Text>
+        <View className="flex flex-wrap items-baseline gap-1">
+          <Text className="text-lg font-bold whitespace-nowrap">
+            {dateInfo.endText}
+          </Text>
+          <Text className="text-sm font-normal whitespace-nowrap text-gray-500">
+            {dateInfo.endLabel}
+          </Text>
         </View>
       </View>
-      <Text className="text-base font-normal">{`${dateInfo.nights} ${t("home.location_bar.nights")}`}</Text>
+
+      {/* 右侧晚数 */}
+      <Text className="text-base font-normal text-gray-600 flex-shrink-0">
+        {`${dateInfo.nights} ${t("home.location_bar.nights")}`}
+      </Text>
     </View>
   );
 };

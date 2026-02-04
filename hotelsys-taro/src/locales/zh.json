@@ -20,6 +20,18 @@
       "slogan": "发现属于您的理想下榻之所"
     }
   },
+  "list": {
+    "recommend": "为您推荐",
+    "search_bar": {
+      "unknown_location": "未知位置",
+      "map": "地图"
+    },
+    "filter_bar": {
+      "popularity": "欢迎度排序",
+      "distance": "位置距离",
+      "price": "价格星级"
+    }
+  },
   "language": {
     "languageChange": "切换语言"
   },

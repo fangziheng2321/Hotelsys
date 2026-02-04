@@ -1,32 +1,37 @@
-// src/pages/home/index.tsx
-import React from "react";
+import React, { useState } from "react";
 import { View } from "@tarojs/components";
-import { Button } from "@nutui/nutui-react-taro";
-import Taro from "@tarojs/taro";
+import { Button, NavBar, harmony } from "@nutui/nutui-react-taro";
+import SafeNavBar from "./components/SafeNavBar";
+import SearchBar from "./components/SearchBar";
+import "./index.scss";
+import dayjs from "dayjs";
+import FilterBar from "./components/FilterBar";
+import Divide from "../home/components/Divide";
 
-// 这里的 className 用的是 UnoCSS/Tailwind 写法
-const Home = () => {
-  const handleSearch = () => {
-    console.log("去搜索...");
-    // 路由跳转逻辑写在这里，下面会讲
-  };
+const List = () => {
+  const [city, setCity] = useState("上海");
+  const [dateForm, setDateForm] = useState({
+    startDate: dayjs(),
+    endDate: dayjs().add(1, "day"),
+  });
 
   return (
-    <View className="p-4 bg-gray-100 min-h-screen">
-      <View className="text-2xl font-bold text-center mb-6 text-primary">
-        易宿酒店预订
-      </View>
+    <View className="bg-custom-gray min-h-screen">
+      <View className="bg-white">
+        {/* 顶部安全导航栏 */}
+        <SafeNavBar />
 
-      <View className="bg-white rounded-xl p-4 shadow-md">
-        <View className="mb-4">这里放城市选择组件</View>
-        <View className="mb-4">这里放日期选择组件</View>
+        {/* 搜索栏 */}
+        <SearchBar city={city} dateForm={dateForm} />
 
-        <Button type="primary" block onClick={handleSearch}>
-          开始搜索
-        </Button>
+        {/* 分隔线 */}
+        <Divide />
+
+        {/* 筛选框 */}
+        <FilterBar />
       </View>
     </View>
   );
 };
 
-export default Home;
+export default List;

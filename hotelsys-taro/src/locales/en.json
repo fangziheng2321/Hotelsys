@@ -27,5 +27,17 @@
     "sameDay": "Today",
     "nextDay": "Tomorrow",
     "yesterday": "Yesterday"
+  },
+  "list": {
+    "recommend": "Recommendation",
+    "search_bar": {
+      "map": "MAP",
+      "unknown_location": "unknown location"
+    },
+    "filter_bar": {
+      "popularity": "Popularity",
+      "distance": "Distance",
+      "price": "Price"
+    }
   }
 }

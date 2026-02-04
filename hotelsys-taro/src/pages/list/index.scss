@@ -1,0 +1,17 @@
+.nut-menu-bar {
+  padding: 0.5rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+.nut-menu-title-text {
+  padding: 0;
+  margin-right: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.nut-menu-title {
+  max-width: fit-content;
+}
