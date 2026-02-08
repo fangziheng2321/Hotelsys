@@ -5,7 +5,7 @@ import './App.css'
 
 function App() {
   return (
-    <Router>
+    <Router basename="/infoplat">
       <div className="App">
         <AppRoutes />
       </div>
