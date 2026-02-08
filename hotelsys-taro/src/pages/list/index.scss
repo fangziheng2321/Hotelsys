@@ -3,7 +3,6 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1.5rem;
 }
 
 .nut-menu-title-text {
@@ -14,4 +13,8 @@
 
 .nut-menu-title {
   max-width: fit-content;
+}
+
+.nut-menu-container-wrap {
+  width: 100vw;
 }

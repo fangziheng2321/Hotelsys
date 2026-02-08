@@ -15,10 +15,12 @@ page {
   /* 按钮样式 */
   --nutui-color-primary-stop-1: var(--brand-color);
   --nutui-color-primary-stop-2: var(--brand-color);
+}
 
-  /* 菜单标题栏的阴影 */
-  --nutui-menu-bar-box-shadow: none;
-  --nutui-menu-bar-line-height: auto;
-  --nutui-menu-title-font-size: 
-;
+// 隐藏滚动条
+::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+  color: transparent;
 }

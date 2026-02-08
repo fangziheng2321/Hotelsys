@@ -12,6 +12,7 @@ import { useTranslation } from "react-i18next";
 import { ConfigProvider, harmony, NavBar } from "@nutui/nutui-react-taro";
 import { ArrowLeft } from "@nutui/icons-react-taro";
 import Taro from "@tarojs/taro";
+import { setStatusBarStyle } from "@/utils/style";
 
 interface IProps {}
 
@@ -24,6 +25,11 @@ const SafeNavBar: FC<IProps> = (props) => {
       nutuiNavbarHeight: `${capsuleHeight}px`,
     };
   }, [capsuleHeight]);
+
+  /* 设置状态栏颜色为黑色 */
+  useEffect(() => {
+    setStatusBarStyle("black");
+  }, []);
 
   useEffect(() => {
     const getWeixinMenuButtonBoundingClientRect = () => {

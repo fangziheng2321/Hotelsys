@@ -30,6 +30,16 @@
       "popularity": "欢迎度排序",
       "distance": "位置距离",
       "price": "价格星级"
+    },
+    "score_label": "超赞",
+    "hotel_card": {
+      "price_prefix": "",
+      "price_suffix": "起"
+    },
+    "tips": {
+      "loading": "正在拼命加载中",
+      "refresh": "下拉刷新中",
+      "noMore": "哎呀，找不到更多了"
     }
   },
   "language": {

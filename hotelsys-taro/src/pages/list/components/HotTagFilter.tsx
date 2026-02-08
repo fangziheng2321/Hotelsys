@@ -6,28 +6,36 @@ import React, {
   useCallback,
   useContext,
   useRef,
+  Dispatch,
+  SetStateAction,
 } from "react";
-import { View, Text } from "@tarojs/components";
-import { useTranslation } from "react-i18next";
 import HotTagList from "@/components/HotTagList/HotTagList";
 import { hotTagType } from "../types";
 
-const HotTagFilter = () => {
-  const [selectedList, setSelectedList] = useState<string[]>([]);
+interface IProps {
+  selectedList: string[];
+  setSelectedList: Dispatch<SetStateAction<string[]>>;
+}
+
+const HotTagFilter = ({ selectedList, setSelectedList }: IProps) => {
   const hotTags = [
     {
+      id: 1,
       label: "免费停车场",
       value: "free_parking",
     },
     {
+      id: 2,
       label: "免费 wifi",
       value: "free_wifi",
     },
     {
+      id: 3,
       label: "免费早餐",
       value: "free_breakfast",
     },
     {
+      id: 4,
       label: "24小时服务",
       value: "24_hour_service",
     },
@@ -46,8 +54,10 @@ const HotTagFilter = () => {
   return (
     <HotTagList
       list={hotTags}
+      customClassName="p-2"
       onTagClick={handleClickTag}
       selectedList={selectedList}
+      hotTags={hotTags}
     />
   );
 };

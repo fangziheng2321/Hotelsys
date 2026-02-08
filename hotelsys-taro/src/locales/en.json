@@ -38,6 +38,16 @@
       "popularity": "Popularity",
       "distance": "Distance",
       "price": "Price"
+    },
+    "score_label": "Awesome",
+    "hotel_card": {
+      "price_prefix": "from",
+      "price_suffix": ""
+    },
+    "tips": {
+      "loading": "Loading desperately",
+      "refresh": "Pull down to refresh",
+      "noMore": "Oops, can't find any more"
     }
   }
 }
