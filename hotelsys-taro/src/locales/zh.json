@@ -42,6 +42,21 @@
       "noMore": "哎呀，找不到更多了"
     }
   },
+  "detail": {
+    "facility": {
+      "more": "更多"
+    },
+    "room": {
+      "canCancel": "可以取消",
+      "cannotCancel": "不可取消",
+      "soldOut": "暂无剩余",
+      "book": "预订"
+    },
+    "function_bar": {
+      "contact": "问酒店",
+      "viewRoom": "查看房型"
+    }
+  },
   "language": {
     "languageChange": "切换语言"
   },

@@ -51,7 +51,7 @@ const SafeNavBar: FC<IProps> = (props) => {
       <ConfigProvider theme={customNavTheme}>
         <NavBar
           title={t("list.recommend")}
-          back={<ArrowLeft />}
+          back={<ArrowLeft size={"1.5rem"} />}
           onBackClick={() => Taro.navigateBack()}
         />
       </ConfigProvider>

@@ -20,9 +20,9 @@ const CutomButton: FC<IProps> = ({
   return (
     <Button
       className={[
-        "bg-gradient-to-r from-primary to-secondary flex items-center justify-center",
-        useAnimation ? "animation" : "",
         customClassName,
+        "bg-gradient-to-r from-primary to-secondary flex items-center justify-center shadow-lg shadow-blue-200",
+        useAnimation ? "animation" : "",
       ].join(" ")}
       disabled={disabled}
       onClick={onClick}

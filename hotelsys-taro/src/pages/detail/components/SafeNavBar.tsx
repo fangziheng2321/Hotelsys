@@ -51,15 +51,9 @@ const SafeNavBar: FC<IProps> = ({ title, className }) => {
 
       // 更新状态栏的颜色
       if (nextOpacity > 0.5) {
-        Taro.setNavigationBarColor({
-          frontColor: "#000000",
-          backgroundColor: "#ffffff",
-        });
+        setStatusBarStyle("black");
       } else {
-        Taro.setNavigationBarColor({
-          frontColor: "#ffffff",
-          backgroundColor: "#000000",
-        });
+        setStatusBarStyle("white");
       }
     }
   });
@@ -112,17 +106,17 @@ const SafeNavBar: FC<IProps> = ({ title, className }) => {
              当透明度小于 0.5 时显示，做个反向的淡入淡出
           */}
           <View
-            className="absolute left-2 z-20 transition-opacity duration-200"
+            className="absolute left-4 z-20 transition-opacity duration-200"
             style={{
               opacity: navOpacity < 0.5 ? 1 : 0,
               pointerEvents: navOpacity < 0.5 ? "auto" : "none",
             }}
           >
             <View
-              className="rounded-full p-1 bg-black/40 flex items-center justify-center backdrop-blur-sm"
+              className="rounded-full p-1 bg-black/40 flex items-center justify-center backdrop-blur-sm border border-white/40"
               onClick={handleBack}
             >
-              <ArrowLeft color="white" />
+              <ArrowLeft color="white" size={"1.5rem"} />
             </View>
           </View>
 
@@ -136,7 +130,7 @@ const SafeNavBar: FC<IProps> = ({ title, className }) => {
           >
             {/* 普通黑色返回箭头 */}
             <View className="absolute left-4" onClick={handleBack}>
-              <ArrowLeft color="black" />
+              <ArrowLeft color="black" size={"1.5rem"} />
             </View>
 
             {/* 标题 */}

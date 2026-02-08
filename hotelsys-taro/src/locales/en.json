@@ -49,5 +49,20 @@
       "refresh": "Pull down to refresh",
       "noMore": "Oops, can't find any more"
     }
+  },
+  "detail": {
+    "facility": {
+      "more": "More"
+    },
+    "room": {
+      "canCancel": "Can be canceled",
+      "cannotCancel": "No cancellation",
+      "soldOut": "Sold Out",
+      "book": "Book"
+    },
+    "function_bar": {
+      "contact": "Contact",
+      "viewRoom": "View Rooms"
+    }
   }
 }
