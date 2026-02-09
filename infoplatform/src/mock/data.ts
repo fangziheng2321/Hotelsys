@@ -192,7 +192,7 @@ export const mockApi = {
 
   // 创建或更新酒店
   // forcePending: 是否强制将状态设为审核中（用于编辑已发布/已拒绝/已下线的酒店）
-  saveHotel: (hotel: Partial<Hotel>, forcePending: boolean = false) => {
+  saveHotel: (hotel: Partial<Hotel>) => {
     if (hotel.id) {
       // 更新酒店
       const index = mockHotels.findIndex(h => h.id === hotel.id);
@@ -201,7 +201,7 @@ export const mockApi = {
           ...mockHotels[index],
           ...hotel,
           // 如果forcePending为true，将状态改为审核中
-          status: forcePending ? 'pending' : (hotel.status || mockHotels[index].status),
+          status: 'pending',
           updatedAt: new Date().toISOString()
         };
         return {

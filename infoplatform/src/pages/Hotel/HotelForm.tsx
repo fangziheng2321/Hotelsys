@@ -112,7 +112,7 @@ const HotelForm: React.FC = () => {
     const response = mockApi.saveHotel({
       id: hotelId,
       ...formData
-    }, forcePending);
+    });
 
     if (response.success) {
       if (forcePending) {

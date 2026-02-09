@@ -67,13 +67,13 @@ api.interceptors.response.use(
 export const authApi = {
   // 登录
   login: async (username: string, password: string) => {
-    const response = await api.post('/auth/login', { username, password });
+    const response = await api.post('/PClogin', { username, password });
     return response.data;
   },
 
   // 注册
   register: async (username: string, password: string, role: 'merchant' | 'admin') => {
-    const response = await api.post('/auth/register', { username, password, role });
+    const response = await api.post('/PCregister', { username, password, role });
     return response.data;
   }
 };
