@@ -20,22 +20,18 @@ const Banner: FC<IProps> = ({
   const [bannerList, setBannerList] = useState<BannerType[]>([
     {
       id: 1,
-      name: "酒店1",
       imgUrl: "https://storage.360buyimg.com/jdc-article/NutUItaro34.jpg",
     },
     {
       id: 2,
-      name: "酒店2",
       imgUrl: "https://storage.360buyimg.com/jdc-article/NutUItaro2.jpg",
     },
     {
       id: 3,
-      name: "酒店3",
       imgUrl: "https://storage.360buyimg.com/jdc-article/welcomenutui.jpg",
     },
     {
       id: 4,
-      name: "酒店4",
       imgUrl: "https://storage.360buyimg.com/jdc-article/fristfabu.jpg",
     },
   ]);

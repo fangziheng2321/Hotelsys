@@ -2,7 +2,6 @@ import { timeType } from "@/types";
 /* 轮播图类型 */
 export interface BannerType {
   id: number;
-  name: string;
   imgUrl?: string;
 }
 

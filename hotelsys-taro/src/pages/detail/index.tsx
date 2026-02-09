@@ -13,47 +13,56 @@ import SafeNavBar from "./components/SafeNavBar";
 import HotelBanner from "./components/HotelBanner";
 import DetailInfo from "./components/DetailInfo";
 import { DetailInfoType } from "./types";
-import { FacilityIcon } from "@/enum/detail";
 import Calendar from "./components/Calendar";
 import RoomList from "./components/RoomList";
 import FunctionBar from "./components/FunctionBar";
+import { useRouter } from "@tarojs/taro";
+import { getHotelDetailById } from "@/api/detail";
+import DetailSkeleton from "./components/DetailSkeleton";
 
 interface IProps {}
 
 const Index: FC<IProps> = (props) => {
   const { t } = useTranslation();
+  const router = useRouter();
+  const { params } = router;
+  const [loading, setLoading] = useState<boolean>(false);
   const [hotelInfo, setHotelInfo] = useState<DetailInfoType>({
     id: 1,
-    name: "陆家嘴禧玥酒店",
-    rate: 5,
-    imgList: [
-      "https://modao.cc/agent-py/media/generated_images/2026-02-07/0f513ec570834b798774104363e44c81.jpg",
-      "https://modao.cc/agent-py/media/generated_images/2026-02-03/0356c22d93a042c794e0f0ca57400f1f.jpg",
-      "https://modao.cc/agent-py/media/generated_images/2026-02-03/6c6959e198984f0888aa0718f1bd992d.jpg",
-    ],
-    score: 4.8,
-    address: "浦东新区浦明路868弄3号楼",
-    tagList: ["免费升房", "新中式风", "一线江景"],
-    price: Math.floor(Math.random() * 900) + 100,
-    facilities: [
-      {
-        title: "2020年开业",
-        iconKey: FacilityIcon.CALENDAR,
-      },
-      {
-        title: "新中式风",
-        iconKey: FacilityIcon.HOUSE,
-      },
-      {
-        title: "免费停车",
-        iconKey: FacilityIcon.PARKING,
-      },
-      {
-        title: "一线江景",
-        iconKey: FacilityIcon.VIEW,
-      },
-    ],
+    name: "",
+    rate: 0,
+    imgList: [],
+    score: 0.0,
+    address: "",
+    price: 0,
+    facilities: [],
   });
+
+  // 获取酒店详情
+  const loadHotelDetail = async (id: number | string) => {
+    setLoading(true);
+    try {
+      const res = await getHotelDetailById(id);
+      console.log(res);
+      setHotelInfo(res);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const { id } = params;
+    if (id) {
+      // 请求接口获取酒店详情数据
+      loadHotelDetail(id);
+    }
+  }, []);
+
+  if (loading) {
+    return <DetailSkeleton />;
+  }
 
   return (
     <>

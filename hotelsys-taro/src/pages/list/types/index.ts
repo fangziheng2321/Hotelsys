@@ -18,7 +18,7 @@ export interface hotelCardType {
   rate: number;
   score: number;
   address: string;
-  tagList: string[];
+  facilities: string[];
   price: number;
   imgUrl: string;
 }

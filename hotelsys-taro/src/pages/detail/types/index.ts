@@ -7,7 +7,6 @@ export interface DetailInfoType {
   rate: 0 | 1 | 2 | 3 | 4 | 5;
   address: string;
   price: number;
-  tagList: string[];
   facilities: FacilityItemType[];
 }
 

@@ -24,3 +24,9 @@ page {
   height: 0;
   color: transparent;
 }
+
+@layer components {
+  .sk-bg {
+    @apply bg-gray-200 rounded animate-pulse;
+  }
+}

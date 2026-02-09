@@ -26,7 +26,7 @@ const HotelCard: FC<IProps> = ({
   rate,
   score,
   address,
-  tagList,
+  facilities,
   price,
   imgUrl,
   customClassName,
@@ -86,7 +86,7 @@ const HotelCard: FC<IProps> = ({
 
         {/* 酒店标签 */}
         <View className="flex flex-wrap gap-2 items-center">
-          {tagList?.slice(0, 3).map((tag) => (
+          {facilities?.slice(0, 3).map((tag) => (
             <CustomTag
               key={tag}
               customClassName="bg-transparent border-secondary border border-solid text-secondary text-xs font-normal"

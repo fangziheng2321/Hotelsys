@@ -4,7 +4,6 @@ module.exports = {
     // 不在 content 包括的文件内，你编写的 class，是不会生成对应的css工具类的
     content: ['./public/index.html', './src/**/*.{html,js,ts,jsx,tsx,vue}'],
     // 其他配置项
-    // ...
     corePlugins: {
         // 小程序不需要 preflight
         preflight: false

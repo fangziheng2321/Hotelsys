@@ -31,11 +31,6 @@ const Home = () => {
   });
   const [filterLabel, setFilterLabel] = useState<string | null>(null);
 
-  /* 点击轮播图 */
-  const handleClickBanner = (banner: BannerType) => {
-    console.log(banner);
-  };
-
   /* 修改选中搜索Tabs */
   const handleChangeTab = (type: SearchTabType) => {
     setActiveTabType(type);

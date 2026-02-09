@@ -35,7 +35,7 @@ const HotelList: FC<IProps> = (props) => {
         rate: Math.floor(Math.random() * 4) + 1,
         score: Math.random() * 4,
         address: "近外滩 · 东方明珠",
-        tagList: ["免费升房", "新中式风", "一线江景"],
+        facilities: ["免费升房", "新中式风", "一线江景"],
         price: Math.floor(Math.random() * 900) + 100,
         imgUrl:
           "https://modao.cc/agent-py/media/generated_images/2026-02-03/6c6959e198984f0888aa0718f1bd992d.jpg",
