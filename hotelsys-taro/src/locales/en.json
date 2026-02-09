@@ -1,0 +1,68 @@
+{
+  "home": {
+    "search_tabs": {
+      "domestic": "Dome",
+      "overseas": "Over",
+      "hourly": "Hourly",
+      "homestay": "Home"
+    },
+    "location_bar": {
+      "myLocation": "My Location",
+      "searchTextPlaceholder": "Location/Brand/Hotel",
+      "nights": "Night"
+    },
+    "search_button": "Query",
+    "filter_bar": {
+      "placeholder": "Price/star rating"
+    },
+    "header": {
+      "easeStay": "Ease Stay",
+      "slogan": "Discover your ideal place to stay"
+    }
+  },
+  "language": {
+    "languageChange": "switch language"
+  },
+  "time": {
+    "sameDay": "Today",
+    "nextDay": "Tomorrow",
+    "yesterday": "Yesterday"
+  },
+  "list": {
+    "recommend": "Recommendation",
+    "search_bar": {
+      "map": "MAP",
+      "unknown_location": "unknown location"
+    },
+    "filter_bar": {
+      "popularity": "Popularity",
+      "distance": "Distance",
+      "price": "Price"
+    },
+    "score_label": "Awesome",
+    "hotel_card": {
+      "price_prefix": "from",
+      "price_suffix": ""
+    },
+    "tips": {
+      "loading": "Loading desperately",
+      "refresh": "Pull down to refresh",
+      "noMore": "Oops, can't find any more"
+    }
+  },
+  "detail": {
+    "facility": {
+      "more": "More"
+    },
+    "room": {
+      "canCancel": "Can be canceled",
+      "cannotCancel": "No cancellation",
+      "soldOut": "Sold Out",
+      "book": "Book"
+    },
+    "function_bar": {
+      "contact": "Contact",
+      "viewRoom": "View Rooms"
+    }
+  }
+}

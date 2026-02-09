@@ -1,0 +1,25 @@
+.animation {
+overflow: hidden;
+position: relative;
+
+&::after {
+    content: '';
+    position: absolute;
+    inset: -100%;
+    border: none;
+    background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0) 30%,
+    rgba(255, 255, 255, 0.4),
+    rgba(255, 255, 255, 0) 70%
+    );
+    animation: flush 3s infinite;
+    transform: translate(-100%, -100%) rotate(0deg);
+}
+}
+
+@keyframes flush {
+to {
+    transform: translate(100%, 100%) rotate(0deg);
+}
+}

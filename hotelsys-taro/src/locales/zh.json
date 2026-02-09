@@ -1,0 +1,68 @@
+{
+  "home": {
+    "search_tabs": {
+      "domestic": "国内",
+      "overseas": "海外",
+      "hourly": "钟点房",
+      "homestay": "民宿"
+    },
+    "location_bar": {
+      "myLocation": "我的位置",
+      "searchTextPlaceholder": "位置/品牌/酒店",
+      "nights": "晚"
+    },
+    "search_button": "查 询",
+    "filter_bar": {
+      "placeholder": "价格/星级"
+    },
+    "header": {
+      "easeStay": "易宿酒店",
+      "slogan": "发现属于您的理想下榻之所"
+    }
+  },
+  "list": {
+    "recommend": "为您推荐",
+    "search_bar": {
+      "unknown_location": "未知位置",
+      "map": "地图"
+    },
+    "filter_bar": {
+      "popularity": "欢迎度排序",
+      "distance": "位置距离",
+      "price": "价格星级"
+    },
+    "score_label": "超赞",
+    "hotel_card": {
+      "price_prefix": "",
+      "price_suffix": "起"
+    },
+    "tips": {
+      "loading": "正在拼命加载中",
+      "refresh": "下拉刷新中",
+      "noMore": "哎呀，找不到更多了"
+    }
+  },
+  "detail": {
+    "facility": {
+      "more": "更多"
+    },
+    "room": {
+      "canCancel": "可以取消",
+      "cannotCancel": "不可取消",
+      "soldOut": "暂无剩余",
+      "book": "预订"
+    },
+    "function_bar": {
+      "contact": "问酒店",
+      "viewRoom": "查看房型"
+    }
+  },
+  "language": {
+    "languageChange": "切换语言"
+  },
+  "time": {
+    "sameDay": "今天",
+    "nextDay": "明天",
+    "yesterday": "昨天"
+  }
+}
