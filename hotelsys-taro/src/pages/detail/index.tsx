@@ -12,12 +12,12 @@ import { useTranslation } from "react-i18next";
 import SafeNavBar from "./components/SafeNavBar";
 import HotelBanner from "./components/HotelBanner";
 import DetailInfo from "./components/DetailInfo";
-import { DetailInfoType } from "./types";
+import { DetailInfoType, RoomType } from "./types";
 import Calendar from "./components/Calendar";
 import RoomList from "./components/RoomList";
 import FunctionBar from "./components/FunctionBar";
 import { useRouter } from "@tarojs/taro";
-import { getHotelDetailById } from "@/api/detail";
+import { getHotelDetailById, getHotelRoomListById } from "@/api/detail";
 import DetailSkeleton from "./components/DetailSkeleton";
 
 interface IProps {}
@@ -27,6 +27,7 @@ const Index: FC<IProps> = (props) => {
   const router = useRouter();
   const { params } = router;
   const [loading, setLoading] = useState<boolean>(false);
+  const [roomListLoading, setRoomListLoading] = useState<boolean>(false);
   const [hotelInfo, setHotelInfo] = useState<DetailInfoType>({
     id: 1,
     name: "",
@@ -35,15 +36,17 @@ const Index: FC<IProps> = (props) => {
     score: 0.0,
     address: "",
     price: 0,
+    telephone: null,
     facilities: [],
   });
+  const [roomList, setRoomList] = useState<RoomType[]>([]);
 
   // 获取酒店详情
   const loadHotelDetail = async (id: number | string) => {
+    if (!id) return;
     setLoading(true);
     try {
       const res = await getHotelDetailById(id);
-      console.log(res);
       setHotelInfo(res);
     } catch (error) {
       console.error(error);
@@ -52,11 +55,27 @@ const Index: FC<IProps> = (props) => {
     }
   };
 
+  // 获取房型列表
+  const loadRoomList = async (id: number | string) => {
+    if (!id) return;
+    setRoomListLoading(true);
+    try {
+      const res = await getHotelRoomListById(id);
+      setRoomList(res);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setRoomListLoading(false);
+    }
+  };
+
   useEffect(() => {
     const { id } = params;
     if (id) {
       // 请求接口获取酒店详情数据
       loadHotelDetail(id);
+      // 请求接口获取房型数据
+      loadRoomList(id);
     }
   }, []);
 
@@ -80,18 +99,21 @@ const Index: FC<IProps> = (props) => {
           </View>
 
           {/* 日历与人间夜 */}
-          <View className="bg-white p-4 mt-2">
+          <View
+            className="bg-white p-4 mt-2"
+            onClick={() => loadRoomList(hotelInfo.id)}
+          >
             <Calendar />
           </View>
           {/* 房型价格列表 */}
           <View className="bg-white px-4 mt-2">
-            <RoomList />
+            <RoomList roomList={roomList} loading={roomListLoading} />
           </View>
         </View>
       </View>
       {/* 底部栏 */}
       <View className="fixed bottom-0 left-0 right-0 px-4 py-2 bg-white">
-        <FunctionBar price={hotelInfo.price} />
+        <FunctionBar price={hotelInfo.price} telephone={hotelInfo.telephone} />
       </View>
     </>
   );

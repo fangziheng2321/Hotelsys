@@ -21,11 +21,10 @@ const RoomCard: FC<IProps> = ({
   area,
   occupancy,
   floor,
-  breakfast,
   canCancel,
   instantConfirm,
   price,
-  soldOut,
+  stock,
   imageUrl,
 }) => {
   const { t } = useTranslation();
@@ -55,8 +54,14 @@ const RoomCard: FC<IProps> = ({
         </View>
         {/* 早餐与是否可以取消 */}
         <View className="flex gap-2 items-center text-xs">
-          {/* 是否包含早餐 */}
-          <Text className="text-green-600">{breakfast ?? "N/A"}</Text>
+          {/* 剩余数量 */}
+          <Text className={stock > 1 ? "text-green-600" : "text-orange-600"}>
+            {stock > 1
+              ? `${t("detail.room.remaining")} ${stock} ${t("detail.room.room")}`
+              : stock === 0
+                ? `${t("detail.room.soldOut")}`
+                : `${t("detail.room.onlyOneLeft")}`}
+          </Text>
           {/* 立即确认：蓝色 */}
           {instantConfirm && <Text className="text-blue-600">立即确认</Text>}
           {/* 取消政策：如果是不可取消用灰色，免费取消用绿色 */}
@@ -81,8 +86,8 @@ const RoomCard: FC<IProps> = ({
             </Text>
           </View>
           {/* 预订按钮 */}
-          <Button type="primary" disabled={soldOut}>
-            {soldOut ? t("detail.room.soldOut") : t("detail.room.book")}
+          <Button type="primary" disabled={stock <= 0}>
+            {stock <= 0 ? t("detail.room.soldOut") : t("detail.room.book")}
           </Button>
         </View>
       </View>

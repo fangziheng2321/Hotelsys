@@ -28,7 +28,7 @@ const LocationBar: FC<IProps> = (props) => {
       {/* 定位器 */}
       <View className="flex items-center gap-2" onClick={props?.onCityClick}>
         <Text className="text-lg font-bold truncate max-w-[5em]">
-          {t("home.location_bar.myLocation")}
+          {props?.cityName ?? t("home.location_bar.myLocation")}
         </Text>
         {/* 图标，点击后跳转定位页面 */}
         <ArrowDownSmall size={"1rem"} />

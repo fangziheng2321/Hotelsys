@@ -18,8 +18,8 @@ export const useTime = () => {
     const target = dayjs(dateStr);
     const today = dayjs();
 
-    const sameElseFormat =
-      target.year() === today.year() ? "MM-DD" : "YYYY-MM-DD";
+    // const sameElseFormat =
+    //   target.year() === today.year() ? "MM-DD" : "YYYY-MM-DD";
 
     // 使用 calendar 插件来处理今天/明天/后天的逻辑
     // 注意：dayjs 的 calendar 默认配置可能不完全符合中文习惯，这里自定义配置
@@ -29,7 +29,7 @@ export const useTime = () => {
       nextWeek: "dddd", // 下周显示星期几
       lastDay: `[${t("time.yesterday")}]`, // 昨天
       lastWeek: "dddd", // 上周显示星期几
-      sameElse: sameElseFormat, // 其他情况不显示
+      sameElse: "dddd", // 其他情况不显示
     });
   };
 

@@ -40,6 +40,10 @@
       "loading": "正在拼命加载中",
       "refresh": "下拉刷新中",
       "noMore": "哎呀，找不到更多了"
+    },
+    "refresh": {
+      "success": "刷新成功",
+      "fail": "刷新失败"
     }
   },
   "detail": {
@@ -50,10 +54,16 @@
       "canCancel": "可以取消",
       "cannotCancel": "不可取消",
       "soldOut": "暂无剩余",
-      "book": "预订"
+      "book": "预订",
+      "remaining": "剩余",
+      "room": "间",
+      "onlyOneLeft": "仅剩余1间"
     },
     "function_bar": {
       "contact": "问酒店",
+      "makePhoneCall": {
+        "empty": "酒店暂未提供联系方式"
+      },
       "viewRoom": "查看房型"
     }
   },

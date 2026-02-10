@@ -13,10 +13,9 @@ import { getMockHotelPage } from "@/mock/list";
  * @param {number} params.pageSize
  */
 export const getFilteredHotelListByPage = (params) => {
-  // 先调用 Mock 逻辑算出这一页的数据
   const mockResult = getMockHotelPage(params);
   return request<any>({
-    url: "/hotel/list",
+    url: "/hotels/search",
     method: "POST",
     data: params,
     mockData: mockResult.data,

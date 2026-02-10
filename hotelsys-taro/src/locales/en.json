@@ -48,6 +48,10 @@
       "loading": "Loading desperately",
       "refresh": "Pull down to refresh",
       "noMore": "Oops, can't find any more"
+    },
+    "refresh": {
+      "success": "Refresh successful",
+      "fail": "Refresh failed"
     }
   },
   "detail": {
@@ -58,11 +62,21 @@
       "canCancel": "Can be canceled",
       "cannotCancel": "No cancellation",
       "soldOut": "Sold Out",
-      "book": "Book"
+      "book": "Book",
+      "remaining": "",
+      "room": "rooms left",
+      "onlyOneLeft": "Only 1 room left"
     },
     "function_bar": {
       "contact": "Contact",
-      "viewRoom": "View Rooms"
+      "viewRoom": "View Rooms",
+      "makePhoneCall": {
+        "empty": "The hotel has not provided contact information yet"
+      }
     }
+  },
+  "request": {
+    "success": "Request successful",
+    "error": "Request failed"
   }
 }

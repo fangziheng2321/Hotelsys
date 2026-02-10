@@ -31,7 +31,7 @@ const HotelList: FC<IProps> = ({
   };
   const refresh = async () => {
     refreshLoadMore(true);
-    toastShow("刷新成功");
+    toastShow(t("list.refresh.success"));
   };
 
   if (loading) {

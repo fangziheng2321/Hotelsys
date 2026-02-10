@@ -8,6 +8,7 @@ export interface DetailInfoType {
   address: string;
   price: number;
   facilities: FacilityItemType[];
+  telephone: null | string;
 }
 
 // 设施
@@ -25,9 +26,8 @@ export interface RoomType {
   area: string; // 面积："40m²"
   occupancy: string; // 入住人数："2人入住"
   floor: string; // 楼层："5-15层"
-  breakfast: string; // 早餐
+  stock: number; //剩余数量
   canCancel: boolean; // 取消政策
   instantConfirm: boolean;
   price: number;
-  soldOut?: boolean;
 }
