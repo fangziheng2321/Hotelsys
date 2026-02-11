@@ -15,12 +15,19 @@ import healthRouter from './routes/health.routes';
 import authRouter from './routes/auth.routes';
 import hotelRouter from './routes/hotel.routes';
 
+// 【新增导入】导入上传相关的中间件和控制器
+import { uploadHotelImages } from './middleware/upload.middleware';
+import * as uploadController from './controllers/upload.controller';
+import { protect, restrictTo } from './middleware/auth.middleware';
+
 // 加载环境变量
 dotenv.config();
 
 const app: Application = express();
 const PORT = process.env.PORT || 3000;
 const API_PREFIX = process.env.API_PREFIX || '/api';
+
+// --- 全局中间件配置 ---
 
 // 安全中间件
 app.use(helmet());
@@ -46,7 +53,7 @@ app.use(express.urlencoded({ extended: true }));
 // 压缩响应
 app.use(compression());
 
-// 请求日志中间件
+// 请求日志记录
 app.use((req: Request, res: Response, next: NextFunction) => {
   logger.info(`${req.method} ${req.originalUrl}`, {
     ip: req.ip,
@@ -55,26 +62,46 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   next();
 });
 
-// 1. 静态资源托管,否则前端无法加载图片 
+// --- 静态资源与路由配置 ---
+
+// 1. 静态资源托管：让前端能通过 URL 访问上传的酒店图片
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
-// API路由
+// 2. 健康检查路由
 app.use(`${API_PREFIX}/health`, healthRouter);
+
+// 3. 认证相关路由 (登录/注册)
 app.use(`${API_PREFIX}`, authRouter);
-app.use(`${API_PREFIX}/hotels`, hotelRouter);
+
+// 4. 图片上传接口
+// 必须登录(protect)且角色为商户(restrictTo)，允许并发上传10张名为 'files' 的字段
+app.post(
+  `${API_PREFIX}/merchant/upload`, 
+  protect, 
+  restrictTo('merchant'), 
+  uploadHotelImages.array('files', 10), 
+  uploadController.uploadImages
+);
+
+// 5. 酒店业务路由 (创建/更新)
+app.use(`${API_PREFIX}/merchant/hotels`, hotelRouter);
+
+// 6. Swagger API 文档
 app.use('/api-docs', swaggerRouter);
 
-// 404处理
+
+// --- 错误处理 ---
+
+// 404 处理：找不到定义的路由
 app.use('*', (req: Request, res: Response, next: NextFunction) => {
   next(new AppError(`找不到 ${req.originalUrl}`, 404));
 });
 
-// 全局错误处理中间件
+// 全局错误处理中间件：统一返回 JSON 格式的报错信息
 app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
   logger.error(error.message, { stack: error.stack });
 
   if (error instanceof AppError) {
-    // 路径 1: 返回了 response
     return res.status(error.statusCode).json({
       success: false,
       error: {
@@ -84,7 +111,6 @@ app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
     });
   }
 
-  // 未知错误 - 路径 2: 也要加上 return 确保 TypeScript 满意
   return res.status(500).json({
     success: false,
     error: {
@@ -96,28 +122,20 @@ app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
   });
 });
 
-// 启动服务器
-/*if (process.env.NODE_ENV !== 'test') {
-  app.listen(PORT, () => {
-    logger.info(`服务器启动成功，端口：${PORT}`);
-    logger.info(`API文档：http://localhost:${PORT}/api-docs`);
-    logger.info(`健康检查：http://localhost:${PORT}/api/health`);
-  });
-}
-*/
-
-export default app;
-
 async function startServer() {
   try {
     await sequelize.authenticate();
     logger.info('数据库连接成功');
     
-    // 如果你希望代码自动同步表结构（开发环境建议开启）
-    // await sequelize.sync({ alter: true }); 
+    // 开发环境下自动同步表结构
+    if (process.env.NODE_ENV === 'development') {
+      await sequelize.sync({ alter: true }); 
+      logger.info('数据库表结构同步完成');
+    }
 
     app.listen(PORT, () => {
       logger.info(`服务运行在 http://localhost:${PORT}`);
+      logger.info(`API预览: http://localhost:${PORT}/api-docs`);
     });
   } catch (error) {
     logger.error('无法连接到数据库:', error);
@@ -126,3 +144,5 @@ async function startServer() {
 }
 
 startServer();
+
+export default app;

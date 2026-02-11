@@ -2,28 +2,28 @@ import { DataTypes } from 'sequelize';
 import { BaseModel } from './BaseModel';
 
 class Hotel extends BaseModel<Hotel> {
-  public merchant_id!: number;
-  public name_zh!: string;
-  public name_en?: string;
-  public address!: string;
-  public city!: string;
-  public district?: string;
-  public latitude?: number;
-  public longitude?: number;
-  public star_rating!: number;
-  public opening_date!: Date;
-  public status!: 'draft' | 'pending' | 'approved' | 'rejected' | 'offline';
-  public rejection_reason?: string;
-  public is_featured!: boolean;
-  public contact_phone?: string;
-  public contact_email?: string;
-  public facilities?: any; // JSON 字段
-  public nearby_attractions?: any;
-  public transportation_info?: any;
-  public description?: string;
-  public total_rooms!: number;
-  public average_rating!: number;
-  public review_count!: number;
+  declare merchant_id: number;
+  declare name_zh: string;
+  declare name_en?: string;
+  declare address: string;
+  declare city: string;
+  declare district?: string;
+  declare latitude?: number;
+  declare longitude?: number;
+  declare star_rating: number;
+  declare opening_date: Date;
+  declare status: 'draft' | 'pending' | 'approved' | 'rejected' | 'offline';
+  declare rejection_reason?: string;
+  declare is_featured: boolean;
+  declare contact_phone?: string;
+  declare contact_email?: string;
+  declare facilities?: any; // JSON 字段
+  declare nearby_attractions?: any;
+  declare transportation_info?: any;
+  declare description?: string;
+  declare total_rooms: number;
+  declare average_rating: number;
+  declare review_count: number;
 
   // 定义关联关系的声明
   static associate(models: any) {
@@ -49,7 +49,7 @@ Hotel.initModel(
     },
     city: {
       type: DataTypes.STRING(50),
-      allowNull: false
+      allowNull: true
     },
     district: DataTypes.STRING(50),
     latitude: DataTypes.DECIMAL(10, 8),
@@ -61,7 +61,7 @@ Hotel.initModel(
     },
     opening_date: {
       type: DataTypes.DATEONLY,
-      allowNull: false
+      allowNull: true
     },
     status: {
       type: DataTypes.ENUM('draft', 'pending', 'approved', 'rejected', 'offline'),

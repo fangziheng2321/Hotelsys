@@ -27,102 +27,73 @@ CREATE TABLE users (
 -- 2. 酒店表
 CREATE TABLE hotels (
   id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY COMMENT '酒店ID',
-  merchant_id INT UNSIGNED NOT NULL COMMENT '商户ID',
-  -- 必须维度（来自需求文档）
+  merchant_id INT UNSIGNED NOT NULL COMMENT '所属商户ID',
   name_zh VARCHAR(100) NOT NULL COMMENT '酒店中文名',
   name_en VARCHAR(100) COMMENT '酒店英文名',
+  hotel_type ENUM('domestic', 'overseas', 'homestay', 'hourly') DEFAULT 'domestic' COMMENT '酒店类型',
   address VARCHAR(255) NOT NULL COMMENT '详细地址',
   city VARCHAR(50) NOT NULL COMMENT '城市',
-  district VARCHAR(50) COMMENT '区/县',
-  latitude DECIMAL(10, 8) COMMENT '纬度',
-  longitude DECIMAL(11, 8) COMMENT '经度',
-  star_rating TINYINT UNSIGNED NOT NULL COMMENT '星级(1-5)',
-  opening_date DATE NOT NULL COMMENT '开业时间',
-  -- 业务字段
-  status ENUM('draft', 'pending', 'approved', 'rejected', 'offline') 
-    DEFAULT 'draft' COMMENT '状态：草稿/待审核/已通过/已拒绝/已下线',
-  rejection_reason TEXT COMMENT '拒绝原因',
-  is_featured BOOLEAN DEFAULT FALSE COMMENT '是否推荐',
+  star_rating TINYINT UNSIGNED NOT NULL DEFAULT 3 COMMENT '星级(1-5)',
+  rating_score DECIMAL(2,1) DEFAULT 4.0 COMMENT '评分',
+  opening_date DATE COMMENT '开业时间',
+  status ENUM('pending', 'approved', 'rejected', 'offline') DEFAULT 'pending' COMMENT '状态',
+  rejection_reason TEXT COMMENT '驳回原因',
   contact_phone VARCHAR(20) COMMENT '联系电话',
-  contact_email VARCHAR(100) COMMENT '联系邮箱',
-  -- 可选维度
-  facilities JSON COMMENT '设施：{"wifi": true, "parking": true, "pool": false, ...}',
-  nearby_attractions JSON COMMENT '附近景点：["景点1", "景点2"]',
-  transportation_info JSON COMMENT '交通信息：{"地铁": ["2号线", "10号线"], "公交": ["123路"]}',
-  description TEXT COMMENT '酒店描述',
-  -- 统计字段（避免频繁COUNT查询）
-  total_rooms SMALLINT UNSIGNED DEFAULT 0 COMMENT '总房型数',
-  average_rating DECIMAL(3,2) DEFAULT 0.00 COMMENT '平均评分',
-  review_count INT UNSIGNED DEFAULT 0 COMMENT '评价数量',
-  -- 时间戳
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  approved_at TIMESTAMP NULL COMMENT '审核通过时间',
-  -- 外键约束
+  facilities JSON COMMENT '酒店设施服务(JSON存储,如["免费WiFi", "停车场"])',
+  description TEXT COMMENT '酒店详情描述',
+  min_price DECIMAL(10, 2) DEFAULT 0.00 COMMENT '起步价(冗余字段提高查询性能)',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  
   FOREIGN KEY (merchant_id) REFERENCES users(id) ON DELETE CASCADE,
-  -- 索引设计
-  INDEX idx_merchant (merchant_id),
-  INDEX idx_city (city),
-  INDEX idx_star_rating (star_rating),
-  INDEX idx_status_approved_at (status, approved_at),
-  INDEX idx_location (latitude, longitude),
-  INDEX idx_opening_date (opening_date),
-  FULLTEXT INDEX idx_search (name_zh, name_en, address, city)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='酒店表';
+  INDEX idx_city_status (city, status),
+  INDEX idx_hotel_type (hotel_type)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='酒店表';
 
 
 -- 3. 酒店图片表
 CREATE TABLE hotel_images (
-  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY COMMENT '图片ID',
-  hotel_id INT UNSIGNED NOT NULL COMMENT '酒店ID',
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  hotel_id INT UNSIGNED NOT NULL,
   image_url VARCHAR(500) NOT NULL COMMENT '图片URL',
-  image_type ENUM('exterior', 'lobby', 'room', 'facility', 'other') DEFAULT 'other' COMMENT '图片类型',
-  caption VARCHAR(200) COMMENT '图片说明',
-  sort_order TINYINT UNSIGNED DEFAULT 0 COMMENT '排序（越小越前）',
-  is_primary BOOLEAN DEFAULT FALSE COMMENT '是否为主图',
-  uploaded_by INT UNSIGNED COMMENT '上传者用户ID',
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '上传时间',
-  FOREIGN KEY (hotel_id) REFERENCES hotels(id) ON DELETE CASCADE,
-  FOREIGN KEY (uploaded_by) REFERENCES users(id) ON DELETE SET NULL,
-  INDEX idx_hotel_id (hotel_id),
-  INDEX idx_sort_order (sort_order),
-  INDEX idx_is_primary (is_primary)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='酒店图片表';
-
+  is_primary BOOLEAN DEFAULT FALSE COMMENT '是否为主图/封面图',
+  sort_order TINYINT UNSIGNED DEFAULT 0 COMMENT '排序',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (hotel_id) REFERENCES hotels(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='酒店图片表';
 
 -- 4. 房型表
 CREATE TABLE rooms (
   id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY COMMENT '房型ID',
   hotel_id INT UNSIGNED NOT NULL COMMENT '所属酒店ID',
-  -- 房型基本信息
-  room_type VARCHAR(50) NOT NULL COMMENT '房型名称：豪华大床房/标准双床房等',
-  room_code VARCHAR(20) COMMENT '房型代码：内部使用',
-  description TEXT COMMENT '房型描述',
-  -- 房型属性
-  max_guests TINYINT UNSIGNED DEFAULT 2 COMMENT '最大入住人数',
-  bed_type VARCHAR(20) COMMENT '床型：大床/双床',
-  bed_count TINYINT UNSIGNED DEFAULT 1 COMMENT '床数量',
-  room_size VARCHAR(20) COMMENT '房间面积：30㎡',
-  -- 设施（JSON存储）
-  amenities JSON COMMENT '设施：{"tv": true, "fridge": true, "balcony": false}',
-  -- 库存与状态
-  total_inventory SMALLINT UNSIGNED NOT NULL COMMENT '总库存量',
-  available_inventory SMALLINT UNSIGNED NOT NULL COMMENT '可用库存',
-  is_active BOOLEAN DEFAULT TRUE COMMENT '是否可售',
-  -- 时间戳
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  -- 外键约束
+  name VARCHAR(50) NOT NULL COMMENT '房型名称(如:豪华大床房)',
+  bed_type VARCHAR(50) COMMENT '床型规格(如:1.8米大床)',
+  room_size VARCHAR(20) COMMENT '房间面积(如:35㎡)',
+  capacity VARCHAR(20) COMMENT '入住人数(如:2人)',
+  floor VARCHAR(20) COMMENT '所在楼层(如:5-10层)',
+  image_url VARCHAR(500) COMMENT '房型图片',
+  total_stock INT UNSIGNED DEFAULT 10 COMMENT '总库存',
+  current_price DECIMAL(10, 2) NOT NULL COMMENT '当前价格(元/晚)',
+  is_active BOOLEAN DEFAULT TRUE COMMENT '是否售卖',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (hotel_id) REFERENCES hotels(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='房型表';
+
+
+-- 5. 审核记录表
+CREATE TABLE audit_logs (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  hotel_id INT UNSIGNED NOT NULL,
+  admin_id INT UNSIGNED NOT NULL,
+  action ENUM('approve', 'reject', 'offline', 'online') NOT NULL COMMENT '操作动作',
+  reason TEXT COMMENT '审核意见',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (hotel_id) REFERENCES hotels(id) ON DELETE CASCADE,
-  -- 索引
-  INDEX idx_hotel_id (hotel_id),
-  INDEX idx_room_type (room_type),
-  INDEX idx_is_active (is_active),
-  UNIQUE INDEX idx_hotel_room_code (hotel_id, room_code) COMMENT '同一酒店内房型代码唯一'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='房型表';
+  FOREIGN KEY (admin_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='审核记录表';
 
 
--- 5. 房型价格日历表
+-- 6. 房型价格日历表
 CREATE TABLE room_prices (
   id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY COMMENT '价格ID',
   room_id INT UNSIGNED NOT NULL COMMENT '房型ID',
@@ -155,7 +126,7 @@ CREATE TABLE room_prices (
   INDEX idx_room_available (room_id, is_available, date)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='房型价格日历表';
 
--- 6. 订单表
+-- 7. 订单表
 CREATE TABLE bookings (
   id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY COMMENT '订单ID',
   booking_no VARCHAR(20) UNIQUE NOT NULL COMMENT '订单号：HD202402010001',
@@ -202,20 +173,3 @@ CREATE TABLE bookings (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='订单表';
 
 
--- 7. 审核记录表
-CREATE TABLE audit_logs (
-  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY COMMENT '记录ID',
-  hotel_id INT UNSIGNED NOT NULL COMMENT '酒店ID',
-  admin_id INT UNSIGNED NOT NULL COMMENT '审核管理员ID',
-  old_status VARCHAR(20) NOT NULL COMMENT '原状态',
-  new_status VARCHAR(20) NOT NULL COMMENT '新状态',
-  reason TEXT COMMENT '审核意见/原因',
-  ip_address VARCHAR(45) COMMENT '操作IP',
-  user_agent TEXT COMMENT '浏览器标识',
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '审核时间',
-  FOREIGN KEY (hotel_id) REFERENCES hotels(id) ON DELETE CASCADE,
-  FOREIGN KEY (admin_id) REFERENCES users(id) ON DELETE CASCADE,
-  INDEX idx_hotel_id (hotel_id),
-  INDEX idx_admin_id (admin_id),
-  INDEX idx_created_at (created_at)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='审核记录表';

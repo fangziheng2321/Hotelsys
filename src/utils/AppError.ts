@@ -1,13 +1,20 @@
-// src/utils/AppError.ts
 export class AppError extends Error {
   public readonly statusCode: number;
+  public readonly status: string;
   public readonly isOperational: boolean;
 
   constructor(message: string, statusCode: number, isOperational = true) {
     super(message);
+
     this.statusCode = statusCode;
+    // 区分 4xx（fail）和 5xx（error）
+    this.status = `${statusCode}`.startsWith('4') ? 'fail' : 'error';
     this.isOperational = isOperational;
 
+    // 修复原型链，确保 instanceof 正常工作
+    Object.setPrototypeOf(this, AppError.prototype);
+
+    // 捕捉堆栈信息，方便排查问题
     Error.captureStackTrace(this, this.constructor);
   }
 }

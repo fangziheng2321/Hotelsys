@@ -1,33 +1,23 @@
 import { Router } from 'express';
 import * as hotelController from '../controllers/hotel.controller';
 import { protect, restrictTo } from '../middleware/auth.middleware';
-import { upload } from '../config/multer';
 
 const router = Router();
 
-// 酒店录入：需要登录，且必须是商户角色 [cite: 66]
-router.post(
-  '/hotels', 
-  protect, 
-  restrictTo('merchant'), 
-  hotelController.createHotel
-);
+/**
+ * 保存酒店（创建/更新）
+ * POST /api/merchant/hotels
+ */
+router.post('/', protect, restrictTo('merchant'), hotelController.saveHotel);
 
-// 酒店更新：需要登录，商户或管理员可操作
-router.patch(
-  '/hotels/:id',
-  protect,
-  restrictTo('merchant', 'admin'),
-  hotelController.updateHotel
-);
+// 获取商户酒店列表
+router.get('/getMerchantHotel', protect, restrictTo('merchant'), hotelController.getMerchantHotels);
 
-// 酒店图片批量上传 (最多上传 5 张)
-router.post(
-  '/:id/images',
-  protect,
-  restrictTo('merchant'),
-  upload.array('images', 5), 
-  hotelController.uploadHotelImages
-);
+// 获取酒店回显详情
+// GET /api/merchant/hotels/2
+router.get('/:id', protect, restrictTo('merchant'), hotelController.getHotelDetail);
 
-export default router;
+// 更新房间数量
+// POST /api/merchant/hotels/:id/room-count
+router.post('/:id/room-count', protect, restrictTo('merchant'), hotelController.updateRoomStock);
+export default router; 
