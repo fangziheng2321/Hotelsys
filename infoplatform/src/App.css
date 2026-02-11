@@ -128,6 +128,85 @@
   width: calc(50% - 10px);
 }
 
+/* 图片上传样式 */
+.image-upload-section {
+  margin-top: 10px;
+}
+
+.upload-button-wrapper {
+  margin-bottom: 15px;
+}
+
+.upload-button {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #f0f0f0;
+  border: 2px dashed #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  color: #666;
+  font-size: 14px;
+  transition: all 0.3s;
+}
+
+.upload-button:hover {
+  background-color: #e0e0e0;
+  border-color: #999;
+}
+
+.upload-hint {
+  margin-left: 10px;
+  color: #999;
+  font-size: 12px;
+}
+
+.image-preview-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.image-preview-item {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid #ddd;
+}
+
+.image-preview-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.remove-image-btn {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.9);
+  border: none;
+  color: #666;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+  transition: all 0.3s;
+}
+
+.remove-image-btn:hover {
+  background-color: #ff4444;
+  color: white;
+}
+
 /* 表格样式 */
 .hotel-list-container, .hotel-audit-container {
   margin: 20px 0;
@@ -233,5 +312,967 @@ button {
   button {
     padding: 6px 10px;
     font-size: 0.9rem;
+  }
+}
+
+/* 房型管理样式 */
+.form-section {
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+}
+
+.room-type-form {
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.room-type-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.room-type-header h3 {
+  margin: 0;
+  color: #333;
+}
+
+.btn-add {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.btn-add:hover {
+  background-color: #45a049;
+}
+
+.no-room-types {
+  text-align: center;
+  padding: 40px;
+  color: #999;
+  font-style: italic;
+}
+
+.room-type-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.room-type-card {
+  display: flex;
+  background-color: white;
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  gap: 15px;
+  align-items: center;
+}
+
+.room-type-image {
+  width: 100px;
+  height: 100px;
+  border-radius: 4px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background-color: #f0f0f0;
+}
+
+.room-type-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.no-image-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+  font-size: 12px;
+}
+
+.room-type-info {
+  flex: 1;
+}
+
+.room-type-info h4 {
+  margin: 0 0 10px 0;
+  color: #333;
+  font-size: 16px;
+}
+
+.room-type-details {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  font-size: 14px;
+  color: #666;
+}
+
+.room-type-details span {
+  display: block;
+}
+
+.room-type-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.room-type-actions button {
+  margin: 0;
+  padding: 6px 12px;
+  font-size: 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-edit {
+  background-color: #2196F3;
+  color: white;
+}
+
+.btn-edit:hover {
+  background-color: #1976D2;
+}
+
+.btn-delete {
+  background-color: #f44336;
+  color: white;
+}
+
+.btn-delete:hover {
+  background-color: #d32f2f;
+}
+
+/* 房型编辑表单 */
+.room-type-edit-form {
+  background-color: white;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.room-type-edit-form h4 {
+  margin: 0 0 20px 0;
+  color: #333;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+}
+
+.room-form-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+}
+
+.room-form-grid .form-group {
+  margin-bottom: 0;
+}
+
+.room-image-upload {
+  grid-column: span 1;
+}
+
+.room-image-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.room-image-preview img {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+}
+
+.room-image-preview .no-image {
+  width: 120px;
+  height: 120px;
+  background-color: #f0f0f0;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+  font-size: 12px;
+  border: 1px dashed #ccc;
+}
+
+.room-image-preview .upload-btn {
+  padding: 6px 12px;
+  background-color: #f0f0f0;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  color: #666;
+}
+
+.room-image-preview .upload-btn:hover {
+  background-color: #e0e0e0;
+}
+
+.room-form-actions {
+  margin-top: 20px;
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.room-form-actions button {
+  margin: 0;
+}
+
+.btn-primary {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-primary:hover {
+  background-color: #45a049;
+}
+
+.btn-secondary {
+  background-color: #f0f0f0;
+  color: #666;
+  border: 1px solid #ddd;
+  padding: 8px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-secondary:hover {
+  background-color: #e0e0e0;
+}
+
+/* 房型响应式 */
+@media (max-width: 768px) {
+  .room-form-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .room-type-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .room-type-image {
+    width: 100%;
+    height: 150px;
+  }
+  
+  .room-type-actions {
+    flex-direction: row;
+    width: 100%;
+    justify-content: flex-end;
+  }
+}
+
+@media (max-width: 480px) {
+  .room-form-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .room-type-details {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* 房型价格样式 */
+.room-price {
+  color: #f44336;
+  font-weight: 600;
+}
+
+.room-price strong {
+  font-size: 16px;
+}
+
+/* 详情弹窗中的房型价格 */
+.detail-room-card .room-price {
+  margin-top: 5px;
+  color: #f44336;
+  font-size: 14px;
+}
+
+.detail-room-card .room-price strong {
+  font-size: 18px;
+}
+
+/* 房间数量编辑弹窗中的价格 */
+.room-count-item .room-price {
+  color: #f44336;
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+/* 编辑房间数量按钮 */
+.btn-room-count {
+  background-color: #FF9800;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  margin-left: 5px;
+}
+
+.btn-room-count:hover {
+  background-color: #F57C00;
+}
+
+/* 弹窗样式 */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-container {
+  background-color: white;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.modal-header h3 {
+  margin: 0;
+  color: #333;
+  font-size: 18px;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #999;
+  cursor: pointer;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+}
+
+.modal-close:hover {
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+.modal-body {
+  padding: 20px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 20px;
+  border-top: 1px solid #eee;
+}
+
+.modal-footer button {
+  margin: 0;
+  padding: 10px 24px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.btn-cancel {
+  background-color: #f0f0f0;
+  color: #666;
+  border: 1px solid #ddd;
+}
+
+.btn-cancel:hover {
+  background-color: #e0e0e0;
+}
+
+.btn-save {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+}
+
+.btn-save:hover {
+  background-color: #45a049;
+}
+
+.btn-save:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+/* 房间数量列表 */
+.no-room-types-message {
+  text-align: center;
+  padding: 40px;
+  color: #999;
+  font-style: italic;
+}
+
+.room-count-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.room-count-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  gap: 15px;
+}
+
+.room-info {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  flex: 1;
+}
+
+.room-image {
+  width: 80px;
+  height: 80px;
+  border-radius: 4px;
+  overflow: hidden;
+  background-color: #f0f0f0;
+  flex-shrink: 0;
+}
+
+.room-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.room-image .no-image {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+  font-size: 12px;
+}
+
+.room-details h4 {
+  margin: 0 0 5px 0;
+  color: #333;
+  font-size: 16px;
+}
+
+.room-details p {
+  margin: 0;
+  color: #666;
+  font-size: 14px;
+}
+
+.room-count-input-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.room-count-input-group label {
+  color: #666;
+  font-size: 14px;
+}
+
+.room-count-input {
+  width: 70px;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  text-align: center;
+  font-size: 16px;
+}
+
+.room-count-input:focus {
+  outline: none;
+  border-color: #4CAF50;
+}
+
+/* 弹窗响应式 */
+@media (max-width: 768px) {
+  .modal-container {
+    width: 95%;
+    max-height: 90vh;
+  }
+  
+  .room-count-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .room-info {
+    width: 100%;
+  }
+  
+  .room-count-input-group {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}
+
+@media (max-width: 480px) {
+  .modal-header {
+    padding: 15px;
+  }
+  
+  .modal-header h3 {
+    font-size: 16px;
+  }
+  
+  .modal-body {
+    padding: 15px;
+  }
+  
+  .modal-footer {
+    padding: 15px;
+  }
+  
+  .room-image {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .room-details h4 {
+    font-size: 14px;
+  }
+  
+  .room-details p {
+    font-size: 12px;
+  }
+}
+
+/* 审核页面样式 */
+.audit-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.audit-actions button {
+  padding: 5px 10px;
+  font-size: 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  border: none;
+  white-space: nowrap;
+}
+
+.btn-detail {
+  background-color: #2196F3;
+  color: white;
+}
+
+.btn-detail:hover {
+  background-color: #1976D2;
+}
+
+.btn-approve {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.btn-approve:hover {
+  background-color: #45a049;
+}
+
+.btn-reject {
+  background-color: #f44336;
+  color: white;
+}
+
+.btn-reject:hover {
+  background-color: #da190b;
+}
+
+.btn-edit-reason {
+  background-color: #FF9800;
+  color: white;
+}
+
+.btn-edit-reason:hover {
+  background-color: #F57C00;
+}
+
+.btn-offline {
+  background-color: #9E9E9E;
+  color: white;
+}
+
+.btn-offline:hover {
+  background-color: #757575;
+}
+
+.btn-restore {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.btn-restore:hover {
+  background-color: #45a049;
+}
+
+/* 状态标签 */
+.status-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.status-pending {
+  background-color: #FFF3E0;
+  color: #E65100;
+}
+
+.status-approved {
+  background-color: #E8F5E9;
+  color: #2E7D32;
+}
+
+.status-rejected {
+  background-color: #FFEBEE;
+  color: #C62828;
+}
+
+.status-offline {
+  background-color: #F5F5F5;
+  color: #616161;
+}
+
+/* 拒绝原因文本 */
+.reject-reason-text {
+  color: #f44336;
+  font-size: 12px;
+  cursor: help;
+}
+
+/* 详情弹窗样式 */
+.detail-modal {
+  max-width: 800px;
+  max-height: 85vh;
+}
+
+.detail-body {
+  padding: 0;
+}
+
+.detail-section {
+  padding: 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.detail-section:last-child {
+  border-bottom: none;
+}
+
+.detail-section h4 {
+  margin: 0 0 15px 0;
+  color: #333;
+  font-size: 16px;
+  font-weight: 600;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #4CAF50;
+  display: inline-block;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px 20px;
+}
+
+.detail-item {
+  display: flex;
+  align-items: flex-start;
+}
+
+.detail-item label {
+  color: #666;
+  font-size: 14px;
+  min-width: 100px;
+  flex-shrink: 0;
+}
+
+.detail-item span {
+  color: #333;
+  font-size: 14px;
+  flex: 1;
+}
+
+.detail-description {
+  color: #555;
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.detail-amenities {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.amenity-tag {
+  background-color: #E3F2FD;
+  color: #1976D2;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+}
+
+.detail-images {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px;
+}
+
+.detail-images img {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+}
+
+.detail-room-types {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.detail-room-card {
+  display: flex;
+  gap: 15px;
+  padding: 15px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+}
+
+.detail-room-card .room-image {
+  width: 100px;
+  height: 100px;
+  border-radius: 4px;
+  overflow: hidden;
+  background-color: #f0f0f0;
+  flex-shrink: 0;
+}
+
+.detail-room-card .room-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.detail-room-card .room-image .no-image {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+  font-size: 12px;
+}
+
+.detail-room-card .room-info {
+  flex: 1;
+}
+
+.detail-room-card .room-info h5 {
+  margin: 0 0 8px 0;
+  color: #333;
+  font-size: 16px;
+}
+
+.detail-room-card .room-info p {
+  margin: 0 0 5px 0;
+  color: #666;
+  font-size: 14px;
+}
+
+.reject-reason-box {
+  background-color: #FFEBEE;
+  color: #C62828;
+  padding: 15px;
+  border-radius: 4px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* 拒绝原因弹窗样式 */
+.reason-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.reason-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.reason-option:hover {
+  background-color: #f5f5f5;
+}
+
+.reason-option input[type="radio"] {
+  margin: 0;
+}
+
+.reason-option span {
+  font-size: 14px;
+  color: #333;
+}
+
+.reason-textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  resize: vertical;
+  margin-top: 10px;
+}
+
+.reason-textarea:focus {
+  outline: none;
+  border-color: #f44336;
+}
+
+.current-reason-box {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #FFF3E0;
+  border-radius: 4px;
+  border-left: 4px solid #FF9800;
+}
+
+.current-reason-box label {
+  display: block;
+  font-size: 12px;
+  color: #E65100;
+  margin-bottom: 5px;
+  font-weight: 500;
+}
+
+.current-reason-box p {
+  margin: 0;
+  color: #333;
+  font-size: 14px;
+}
+
+/* 审核页面响应式 */
+@media (max-width: 1024px) {
+  .audit-actions {
+    flex-direction: column;
+    gap: 5px;
+  }
+  
+  .audit-actions button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .detail-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .detail-images {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .detail-room-card {
+    flex-direction: column;
+  }
+  
+  .detail-room-card .room-image {
+    width: 100%;
+    height: 150px;
+  }
+}
+
+@media (max-width: 480px) {
+  .detail-modal {
+    width: 95%;
+    max-height: 90vh;
+  }
+  
+  .detail-section {
+    padding: 15px;
+  }
+  
+  .detail-images {
+    grid-template-columns: 1fr;
+  }
+  
+  .detail-item {
+    flex-direction: column;
+  }
+  
+  .detail-item label {
+    min-width: auto;
+    margin-bottom: 5px;
   }
 }

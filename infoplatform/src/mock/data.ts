@@ -21,6 +21,22 @@ export const mockUsers: User[] = [
   }
 ];
 
+// 酒店类型
+export type HotelType = 'domestic' | 'overseas' | 'homestay' | 'hourly';
+
+// 房型类型
+export interface RoomType {
+  id: string;
+  name: string;           // 房型名称
+  bedType: string;        // 床的规格
+  roomSize: string;       // 房间大小
+  capacity: string;       // 几人住
+  floor: string;          // 楼层
+  image: string;          // 房型图片
+  roomCount: number;      // 房间数量
+  price: number;          // 房型价格（元/晚）
+}
+
 // 模拟酒店数据
 export interface Hotel {
   id: string;
@@ -31,6 +47,9 @@ export interface Hotel {
   priceRange: string;
   starRating: number;
   amenities: string[];
+  hotelType: HotelType;
+  images: string[]; // 酒店图片URL数组
+  roomTypes: RoomType[]; // 房型信息
   status: 'pending' | 'approved' | 'rejected' | 'offline';
   rejectReason?: string;
   merchantId: string;
@@ -49,6 +68,46 @@ export const mockHotels: Hotel[] = [
     priceRange: '¥800-2000',
     starRating: 5,
     amenities: ['免费WiFi', '停车场', '餐厅', '健身房', '游泳池', '会议室'],
+    hotelType: 'domestic',
+    images: [
+      'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800',
+      'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=800'
+    ],
+    roomTypes: [
+      {
+        id: 'r1',
+        name: '豪华大床房',
+        bedType: '1.8米大床',
+        roomSize: '35㎡',
+        capacity: '2人',
+        floor: '5-10层',
+        image: 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=400',
+        roomCount: 20,
+        price: 888
+      },
+      {
+        id: 'r2',
+        name: '商务双床房',
+        bedType: '1.2米双床',
+        roomSize: '40㎡',
+        capacity: '2人',
+        floor: '8-15层',
+        image: 'https://images.unsplash.com/photo-1590490360182-c33d57733427?w=400',
+        roomCount: 15,
+        price: 688
+      },
+      {
+        id: 'r3',
+        name: '行政套房',
+        bedType: '2.0米大床',
+        roomSize: '65㎡',
+        capacity: '2人',
+        floor: '16-20层',
+        image: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=400',
+        roomCount: 5,
+        price: 1588
+      }
+    ],
     status: 'approved',
     merchantId: '1',
     merchantName: '商户1',
@@ -64,6 +123,23 @@ export const mockHotels: Hotel[] = [
     priceRange: '¥900-2500',
     starRating: 5,
     amenities: ['免费WiFi', '停车场', '餐厅', '健身房', '游泳池', '会议室', 'SPA'],
+    hotelType: 'domestic',
+    images: [
+      'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=800'
+    ],
+    roomTypes: [
+      {
+        id: 'r4',
+        name: '江景大床房',
+        bedType: '1.8米大床',
+        roomSize: '38㎡',
+        capacity: '2人',
+        floor: '10-20层',
+        image: 'https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=400',
+        roomCount: 10,
+        price: 788
+      }
+    ],
     status: 'pending',
     merchantId: '1',
     merchantName: '商户1',
@@ -79,6 +155,9 @@ export const mockHotels: Hotel[] = [
     priceRange: '¥700-1800',
     starRating: 5,
     amenities: ['免费WiFi', '停车场', '餐厅', '健身房', '游泳池', '会议室'],
+    hotelType: 'overseas',
+    images: [],
+    roomTypes: [],
     status: 'rejected',
     rejectReason: '缺少营业执照副本',
     merchantId: '1',
@@ -95,11 +174,59 @@ export const mockHotels: Hotel[] = [
     priceRange: '¥600-1500',
     starRating: 4,
     amenities: ['免费WiFi', '停车场', '餐厅', '健身房', '会议室'],
+    hotelType: 'homestay',
+    images: [
+      'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=800',
+      'https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=800',
+      'https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=800'
+    ],
+    roomTypes: [
+      {
+        id: 'r5',
+        name: '标准间',
+        bedType: '1.5米大床',
+        roomSize: '25㎡',
+        capacity: '2人',
+        floor: '2-8层',
+        image: 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=400',
+        roomCount: 8,
+        price: 388
+      },
+      {
+        id: 'r6',
+        name: '家庭房',
+        bedType: '1.8米+1.2米床',
+        roomSize: '45㎡',
+        capacity: '4人',
+        floor: '3-6层',
+        image: 'https://images.unsplash.com/photo-1566665797739-1674de7a421a?w=400',
+        roomCount: 4,
+        price: 588
+      }
+    ],
     status: 'offline',
     merchantId: '1',
     merchantName: '商户1',
     createdAt: '2024-01-04T00:00:00Z',
     updatedAt: '2024-01-04T00:00:00Z'
+  },
+  {
+    id: '5',
+    name: '成都快捷酒店',
+    address: '成都市锦江区春熙路100号',
+    phone: '028-12345678',
+    description: '成都快捷酒店位于春熙路商圈，提供钟点房服务，方便快捷，价格实惠。',
+    priceRange: '¥50-200',
+    starRating: 2,
+    amenities: ['免费WiFi', '空调', '热水'],
+    hotelType: 'hourly',
+    images: [],
+    roomTypes: [],
+    status: 'approved',
+    merchantId: '1',
+    merchantName: '商户1',
+    createdAt: '2024-01-05T00:00:00Z',
+    updatedAt: '2024-01-05T00:00:00Z'
   }
 ];
 
@@ -158,19 +285,40 @@ export const mockApi = {
     }
   },
 
-  // 获取商户的酒店列表
+  // 获取商户的酒店列表 - 只返回基础信息
   getMerchantHotels: (merchantId: string) => {
+    const list = mockHotels
+      .filter(hotel => hotel.merchantId === merchantId)
+      .map(hotel => ({
+        id: hotel.id,
+        name: hotel.name,
+        address: hotel.address,
+        phone: hotel.phone,
+        hotelType: hotel.hotelType,
+        status: hotel.status,
+        firstImage: hotel.images && hotel.images.length > 0 ? hotel.images[0] : ''
+      }));
     return {
       success: true,
-      data: mockHotels.filter(hotel => hotel.merchantId === merchantId)
+      data: list
     };
   },
 
-  // 获取所有酒店（管理员用）
+  // 获取所有酒店列表（管理员用）- 只返回基础信息
   getAllHotels: () => {
+    const list = mockHotels.map(hotel => ({
+      id: hotel.id,
+      name: hotel.name,
+      address: hotel.address,
+      phone: hotel.phone,
+      merchantName: hotel.merchantName,
+      status: hotel.status,
+      rejectReason: hotel.rejectReason,
+      firstImage: hotel.images && hotel.images.length > 0 ? hotel.images[0] : ''
+    }));
     return {
       success: true,
-      data: mockHotels
+      data: list
     };
   },
 
@@ -225,6 +373,9 @@ export const mockApi = {
         priceRange: hotel.priceRange || '',
         starRating: hotel.starRating || 1,
         amenities: hotel.amenities || [],
+        hotelType: hotel.hotelType || 'domestic',
+        images: hotel.images || [],
+        roomTypes: hotel.roomTypes || [],
         status: 'pending',
         merchantId: hotel.merchantId || '1',
         merchantName: hotel.merchantName || '商户1',
@@ -268,6 +419,35 @@ export const mockApi = {
       mockHotels[index] = {
         ...mockHotels[index],
         status,
+        updatedAt: new Date().toISOString()
+      };
+      return {
+        success: true,
+        data: mockHotels[index]
+      };
+    } else {
+      return {
+        success: false,
+        message: '酒店不存在'
+      };
+    }
+  },
+
+  // 更新房型房间数量（已发布酒店，不需要审核）
+  updateRoomCount: (id: string, roomTypes: RoomType[]) => {
+    const index = mockHotels.findIndex(h => h.id === id);
+    if (index !== -1) {
+      // 只有已发布的酒店才能直接更新房间数量
+      if (mockHotels[index].status !== 'approved') {
+        return {
+          success: false,
+          message: '只有已发布的酒店才能编辑房间数量'
+        };
+      }
+
+      mockHotels[index] = {
+        ...mockHotels[index],
+        roomTypes,
         updatedAt: new Date().toISOString()
       };
       return {

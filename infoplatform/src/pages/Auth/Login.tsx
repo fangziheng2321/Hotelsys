@@ -38,16 +38,18 @@ const Login: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
     setLoading(true);
+    setError('');
 
     try {
-      // 使用真实API进行登录
+      // 使用 API 进行登录
       const response = await authApi.login(formData.username, formData.password);
 
-      if (response.success) {
-        // 使用AuthService存储认证信息（包含token）
-        AuthService.login(response.data.user, response.data.token);
+      if (response.success && response.data) {
+        // 存储 token
+        sessionStorage.setItem('token', response.data.token);
+        // 使用 AuthService 存储认证信息
+        AuthService.login(response.data.user);
 
         // 跳转到对应角色的首页
         const userRole = response.data.user.role;
@@ -60,15 +62,8 @@ const Login: React.FC = () => {
       } else {
         setError(response.message || '登录失败');
       }
-    } catch (err: any) {
-      // 处理API错误
-      if (err.response?.data?.message) {
-        setError(err.response.data.message);
-      } else if (err.message === 'Network Error') {
-        setError('网络错误，请检查网络连接');
-      } else {
-        setError('登录失败，请重试');
-      }
+    } catch (err) {
+      setError('网络错误，请稍后重试');
     } finally {
       setLoading(false);
     }

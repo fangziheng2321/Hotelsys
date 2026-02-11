@@ -1,180 +1,179 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { mockApi } from '../../mock/data';
+import { hotelApi, Hotel, HotelType } from '../../services/api';
+import RoomTypeForm from '../../components/RoomTypeForm';
 
 const HotelForm: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
-  const hotelId = id;
-  const [formData, setFormData] = useState({
+  const isEdit = !!id;
+
+  const [formData, setFormData] = useState<Partial<Hotel>>({
     name: '',
     address: '',
     phone: '',
     description: '',
     priceRange: '',
-    starRating: 1,
-    amenities: [] as string[]
+    starRating: 5,
+    amenities: [],
+    hotelType: 'domestic',
+    images: [],
+    roomTypes: []
   });
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [originalStatus, setOriginalStatus] = useState<string>('');
-  const [canEdit, setCanEdit] = useState(true);
 
-  // 编辑模式：加载酒店数据
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [imageUrl, setImageUrl] = useState('');
+
   useEffect(() => {
-    if (hotelId) {
-      setLoading(true);
-      const response = mockApi.getHotelById(hotelId);
+    if (isEdit && id) {
+      fetchHotelDetail(id);
+    }
+  }, [isEdit, id]);
+
+  const fetchHotelDetail = async (hotelId: string) => {
+    setLoading(true);
+    try {
+      const response = await hotelApi.getHotelById(hotelId);
       if (response.success) {
-        const hotel = response.data;
-        setOriginalStatus(hotel.status);
-        // 审核中的酒店不可编辑
-        if (hotel.status === 'pending') {
-          setCanEdit(false);
-          setError('该酒店正在审核中，暂时不可编辑');
-        }
-        setFormData({
-          name: hotel.name,
-          address: hotel.address,
-          phone: hotel.phone,
-          description: hotel.description,
-          priceRange: hotel.priceRange,
-          starRating: hotel.starRating,
-          amenities: hotel.amenities
-        });
+        setFormData(response.data);
       } else {
-        setError('加载酒店信息失败：' + response.message);
+        setError(response.message || '获取酒店信息失败');
       }
+    } catch (err) {
+      setError('网络错误，请稍后重试');
+    } finally {
       setLoading(false);
     }
-  }, [hotelId]);
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    setError('');
   };
 
-  const handleAmenityChange = (amenity: string) => {
+  const handleStarRatingChange = (rating: number) => {
+    setFormData(prev => ({ ...prev, starRating: rating }));
+  };
+
+  const handleAmenitiesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const amenities = e.target.value.split(',').map(item => item.trim());
+    setFormData(prev => ({ ...prev, amenities }));
+  };
+
+  const handleAddImage = () => {
+    if (imageUrl.trim()) {
+      setFormData(prev => ({
+        ...prev,
+        images: [...(prev.images || []), imageUrl.trim()]
+      }));
+      setImageUrl('');
+    }
+  };
+
+  const handleRemoveImage = (index: number) => {
     setFormData(prev => ({
       ...prev,
-      amenities: prev.amenities.includes(amenity)
-        ? prev.amenities.filter(item => item !== amenity)
-        : [...prev.amenities, amenity]
+      images: prev.images?.filter((_, i) => i !== index) || []
     }));
   };
 
-  // 表单验证
-  const validateForm = (): boolean => {
-    // 酒店名称验证
-    if (!formData.name.trim()) {
-      setError('请输入酒店名称');
-      return false;
-    }
-    if (formData.name.trim().length < 2) {
-      setError('酒店名称至少2个字符');
-      return false;
-    }
-
-    // 酒店地址验证
-    if (!formData.address.trim()) {
-      setError('请输入酒店地址');
-      return false;
-    }
-
-    // 联系电话验证
-    if (!formData.phone.trim()) {
-      setError('请输入联系电话');
-      return false;
-    }
-
-
-
-    return true;
+  const handleRoomTypesChange = (roomTypes: Hotel['roomTypes']) => {
+    setFormData(prev => ({ ...prev, roomTypes }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
+  const validateForm = () => {
+    if (!formData.name?.trim()) return '酒店名称不能为空';
+    if (!formData.address?.trim()) return '地址不能为空';
+    if (!formData.phone?.trim()) return '联系电话不能为空';
+    return null;
+  };
 
-    // 表单验证
-    if (!validateForm()) {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const validationError = validateForm();
+    if (validationError) {
+      setError(validationError);
       return;
     }
 
-    setSaving(true);
+    setLoading(true);
+    setError('');
 
-    // 判断是否需要强制设为审核中（编辑已发布/已拒绝/已下线的酒店时）
-    const forcePending = hotelId && originalStatus !== 'pending' && originalStatus !== '';
+    try {
+      const response = await hotelApi.saveHotel(formData);
 
-    // 调用Api保存酒店信息
-    const response = mockApi.saveHotel({
-      id: hotelId,
-      ...formData
-    });
-
-    if (response.success) {
-      if (forcePending) {
-        alert('酒店信息已修改，状态已重置为"审核中"，请等待管理员审核');
+      if (response.success) {
+        alert(isEdit ? '酒店更新成功' : '酒店创建成功');
+        navigate('/hotel');
       } else {
-        alert(hotelId ? '酒店信息更新成功' : '酒店创建成功');
+        setError(response.message || '保存失败');
       }
-      navigate('/hotel'); // 跳转到酒店列表页
-    } else {
-      setError(response.message || '保存失败，请重试');
+    } catch (err) {
+      setError('网络错误，请稍后重试');
+    } finally {
+      setLoading(false);
     }
-
-    setSaving(false);
   };
 
-  // 加载中显示
-  if (loading) {
-    return (
-      <div className="hotel-form-container">
-        <div className="loading">加载中...</div>
-      </div>
-    );
+  if (loading && isEdit) {
+    return <div className="loading">加载中...</div>;
   }
 
   return (
     <div className="hotel-form-container">
-      <h2>{hotelId ? '编辑酒店信息' : '录入酒店信息'}</h2>
+      <h2>{isEdit ? '编辑酒店' : '添加酒店'}</h2>
       {error && <div className="error-message">{error}</div>}
       <form onSubmit={handleSubmit}>
         <div className="form-group">
-          <label>酒店名称 <span className="required">*</span></label>
+          <label>酒店名称 *</label>
           <input
             type="text"
             name="name"
             value={formData.name}
             onChange={handleChange}
-            placeholder="请输入酒店名称"
-            disabled={saving || !canEdit}
+            required
           />
         </div>
+
         <div className="form-group">
-          <label>酒店地址 <span className="required">*</span></label>
+          <label>酒店类型 *</label>
+          <select
+            name="hotelType"
+            value={formData.hotelType}
+            onChange={handleChange}
+            required
+          >
+            <option value="domestic">国内</option>
+            <option value="overseas">海外</option>
+            <option value="homestay">民宿</option>
+            <option value="hourly">钟点房</option>
+          </select>
+        </div>
+
+        <div className="form-group">
+          <label>地址 *</label>
           <input
             type="text"
             name="address"
             value={formData.address}
             onChange={handleChange}
-            placeholder="请输入详细地址"
-            disabled={saving || !canEdit}
+            required
           />
         </div>
+
         <div className="form-group">
-          <label>联系电话 <span className="required">*</span></label>
+          <label>联系电话 *</label>
           <input
-            type="text"
+            type="tel"
             name="phone"
             value={formData.phone}
             onChange={handleChange}
-            placeholder="请输入手机号或座机号"
-            disabled={saving || !canEdit}
+            required
           />
         </div>
+
         <div className="form-group">
           <label>酒店描述</label>
           <textarea
@@ -182,10 +181,9 @@ const HotelForm: React.FC = () => {
             value={formData.description}
             onChange={handleChange}
             rows={4}
-            placeholder="请输入酒店描述（选填）"
-            disabled={saving || !canEdit}
           />
         </div>
+
         <div className="form-group">
           <label>价格范围</label>
           <input
@@ -193,52 +191,71 @@ const HotelForm: React.FC = () => {
             name="priceRange"
             value={formData.priceRange}
             onChange={handleChange}
-            placeholder="例如: ¥200-500"
-            disabled={saving || !canEdit}
+            placeholder="如：¥500-1000"
           />
         </div>
+
         <div className="form-group">
           <label>星级评分</label>
-          <select
-            name="starRating"
-            value={formData.starRating}
-            onChange={handleChange}
-            disabled={saving || !canEdit}
-          >
+          <div className="star-rating">
             {[1, 2, 3, 4, 5].map(star => (
-              <option key={star} value={star}>{star}星</option>
-            ))}
-          </select>
-        </div>
-        <div className="form-group">
-          <label>设施服务</label>
-          <div className="amenities-list">
-            {['免费WiFi', '停车场', '餐厅', '健身房', '游泳池', '会议室', '洗衣服务', '24小时前台'].map(amenity => (
-              <label key={amenity} className="amenity-checkbox">
-                <input
-                  type="checkbox"
-                  checked={formData.amenities.includes(amenity)}
-                  onChange={() => handleAmenityChange(amenity)}
-                  disabled={saving || !canEdit}
-                />
-                {amenity}
-              </label>
+              <span
+                key={star}
+                className={star <= (formData.starRating || 0) ? 'star active' : 'star'}
+                onClick={() => handleStarRatingChange(star)}
+              >
+                ★
+              </span>
             ))}
           </div>
         </div>
+
+        <div className="form-group">
+          <label>设施服务（用逗号分隔）</label>
+          <input
+            type="text"
+            name="amenities"
+            value={formData.amenities?.join(', ')}
+            onChange={handleAmenitiesChange}
+            placeholder="如：免费WiFi, 停车场, 餐厅"
+          />
+        </div>
+
+        <div className="form-group">
+          <label>酒店图片</label>
+          <div className="image-input-group">
+            <input
+              type="text"
+              value={imageUrl}
+              onChange={(e) => setImageUrl(e.target.value)}
+              placeholder="输入图片URL"
+            />
+            <button type="button" onClick={handleAddImage}>添加图片</button>
+          </div>
+          <div className="image-preview-list">
+            {formData.images?.map((url, index) => (
+              <div key={index} className="image-preview-item">
+                <img src={url} alt={`酒店图片${index + 1}`} />
+                <button type="button" onClick={() => handleRemoveImage(index)}>删除</button>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="form-group">
+          <label>房型信息</label>
+          <RoomTypeForm
+            roomTypes={formData.roomTypes || []}
+            onChange={handleRoomTypesChange}
+          />
+        </div>
+
         <div className="form-actions">
-          {canEdit && (
-            <button type="submit" disabled={saving}>
-              {saving ? '保存中...' : (hotelId ? '更新' : '保存')}
-            </button>
-          )}
-          <button
-            type="button"
-            className="btn-secondary"
-            onClick={() => navigate('/hotel')}
-            disabled={saving}
-          >
-            返回
+          <button type="submit" disabled={loading}>
+            {loading ? '保存中...' : '保存'}
+          </button>
+          <button type="button" onClick={() => navigate('/hotel')}>
+            取消
           </button>
         </div>
       </form>
