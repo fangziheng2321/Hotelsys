@@ -340,11 +340,11 @@ api.interceptors.response.use(
 export const authApi = {
   /**
    * 用户登录
-   * POST /auth/login
+   * POST /PClogin
    */
   login: async (username: string, password: string): Promise<ApiResponse<LoginResponse>> => {
     // 真实请求（已注释）:
-    // const response = await api.post('/auth/login', { username, password });
+    // const response = await api.post('/PClogin', { username, password });
     // return response.data;
 
     // Mock 实现:
@@ -371,11 +371,11 @@ export const authApi = {
 
   /**
    * 用户注册
-   * POST /auth/register
+   * POST /PCregister
    */
   register: async (username: string, password: string, role: UserRole): Promise<ApiResponse<LoginResponse>> => {
     // 真实请求（已注释）:
-    // const response = await api.post('/auth/register', { username, password, role });
+    // const response = await api.post('/PCregister', { username, password, role });
     // return response.data;
 
     // Mock 实现:
@@ -417,7 +417,7 @@ export const hotelApi = {
    */
   getMerchantHotels: async (): Promise<ApiResponse<MerchantHotelListItem[]>> => {
     // 真实请求（已注释）:
-    // const response = await api.get('/merchant/hotels');
+    // const response = await api.get('/hotels/getMerchantHotels');
     // return response.data;
 
     // Mock 实现:
