@@ -26,17 +26,17 @@ const Register: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
     setError('');
     setSuccess('');
-    setLoading(true);
 
     try {
-      // 使用真实API进行注册
+      // 使用 API 进行注册
       const response = await authApi.register(formData.username, formData.password, formData.role);
 
       if (response.success) {
         setSuccess('注册成功，请登录');
-        // 将注册信息存储到sessionStorage，方便登录页自动填充
+        // 将注册信息存储到 sessionStorage，方便登录页自动填充
         sessionStorage.setItem('pendingLogin', JSON.stringify({
           username: formData.username,
           password: formData.password
@@ -48,15 +48,8 @@ const Register: React.FC = () => {
       } else {
         setError(response.message || '注册失败');
       }
-    } catch (err: any) {
-      // 处理API错误
-      if (err.response?.data?.message) {
-        setError(err.response.data.message);
-      } else if (err.message === 'Network Error') {
-        setError('网络错误，请检查网络连接');
-      } else {
-        setError('注册失败，请重试');
-      }
+    } catch (err) {
+      setError('网络错误，请稍后重试');
     } finally {
       setLoading(false);
     }
