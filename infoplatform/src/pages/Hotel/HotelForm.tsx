@@ -25,6 +25,9 @@ const HotelForm: React.FC = () => {
   const [error, setError] = useState('');
   const [imageUrl, setImageUrl] = useState('');
 
+  // 判断是否为审核中状态（只读模式）
+  const isReadOnly = isEdit && formData.status === 'pending';
+
   useEffect(() => {
     if (isEdit && id) {
       fetchHotelDetail(id);
@@ -56,9 +59,25 @@ const HotelForm: React.FC = () => {
     setFormData(prev => ({ ...prev, starRating: rating }));
   };
 
-  const handleAmenitiesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const amenities = e.target.value.split(',').map(item => item.trim());
-    setFormData(prev => ({ ...prev, amenities }));
+  // 预设设施选项
+  const amenityOptions = [
+    '免费WiFi',
+    '停车场',
+    '餐厅',
+    '健身房',
+    '游泳池',
+    '会议室'
+  ];
+
+  const handleAmenityToggle = (amenity: string) => {
+    setFormData(prev => {
+      const currentAmenities = prev.amenities || [];
+      if (currentAmenities.includes(amenity)) {
+        return { ...prev, amenities: currentAmenities.filter(a => a !== amenity) };
+      } else {
+        return { ...prev, amenities: [...currentAmenities, amenity] };
+      }
+    });
   };
 
   const handleAddImage = () => {
@@ -126,6 +145,12 @@ const HotelForm: React.FC = () => {
       <h2>{isEdit ? '编辑酒店' : '添加酒店'}</h2>
       {error && <div className="error-message">{error}</div>}
       <form onSubmit={handleSubmit}>
+        {isReadOnly && (
+          <div className="info-message" style={{ backgroundColor: '#FFF3E0', color: '#E65100', padding: '10px', borderRadius: '4px', marginBottom: '15px' }}>
+            当前酒店正在审核中，仅支持查看，无法编辑
+          </div>
+        )}
+
         <div className="form-group">
           <label>酒店名称 *</label>
           <input
@@ -134,6 +159,7 @@ const HotelForm: React.FC = () => {
             value={formData.name}
             onChange={handleChange}
             required
+            disabled={isReadOnly}
           />
         </div>
 
@@ -144,6 +170,7 @@ const HotelForm: React.FC = () => {
             value={formData.hotelType}
             onChange={handleChange}
             required
+            disabled={isReadOnly}
           >
             <option value="domestic">国内</option>
             <option value="overseas">海外</option>
@@ -160,6 +187,7 @@ const HotelForm: React.FC = () => {
             value={formData.address}
             onChange={handleChange}
             required
+            disabled={isReadOnly}
           />
         </div>
 
@@ -171,6 +199,7 @@ const HotelForm: React.FC = () => {
             value={formData.phone}
             onChange={handleChange}
             required
+            disabled={isReadOnly}
           />
         </div>
 
@@ -181,6 +210,7 @@ const HotelForm: React.FC = () => {
             value={formData.description}
             onChange={handleChange}
             rows={4}
+            disabled={isReadOnly}
           />
         </div>
 
@@ -192,17 +222,18 @@ const HotelForm: React.FC = () => {
             value={formData.priceRange}
             onChange={handleChange}
             placeholder="如：¥500-1000"
+            disabled={isReadOnly}
           />
         </div>
 
         <div className="form-group">
           <label>星级评分</label>
-          <div className="star-rating">
+          <div className={`star-rating ${isReadOnly ? 'disabled' : ''}`}>
             {[1, 2, 3, 4, 5].map(star => (
               <span
                 key={star}
                 className={star <= (formData.starRating || 0) ? 'star active' : 'star'}
-                onClick={() => handleStarRatingChange(star)}
+                onClick={() => !isReadOnly && handleStarRatingChange(star)}
               >
                 ★
               </span>
@@ -211,32 +242,42 @@ const HotelForm: React.FC = () => {
         </div>
 
         <div className="form-group">
-          <label>设施服务（用逗号分隔）</label>
-          <input
-            type="text"
-            name="amenities"
-            value={formData.amenities?.join(', ')}
-            onChange={handleAmenitiesChange}
-            placeholder="如：免费WiFi, 停车场, 餐厅"
-          />
+          <label>设施服务</label>
+          <div className="amenities-checkbox-group">
+            {amenityOptions.map(amenity => (
+              <label key={amenity} className={`amenity-checkbox ${isReadOnly ? 'disabled' : ''}`}>
+                <input
+                  type="checkbox"
+                  checked={formData.amenities?.includes(amenity) || false}
+                  onChange={() => handleAmenityToggle(amenity)}
+                  disabled={isReadOnly}
+                />
+                <span>{amenity}</span>
+              </label>
+            ))}
+          </div>
         </div>
 
         <div className="form-group">
           <label>酒店图片</label>
-          <div className="image-input-group">
-            <input
-              type="text"
-              value={imageUrl}
-              onChange={(e) => setImageUrl(e.target.value)}
-              placeholder="输入图片URL"
-            />
-            <button type="button" onClick={handleAddImage}>添加图片</button>
-          </div>
+          {!isReadOnly && (
+            <div className="image-input-group">
+              <input
+                type="text"
+                value={imageUrl}
+                onChange={(e) => setImageUrl(e.target.value)}
+                placeholder="输入图片URL"
+              />
+              <button type="button" onClick={handleAddImage}>添加图片</button>
+            </div>
+          )}
           <div className="image-preview-list">
             {formData.images?.map((url, index) => (
               <div key={index} className="image-preview-item">
                 <img src={url} alt={`酒店图片${index + 1}`} />
-                <button type="button" onClick={() => handleRemoveImage(index)}>删除</button>
+                {!isReadOnly && (
+                  <button type="button" onClick={() => handleRemoveImage(index)}>删除</button>
+                )}
               </div>
             ))}
           </div>
@@ -247,15 +288,18 @@ const HotelForm: React.FC = () => {
           <RoomTypeForm
             roomTypes={formData.roomTypes || []}
             onChange={handleRoomTypesChange}
+            disabled={isReadOnly}
           />
         </div>
 
         <div className="form-actions">
-          <button type="submit" disabled={loading}>
-            {loading ? '保存中...' : '保存'}
-          </button>
+          {!isReadOnly && (
+            <button type="submit" disabled={loading}>
+              {loading ? '保存中...' : '保存'}
+            </button>
+          )}
           <button type="button" onClick={() => navigate('/hotel')}>
-            取消
+            {isReadOnly ? '返回' : '取消'}
           </button>
         </div>
       </form>
