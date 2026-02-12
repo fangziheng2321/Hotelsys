@@ -173,7 +173,7 @@ const HotelList: React.FC = () => {
               <td>{getStatusText(hotel.status)}</td>
               <td>
                 <Link to={`/hotel/edit/${hotel.id}`}>
-                  <button>编辑</button>
+                  <button>{hotel.status === 'pending' ? '查看' : '编辑'}</button>
                 </Link>
                 {hotel.status === 'approved' && (
                   <button
