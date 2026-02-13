@@ -75,6 +75,21 @@ export interface ApiResponse<T = void> {
   message?: string;
 }
 
+// 分页响应类型
+export interface PaginatedResponse<T> {
+  list: T[];
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+}
+
+// 分页请求参数
+export interface PaginationParams {
+  page?: number;
+  pageSize?: number;
+}
+
 // 登录响应
 export interface LoginResponse {
   token: string;
@@ -167,11 +182,11 @@ export const authApi = {
 
 export const hotelApi = {
   /**
-   * 获取当前商户的酒店列表（精简字段）
-   * GET /hotels/getMerchantHotels
+   * 获取当前商户的酒店列表（精简字段，支持分页）
+   * GET /hotels/getMerchantHotels?page=1&pageSize=10
    */
-  getMerchantHotels: async (): Promise<ApiResponse<MerchantHotelListItem[]>> => {
-    const response = await api.get('/hotels/getMerchantHotels');
+  getMerchantHotels: async (params: PaginationParams = {}): Promise<ApiResponse<PaginatedResponse<MerchantHotelListItem>>> => {
+    const response = await api.get('/hotels/getMerchantHotels', { params });
     return response.data;
   },
 
@@ -208,11 +223,11 @@ export const hotelApi = {
 
 export const adminApi = {
   /**
-   * 获取所有酒店列表（精简字段）
-   * GET /admin/hotels
+   * 获取所有酒店列表（精简字段，支持分页）
+   * GET /admin/hotels?page=1&pageSize=10
    */
-  getAllHotels: async (): Promise<ApiResponse<AdminHotelListItem[]>> => {
-    const response = await api.get('/admin/hotels');
+  getAllHotels: async (params: PaginationParams = {}): Promise<ApiResponse<PaginatedResponse<AdminHotelListItem>>> => {
+    const response = await api.get('/admin/hotels', { params });
     return response.data;
   },
 
