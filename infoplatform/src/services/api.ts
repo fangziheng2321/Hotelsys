@@ -76,6 +76,21 @@ export interface ApiResponse<T = void> {
   message?: string;
 }
 
+// 分页响应类型
+export interface PaginatedResponse<T> {
+  list: T[];
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+}
+
+// 分页请求参数
+export interface PaginationParams {
+  page?: number;
+  pageSize?: number;
+}
+
 // 登录响应
 export interface LoginResponse {
   token: string;
@@ -270,6 +285,228 @@ const mockHotels: Hotel[] = [
     merchantName: '商户1',
     createdAt: '2024-01-05T00:00:00Z',
     updatedAt: '2024-01-05T00:00:00Z'
+  },
+  {
+    id: '6',
+    name: '杭州西湖国宾馆',
+    address: '杭州市西湖区杨公堤18号',
+    phone: '0571-87979888',
+    description: '杭州西湖国宾馆坐落于西湖核心景区，环境优美，是接待重要宾客的国宾馆。',
+    priceRange: '¥1200-3500',
+    starRating: 5,
+    amenities: ['免费WiFi', '停车场', '餐厅', '健身房', '游泳池', '会议室'],
+    hotelType: 'domestic',
+    images: [
+      'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=800'
+    ],
+    roomTypes: [
+      {
+        id: 'r7',
+        name: '湖景套房',
+        bedType: '2.0米大床',
+        roomSize: '80㎡',
+        capacity: '2人',
+        floor: '1-3层',
+        image: 'https://images.unsplash.com/photo-1590490360182-c33d57733427?w=400',
+        roomCount: 6,
+        price: 2588
+      }
+    ],
+    status: 'approved',
+    merchantId: '1',
+    merchantName: '商户1',
+    createdAt: '2024-01-06T00:00:00Z',
+    updatedAt: '2024-01-06T00:00:00Z'
+  },
+  {
+    id: '7',
+    name: '南京金陵饭店',
+    address: '南京市鼓楼区汉中路2号',
+    phone: '025-84711888',
+    description: '南京金陵饭店是南京地标性建筑，历史悠久，服务一流，是商务出行的首选。',
+    priceRange: '¥800-2200',
+    starRating: 5,
+    amenities: ['免费WiFi', '停车场', '餐厅', '健身房', '会议室'],
+    hotelType: 'domestic',
+    images: [
+      'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800'
+    ],
+    roomTypes: [
+      {
+        id: 'r8',
+        name: '商务大床房',
+        bedType: '1.8米大床',
+        roomSize: '35㎡',
+        capacity: '2人',
+        floor: '10-25层',
+        image: 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=400',
+        roomCount: 15,
+        price: 888
+      },
+      {
+        id: 'r9',
+        name: '豪华套房',
+        bedType: '2.0米大床',
+        roomSize: '60㎡',
+        capacity: '2人',
+        floor: '26-30层',
+        image: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=400',
+        roomCount: 5,
+        price: 1888
+      }
+    ],
+    status: 'pending',
+    merchantId: '1',
+    merchantName: '商户1',
+    createdAt: '2024-01-07T00:00:00Z',
+    updatedAt: '2024-01-07T00:00:00Z'
+  },
+  {
+    id: '8',
+    name: '西安曲江民宿',
+    address: '西安市雁塔区曲江池西路',
+    phone: '029-88886666',
+    description: '西安曲江民宿位于大雁塔景区附近，古色古香的装修风格，体验地道的西安文化。',
+    priceRange: '¥200-500',
+    starRating: 3,
+    amenities: ['免费WiFi', '停车场', '餐厅'],
+    hotelType: 'homestay',
+    images: [
+      'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=800'
+    ],
+    roomTypes: [
+      {
+        id: 'r10',
+        name: '古风大床房',
+        bedType: '1.8米大床',
+        roomSize: '30㎡',
+        capacity: '2人',
+        floor: '2层',
+        image: 'https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=400',
+        roomCount: 8,
+        price: 288
+      }
+    ],
+    status: 'approved',
+    merchantId: '1',
+    merchantName: '商户1',
+    createdAt: '2024-01-08T00:00:00Z',
+    updatedAt: '2024-01-08T00:00:00Z'
+  },
+  {
+    id: '9',
+    name: '三亚海棠湾度假酒店',
+    address: '三亚市海棠区海棠北路',
+    phone: '0898-88889999',
+    description: '三亚海棠湾度假酒店位于海滨，拥有私人沙滩，是度假休闲的绝佳选择。',
+    priceRange: '¥1500-4000',
+    starRating: 5,
+    amenities: ['免费WiFi', '停车场', '餐厅', '健身房', '游泳池', '会议室', 'SPA'],
+    hotelType: 'overseas',
+    images: [
+      'https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=800'
+    ],
+    roomTypes: [
+      {
+        id: 'r11',
+        name: '海景大床房',
+        bedType: '1.8米大床',
+        roomSize: '45㎡',
+        capacity: '2人',
+        floor: '3-8层',
+        image: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=400',
+        roomCount: 20,
+        price: 1288
+      }
+    ],
+    status: 'offline',
+    merchantId: '1',
+    merchantName: '商户1',
+    createdAt: '2024-01-09T00:00:00Z',
+    updatedAt: '2024-01-09T00:00:00Z'
+  },
+  {
+    id: '10',
+    name: '武汉江汉路钟点房',
+    address: '武汉市江汉区江汉路步行街',
+    phone: '027-12345678',
+    description: '武汉江汉路钟点房位于繁华商圈，提供灵活的钟点房服务，方便快捷。',
+    priceRange: '¥60-150',
+    starRating: 2,
+    amenities: ['免费WiFi', '空调', '热水'],
+    hotelType: 'hourly',
+    images: [],
+    roomTypes: [],
+    status: 'rejected',
+    rejectReason: '地址信息不完整',
+    merchantId: '1',
+    merchantName: '商户1',
+    createdAt: '2024-01-10T00:00:00Z',
+    updatedAt: '2024-01-10T00:00:00Z'
+  },
+  {
+    id: '11',
+    name: '重庆洪崖洞精品酒店',
+    address: '重庆市渝中区洪崖洞民俗风貌区',
+    phone: '023-66668888',
+    description: '重庆洪崖洞精品酒店位于网红景点洪崖洞，夜景绝佳，体验山城魅力。',
+    priceRange: '¥400-1000',
+    starRating: 4,
+    amenities: ['免费WiFi', '停车场', '餐厅', '健身房', '会议室'],
+    hotelType: 'domestic',
+    images: [
+      'https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=800'
+    ],
+    roomTypes: [
+      {
+        id: 'r12',
+        name: '江景大床房',
+        bedType: '1.8米大床',
+        roomSize: '32㎡',
+        capacity: '2人',
+        floor: '5-12层',
+        image: 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=400',
+        roomCount: 12,
+        price: 488
+      }
+    ],
+    status: 'approved',
+    merchantId: '1',
+    merchantName: '商户1',
+    createdAt: '2024-01-11T00:00:00Z',
+    updatedAt: '2024-01-11T00:00:00Z'
+  },
+  {
+    id: '12',
+    name: '厦门鼓浪屿民宿',
+    address: '厦门市思明区鼓浪屿内厝澳路',
+    phone: '0592-88887777',
+    description: '厦门鼓浪屿民宿位于世界文化遗产鼓浪屿，体验闽南风情和海岛风光。',
+    priceRange: '¥300-800',
+    starRating: 3,
+    amenities: ['免费WiFi', '餐厅'],
+    hotelType: 'homestay',
+    images: [
+      'https://images.unsplash.com/photo-1566665797739-1674de7a421a?w=800'
+    ],
+    roomTypes: [
+      {
+        id: 'r13',
+        name: '花园洋房',
+        bedType: '1.5米大床',
+        roomSize: '25㎡',
+        capacity: '2人',
+        floor: '1-2层',
+        image: 'https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?w=400',
+        roomCount: 6,
+        price: 388
+      }
+    ],
+    status: 'pending',
+    merchantId: '1',
+    merchantName: '商户1',
+    createdAt: '2024-01-12T00:00:00Z',
+    updatedAt: '2024-01-12T00:00:00Z'
   }
 ];
 
@@ -412,12 +649,14 @@ export const authApi = {
 
 export const hotelApi = {
   /**
-   * 获取当前商户的酒店列表（精简字段）
-   * GET /merchant/hotels
+   * 获取当前商户的酒店列表（精简字段，支持分页）
+   * GET /hotels/getMerchantHotels?page=1&pageSize=10
    */
-  getMerchantHotels: async (): Promise<ApiResponse<MerchantHotelListItem[]>> => {
+  getMerchantHotels: async (params: PaginationParams = {}): Promise<ApiResponse<PaginatedResponse<MerchantHotelListItem>>> => {
+    const { page = 1, pageSize = 10 } = params;
+
     // 真实请求（已注释）:
-    // const response = await api.get('/hotels/getMerchantHotels');
+    // const response = await api.get('/hotels/getMerchantHotels', { params });
     // return response.data;
 
     // Mock 实现:
@@ -425,20 +664,34 @@ export const hotelApi = {
     const userStr = sessionStorage.getItem('user');
     const merchantId = userStr ? JSON.parse(userStr).id : '1';
 
-    const list = mockHotels
-      .filter(hotel => hotel.merchantId === merchantId)
-      .map(hotel => ({
-        id: hotel.id,
-        name: hotel.name,
-        address: hotel.address,
-        phone: hotel.phone,
-        hotelType: hotel.hotelType,
-        status: hotel.status,
-        firstImage: hotel.images && hotel.images.length > 0 ? hotel.images[0] : ''
-      }));
+    const filteredHotels = mockHotels.filter(hotel => hotel.merchantId === merchantId);
+
+    // 分页逻辑
+    const total = filteredHotels.length;
+    const totalPages = Math.ceil(total / pageSize);
+    const startIndex = (page - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    const paginatedHotels = filteredHotels.slice(startIndex, endIndex);
+
+    const list = paginatedHotels.map(hotel => ({
+      id: hotel.id,
+      name: hotel.name,
+      address: hotel.address,
+      phone: hotel.phone,
+      hotelType: hotel.hotelType,
+      status: hotel.status,
+      firstImage: hotel.images && hotel.images.length > 0 ? hotel.images[0] : ''
+    }));
+
     return {
       success: true,
-      data: list
+      data: {
+        list,
+        total,
+        page,
+        pageSize,
+        totalPages
+      }
     };
   },
 
@@ -567,16 +820,24 @@ export const hotelApi = {
 
 export const adminApi = {
   /**
-   * 获取所有酒店列表（精简字段）
-   * GET /admin/hotels
+   * 获取所有酒店列表（精简字段，支持分页）
+   * GET /admin/hotels?page=1&pageSize=10
    */
-  getAllHotels: async (): Promise<ApiResponse<AdminHotelListItem[]>> => {
+  getAllHotels: async (params: PaginationParams = {}): Promise<ApiResponse<PaginatedResponse<AdminHotelListItem>>> => {
+    const { page = 1, pageSize = 10 } = params;
+
     // 真实请求（已注释）:
-    // const response = await api.get('/admin/hotels');
+    // const response = await api.get('/admin/hotels', { params: { page, pageSize } });
     // return response.data;
 
     // Mock 实现:
-    const list = mockHotels.map(hotel => ({
+    const total = mockHotels.length;
+    const totalPages = Math.ceil(total / pageSize);
+    const startIndex = (page - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    const paginatedHotels = mockHotels.slice(startIndex, endIndex);
+
+    const list = paginatedHotels.map(hotel => ({
       id: hotel.id,
       name: hotel.name,
       address: hotel.address,
@@ -586,9 +847,16 @@ export const adminApi = {
       rejectReason: hotel.rejectReason,
       firstImage: hotel.images && hotel.images.length > 0 ? hotel.images[0] : ''
     }));
+
     return {
       success: true,
-      data: list
+      data: {
+        list,
+        total,
+        page,
+        pageSize,
+        totalPages
+      }
     };
   },
 

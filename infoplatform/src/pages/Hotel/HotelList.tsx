@@ -1,21 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { hotelApi, Hotel, HotelType, RoomType } from '../../services/api';
+import { hotelApi, Hotel, HotelType, RoomType, PaginatedResponse, MerchantHotelListItem } from '../../services/api';
 import RoomCountEditModal from '../../components/RoomCountEditModal';
-
-// 商户端酒店列表基础信息类型
-interface MerchantHotelListItem {
-  id: string;
-  name: string;
-  address: string;
-  phone: string;
-  hotelType: HotelType;
-  status: 'pending' | 'approved' | 'rejected' | 'offline';
-  firstImage: string;
-}
 
 const HotelList: React.FC = () => {
   const [hotels, setHotels] = useState<MerchantHotelListItem[]>([]);
+  const [pagination, setPagination] = useState({
+    page: 1,
+    pageSize: 10,
+    total: 0,
+    totalPages: 0
+  });
   const [selectedHotel, setSelectedHotel] = useState<Hotel | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loadingDetail, setLoadingDetail] = useState(false);
@@ -24,16 +19,23 @@ const HotelList: React.FC = () => {
 
   useEffect(() => {
     fetchHotels();
-  }, []);
+  }, [pagination.page, pagination.pageSize]);
 
   const fetchHotels = async () => {
     setLoading(true);
     setError('');
     try {
-      // 使用真实API获取商户的酒店列表
-      const response = await hotelApi.getMerchantHotels();
-      if (response.success) {
-        setHotels(response.data);
+      const response = await hotelApi.getMerchantHotels({
+        page: pagination.page,
+        pageSize: pagination.pageSize
+      });
+      if (response.success && response.data) {
+        setHotels(response.data.list);
+        setPagination(prev => ({
+          ...prev,
+          total: response.data!.total,
+          totalPages: response.data!.totalPages
+        }));
       } else {
         setError(response.message || '获取酒店列表失败');
       }
@@ -103,6 +105,77 @@ const HotelList: React.FC = () => {
     }
   };
 
+  // 分页控制
+  const handlePageChange = (newPage: number) => {
+    if (newPage >= 1 && newPage <= pagination.totalPages) {
+      setPagination(prev => ({ ...prev, page: newPage }));
+    }
+  };
+
+  const handlePageSizeChange = (newPageSize: number) => {
+    setPagination({
+      page: 1,
+      pageSize: newPageSize,
+      total: pagination.total,
+      totalPages: Math.ceil(pagination.total / newPageSize)
+    });
+  };
+
+  // 生成分页按钮
+  const renderPageButtons = () => {
+    const buttons = [];
+    const maxVisiblePages = 5;
+    let startPage = Math.max(1, pagination.page - Math.floor(maxVisiblePages / 2));
+    let endPage = Math.min(pagination.totalPages, startPage + maxVisiblePages - 1);
+
+    if (endPage - startPage < maxVisiblePages - 1) {
+      startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
+
+    // 第一页按钮
+    if (startPage > 1) {
+      buttons.push(
+        <button key={1} onClick={() => handlePageChange(1)} className="page-btn">
+          1
+        </button>
+      );
+      if (startPage > 2) {
+        buttons.push(<span key="ellipsis1" className="page-ellipsis">...</span>);
+      }
+    }
+
+    // 中间页码按钮
+    for (let i = startPage; i <= endPage; i++) {
+      buttons.push(
+        <button
+          key={i}
+          onClick={() => handlePageChange(i)}
+          className={`page-btn ${i === pagination.page ? 'active' : ''}`}
+        >
+          {i}
+        </button>
+      );
+    }
+
+    // 最后一页按钮
+    if (endPage < pagination.totalPages) {
+      if (endPage < pagination.totalPages - 1) {
+        buttons.push(<span key="ellipsis2" className="page-ellipsis">...</span>);
+      }
+      buttons.push(
+        <button
+          key={pagination.totalPages}
+          onClick={() => handlePageChange(pagination.totalPages)}
+          className="page-btn"
+        >
+          {pagination.totalPages}
+        </button>
+      );
+    }
+
+    return buttons;
+  };
+
   if (loading) {
     return <div className="loading">加载中...</div>;
   }
@@ -119,6 +192,24 @@ const HotelList: React.FC = () => {
           <button>添加酒店</button>
         </Link>
       </div>
+
+      {/* 分页信息 */}
+      <div className="pagination-info">
+        <span>共 {pagination.total} 条记录，第 {pagination.page}/{pagination.totalPages} 页</span>
+        <div className="page-size-selector">
+          <span>每页显示：</span>
+          <select
+            value={pagination.pageSize}
+            onChange={(e) => handlePageSizeChange(Number(e.target.value))}
+          >
+            <option value={5}>5</option>
+            <option value={10}>10</option>
+            <option value={20}>20</option>
+            <option value={50}>50</option>
+          </select>
+        </div>
+      </div>
+
       <table className="hotel-table">
         <thead>
           <tr>
@@ -189,6 +280,27 @@ const HotelList: React.FC = () => {
           ))}
         </tbody>
       </table>
+
+      {/* 分页控制 */}
+      {pagination.totalPages > 1 && (
+        <div className="pagination">
+          <button
+            onClick={() => handlePageChange(pagination.page - 1)}
+            disabled={pagination.page === 1}
+            className="page-btn prev"
+          >
+            上一页
+          </button>
+          {renderPageButtons()}
+          <button
+            onClick={() => handlePageChange(pagination.page + 1)}
+            disabled={pagination.page === pagination.totalPages}
+            className="page-btn next"
+          >
+            下一页
+          </button>
+        </div>
+      )}
 
       <RoomCountEditModal
         hotel={selectedHotel}
