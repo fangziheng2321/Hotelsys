@@ -9,7 +9,7 @@ interface CityState {
 }
 
 export const useCityStore = create<CityState>((set) => ({
-  cityName: "上海市", // 默认值
+  cityName: "上海", // 默认值
   latitude: null,
   longitude: null,
   setCity: (name, lat, lng) =>

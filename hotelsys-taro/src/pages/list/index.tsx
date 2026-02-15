@@ -1,33 +1,71 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { View } from "@tarojs/components";
 import SafeNavBar from "./components/SafeNavBar";
 import SearchBar from "./components/SearchBar";
 import "./index.scss";
-import dayjs from "dayjs";
 import FilterBar from "./components/FilterBar";
 import Divide from "../home/components/Divide";
-import { filterFormType, hotelCardType } from "./types";
-import HotTagFilter from "./components/HotTagFilter";
+import { hotelCardType } from "./types";
 import HotelList from "./components/HotelList";
 import { getFilteredHotelListByPage } from "@/api/list";
+import { useCitySelect } from "@/hooks/useCitySelect";
+import HotelHotTags from "../home/components/HotelHotTags";
+import { useSearchStore } from "@/store/searchStore";
+import { SearchTabType } from "@/enum/home";
+import { useDebounce } from "@/hooks/useDebounce";
 
 const List = () => {
   const pageSize = 10;
   const [loading, setLoading] = useState<boolean>(false);
   const [page, setPage] = useState<number>(1);
-  const [city, setCity] = useState("上海");
-  const [dateForm, setDateForm] = useState({
-    startDate: dayjs(),
-    endDate: dayjs().add(1, "day"),
-  });
-  const [filterForm, setFilterForm] = useState<filterFormType>({
-    popularity: null,
-    distance: null,
-    price: null,
-  });
-  const [selectTags, setSelectTags] = useState<string[]>([]);
+  /* 表单数据 */
+  const {
+    location,
+    stayDate,
+    type,
+    hotelName,
+    facilities,
+    priceRange,
+    rate,
+    setStayDate,
+    setType,
+    setHotelName,
+    setFacilities,
+    setPriceRange,
+    setRate,
+  } = useSearchStore();
+
+  const { cityName, navigateToCitySelector } = useCitySelect();
+  const [distance, setDistance] = useState<number | null>(null);
+  const filterForm = useMemo(() => {
+    return {
+      type: type,
+      distance: distance,
+      priceRange: priceRange,
+      rate: rate,
+    };
+  }, [type, priceRange, distance]);
+  const setFilterForm = (
+    tag: "type" | "distance" | "priceRange" | "rate",
+    value: SearchTabType | number | number[] | null,
+  ) => {
+    switch (tag) {
+      case "type":
+        setType(value as SearchTabType);
+        break;
+      case "distance":
+        setDistance(value as number);
+        break;
+      case "priceRange":
+        setPriceRange(value as number[]);
+      case "rate":
+        setRate(value as number);
+    }
+  };
   const [refreshList, setRefreshList] = useState<hotelCardType[]>([]);
   const [refreshHasMore, setRefreshHasMore] = useState(true);
+  // 对搜索框的酒店名进行防抖
+  const debouncedHotelName = useDebounce(hotelName, 500);
 
   /* 获取酒店列表 */
   const refreshLoadMore = async (isRefresh = false) => {
@@ -40,8 +78,11 @@ const List = () => {
 
     try {
       const res = await getFilteredHotelListByPage({
-        location: city,
-        facilities: selectTags,
+        location: cityName,
+        latitude: location.latitude,
+        longitude: location.longitude,
+        facilities: facilities,
+        hotelName: debouncedHotelName,
         currentPage,
         pageSize,
         ...filterForm,
@@ -71,7 +112,7 @@ const List = () => {
     setPage(1);
     setRefreshHasMore(true);
     refreshLoadMore(true);
-  }, [city, filterForm, selectTags]);
+  }, [stayDate, cityName, filterForm, facilities, debouncedHotelName]);
 
   return (
     <View className="bg-custom-gray h-screen flex flex-col">
@@ -81,7 +122,15 @@ const List = () => {
         <SafeNavBar />
 
         {/* 搜索栏 */}
-        <SearchBar city={city} dateForm={dateForm} />
+        <SearchBar
+          city={cityName}
+          startDate={stayDate.startDate}
+          endDate={stayDate.endDate}
+          searchText={hotelName}
+          setSearchText={setHotelName}
+          setStayDate={setStayDate}
+          onClickDate={navigateToCitySelector}
+        />
 
         {/* 分隔线 */}
         <Divide />
@@ -90,9 +139,10 @@ const List = () => {
         <FilterBar filterForm={filterForm} setFilterForm={setFilterForm} />
 
         {/* 热门标签（设施） */}
-        <HotTagFilter
-          selectedList={selectTags}
-          setSelectedList={setSelectTags}
+        <HotelHotTags
+          customClassName="p-2"
+          selectedList={facilities}
+          setSelectedList={setFacilities}
         />
       </View>
 

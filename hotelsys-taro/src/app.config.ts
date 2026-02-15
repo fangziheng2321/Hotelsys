@@ -1,5 +1,10 @@
 export default defineAppConfig({
-  pages: ["pages/home/index", "pages/list/index", "pages/detail/index"],
+  pages: [
+    "pages/home/index",
+    "pages/list/index",
+    "pages/detail/index",
+    "pages/map/index",
+  ],
   plugins: {
     citySelector: {
       version: "1.0.3",
@@ -11,4 +16,5 @@ export default defineAppConfig({
       desc: "你的位置信息将用于小程序定位",
     },
   },
+  requiredPrivateInfos: ["getFuzzyLocation", "chooseLocation"],
 });

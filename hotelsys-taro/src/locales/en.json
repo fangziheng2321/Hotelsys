@@ -8,12 +8,27 @@
     },
     "location_bar": {
       "myLocation": "My Location",
-      "searchTextPlaceholder": "Location/Brand/Hotel",
-      "nights": "Night"
+      "searchTextPlaceholder": "Hotel",
+      "nights": "Night",
+      "getLocation": {
+        "success": "Obtained location successfully",
+        "fail": "Failed to get location"
+      }
     },
     "search_button": "Query",
     "filter_bar": {
-      "placeholder": "Price/star rating"
+      "placeholder": "Price/star rating",
+      "price_rate_select": "Price/star selection",
+      "price_select": {
+        "title": "Price options",
+        "reset": "reset",
+        "confirm": "Confirm"
+      },
+      "rate_select": {
+        "title": "Star selection",
+        "reset": "reset",
+        "confirm": "Confirm"
+      }
     },
     "header": {
       "easeStay": "Ease Stay",
@@ -37,7 +52,8 @@
     "filter_bar": {
       "popularity": "Popularity",
       "distance": "Distance",
-      "price": "Price"
+      "price": "Price",
+      "type": "Type filter"
     },
     "score_label": "Awesome",
     "hotel_card": {
@@ -63,7 +79,7 @@
       "cannotCancel": "No cancellation",
       "soldOut": "Sold Out",
       "book": "Book",
-      "remaining": "",
+      "remaining": "Remaining",
       "room": "rooms left",
       "onlyOneLeft": "Only 1 room left"
     },
@@ -78,5 +94,13 @@
   "request": {
     "success": "Request successful",
     "error": "Request failed"
+  },
+  "facility": {
+    "wifi": "Free Wifi",
+    "parking": "parking lot",
+    "restaurant": "restaurant",
+    "gym": "gym",
+    "pool": "swimming pool",
+    "meeting": "conference room"
   }
 }

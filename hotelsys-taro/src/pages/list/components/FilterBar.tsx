@@ -16,10 +16,15 @@ import { Filter, FilterF } from "@nutui/icons-react-taro";
 import DistanceFilterPanel from "./DistanceFilterPanel";
 import { FilterType } from "../enums";
 import { filterFormType } from "../types";
+import { SearchTabType } from "@/enum/home";
+import PriceRateFilterPanel from "./PriceRateFilterPanel";
 
 interface IProps {
   filterForm: filterFormType;
-  setFilterForm: Dispatch<SetStateAction<filterFormType>>;
+  setFilterForm: (
+    tag: "type" | "distance" | "priceRange" | "rate",
+    value: SearchTabType | number | number[] | null,
+  ) => void;
 }
 
 const FilterBar: FC<IProps> = ({ filterForm, setFilterForm }) => {
@@ -30,14 +35,28 @@ const FilterBar: FC<IProps> = ({ filterForm, setFilterForm }) => {
   }, [filterForm]);
   const menuList = [
     {
-      id: "popularity",
-      type: FilterType.POPULARITY,
+      id: "type",
+      type: FilterType.TYPE,
       isCustom: false,
-      title: t("list.filter_bar.popularity"),
+      title: t("list.filter_bar.type"),
       customTitleIcon: null,
       options: [
-        { text: "欢迎度1", value: 1 },
-        { text: "欢迎度2", value: 2 },
+        {
+          text: t("home.search_tabs.domestic"),
+          value: SearchTabType.DOMESTIC,
+        },
+        {
+          text: t("home.search_tabs.overseas"),
+          value: SearchTabType.OVERSEAS,
+        },
+        {
+          text: t("home.search_tabs.hourly"),
+          value: SearchTabType.HOURLY,
+        },
+        {
+          text: t("home.search_tabs.homestay"),
+          value: SearchTabType.HOMESTAY,
+        },
       ],
     },
     {
@@ -47,20 +66,17 @@ const FilterBar: FC<IProps> = ({ filterForm, setFilterForm }) => {
       customTitleIcon: null,
       title: t("list.filter_bar.distance"),
       options: [
-        { text: "距离1", value: 1 },
-        { text: "距离2", value: 2 },
+        { text: "0-100m", value: 100 },
+        { text: "100-500m", value: 500 },
+        { text: "500-1000m", value: 1000 },
       ],
     },
     {
-      id: "price",
-      isCustom: false,
-      type: FilterType.PRICE,
+      id: "priceRate",
+      isCustom: true,
+      type: FilterType.PRICERATE,
       customTitleIcon: null,
       title: t("list.filter_bar.price"),
-      options: [
-        { text: "星级1", value: 1 },
-        { text: "星级2", value: 2 },
-      ],
     },
   ];
 
@@ -71,11 +87,17 @@ const FilterBar: FC<IProps> = ({ filterForm, setFilterForm }) => {
 
   /* 重置筛选 */
   const resetFilterForm = () => {
-    setFilterForm({
-      popularity: null,
-      distance: null,
-      price: null,
-    });
+    setFilterForm("type", null);
+    setFilterForm("distance", null);
+    setFilterForm("priceRange", null);
+  };
+
+  const setOuterPriceRange = (value: number[] | null) => {
+    return setFilterForm("priceRange", value);
+  };
+
+  const setOuterRate = (value: number | null) => {
+    return setFilterForm("rate", value);
   };
 
   // 组件映射字典：配置每种类型对应的组件
@@ -85,9 +107,16 @@ const FilterBar: FC<IProps> = ({ filterForm, setFilterForm }) => {
         return (
           <DistanceFilterPanel menuId={item.id} handleClose={handleClose} />
         );
-      case FilterType.PRICE:
+      case FilterType.PRICERATE:
         return (
-          <DistanceFilterPanel menuId={item.id} handleClose={handleClose} />
+          <PriceRateFilterPanel
+            menuId={item.id}
+            handleClose={handleClose}
+            rate={filterForm.rate}
+            priceRange={filterForm.priceRange}
+            setPriceRange={setOuterPriceRange}
+            setRate={setOuterRate}
+          />
         );
       default:
         return null;
@@ -98,6 +127,7 @@ const FilterBar: FC<IProps> = ({ filterForm, setFilterForm }) => {
     nutuiMenuBarBoxShadow: "none",
     nutuiMenuBarLineHeight: "auto",
     nutuiMenuItemIconMargin: "1.5rem",
+    nutuiMenuContentMaxHeight: "auto",
   };
 
   return (
@@ -114,12 +144,7 @@ const FilterBar: FC<IProps> = ({ filterForm, setFilterForm }) => {
               value={filterForm[item.id]}
               options={item.isCustom ? undefined : item.options}
               titleIcon={item.customTitleIcon ?? undefined}
-              onChange={(option) =>
-                setFilterForm((pre) => ({
-                  ...pre,
-                  [item.id]: option.value,
-                }))
-              }
+              onChange={(option) => setFilterForm(item.id as any, option.value)}
             >
               {item.isCustom && renderPanel(item)}
             </Menu.Item>

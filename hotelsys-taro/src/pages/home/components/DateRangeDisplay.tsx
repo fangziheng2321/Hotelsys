@@ -3,40 +3,41 @@ import { View, Text } from "@tarojs/components";
 import { useTranslation } from "react-i18next";
 import { useTime } from "@/utils/date";
 import { timeType } from "@/types";
-import { dateFormType } from "../types";
 import CalendarSelect from "@/components/CalendarSelect/CalendarSelect";
 
 interface IProps {
-  dateForm: dateFormType;
+  startDate: timeType;
+  endDate: timeType;
   isVisible: boolean;
   setIsVisible: Dispatch<React.SetStateAction<boolean>>;
-  setDateForm: Dispatch<React.SetStateAction<dateFormType>>;
+  setStayDate: (startDate: timeType, endDate: timeType) => void;
   onClick: () => void;
 }
 
 const DateRangeDisplay: FC<IProps> = ({
-  dateForm,
+  startDate,
+  endDate,
   isVisible,
+  setStayDate,
   setIsVisible,
-  setDateForm,
   onClick,
 }: IProps) => {
   const { getDayLabel, getDuration, formatDate } = useTime();
   const { t, i18n } = useTranslation();
 
   const dateInfo = useMemo(() => {
-    const nights = getDuration(dateForm?.startDate, dateForm?.endDate);
+    const nights = getDuration(startDate, endDate);
     return {
-      startText: formatDate(dateForm?.startDate),
-      startLabel: getDayLabel(dateForm?.startDate),
-      endText: formatDate(dateForm?.endDate),
-      endLabel: getDayLabel(dateForm?.endDate),
+      startText: formatDate(startDate),
+      startLabel: getDayLabel(startDate),
+      endText: formatDate(endDate),
+      endLabel: getDayLabel(endDate),
       nights,
     };
-  }, [dateForm, i18n.language]);
+  }, [startDate, endDate, i18n.language]);
 
   return (
-    <>
+    <View>
       <View className="flex items-center justify-between" onClick={onClick}>
         <View className="flex items-center gap-2">
           {/* 开始时间 */}
@@ -70,11 +71,12 @@ const DateRangeDisplay: FC<IProps> = ({
       </View>
       <CalendarSelect
         isVisible={isVisible}
-        dateForm={dateForm}
+        startDate={startDate}
+        endDate={endDate}
         setIsVisible={setIsVisible}
-        setDateForm={setDateForm}
+        setStayDate={setStayDate}
       />
-    </>
+    </View>
   );
 };
 

@@ -6,9 +6,10 @@ export interface hotTagType {
 
 /* 筛选表单 */
 export interface filterFormType {
-  popularity?: number | null;
-  distance?: number | null;
-  price?: number | null;
+  type: string | null;
+  distance: number | null;
+  priceRange: number[] | null;
+  rate: number | null;
 }
 
 /* 酒店卡片 */

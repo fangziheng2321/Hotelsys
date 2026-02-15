@@ -19,6 +19,7 @@ import { fetchCityByIP } from "./hooks/useCitySelect";
 function App({ children }: PropsWithChildren<any>) {
   useLaunch(() => {
     console.log("App launched.");
+    // 通过IP获取用户位置
     fetchCityByIP();
   });
 

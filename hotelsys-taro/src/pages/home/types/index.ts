@@ -10,9 +10,3 @@ export interface dateFormType {
   startDate: timeType;
   endDate: timeType;
 }
-
-/* 热门标签 */
-export interface hotTagType {
-  label: string;
-  value: string;
-}

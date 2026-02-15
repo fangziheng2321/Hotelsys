@@ -8,9 +8,10 @@ import React, {
   useRef,
 } from "react";
 import { View, Text } from "@tarojs/components";
-import { hotTagType } from "@/pages/home/types";
+import { FacilityItem } from "@/types";
+import { useTranslation } from "react-i18next";
 
-interface HotTagProps extends hotTagType {
+interface HotTagProps extends FacilityItem {
   isSelected?: boolean;
 }
 
@@ -18,7 +19,6 @@ interface IProps {
   list: HotTagProps[];
   selectedList: string[];
   onTagClick: (tag: HotTagProps) => void;
-  hotTags: hotTagType[];
   customClassName?: string;
 }
 
@@ -31,22 +31,8 @@ const HotTagList: FC<IProps> = ({
   list,
   selectedList,
   onTagClick,
-  hotTags,
   customClassName,
 }) => {
-  /* 展示列表 */
-  // const showList = useMemo(() => {
-  //   // 将选中的标签放在最前面
-  //   const selectedTags = hotTags.filter((item) =>
-  //     selectedList.includes(item.value),
-  //   );
-  //   // 未选中的标签
-  //   const unselectedTags = hotTags.filter(
-  //     (item) => !selectedList.includes(item.value),
-  //   );
-  //   return [...selectedTags, ...unselectedTags];
-  // }, [selectedList, hotTags]);
-
   return (
     <View
       className={[
@@ -57,10 +43,10 @@ const HotTagList: FC<IProps> = ({
       {list.map((item) => {
         return (
           <HotTag
-            key={item.value}
+            key={item.id}
             {...item}
             onClick={() => onTagClick(item)}
-            isSelected={selectedList.includes(item.value)}
+            isSelected={selectedList.includes(item.id)}
           />
         );
       })}
@@ -69,7 +55,8 @@ const HotTagList: FC<IProps> = ({
 };
 
 /* 标签 */
-export const HotTag: FC<IHotTagProps> = ({ label, isSelected, onClick }) => {
+export const HotTag: FC<IHotTagProps> = ({ name, isSelected, onClick }) => {
+  const { t } = useTranslation();
   return (
     <View
       onClick={onClick}
@@ -78,7 +65,7 @@ export const HotTag: FC<IHotTagProps> = ({ label, isSelected, onClick }) => {
         isSelected ? "text-white bg-primary font-bold" : "bg-custom-gray",
       ].join(" ")}
     >
-      <Text>{`${label}${isSelected ? " ·" : ""}`}</Text>
+      <Text>{`${t(name as any)}${isSelected ? " ·" : ""}`}</Text>
     </View>
   );
 };

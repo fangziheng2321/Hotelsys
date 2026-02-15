@@ -18,3 +18,12 @@ export const background = {
 };
 
 export const LocationBarIcon = { Location };
+
+// 价格区间范围
+export const priceRange = {
+  MIN: 0,
+  MAX: 1000,
+};
+
+// 价格标签
+export const presetRanges = [0, 200, 300, 500, 700, 900, 1000];
