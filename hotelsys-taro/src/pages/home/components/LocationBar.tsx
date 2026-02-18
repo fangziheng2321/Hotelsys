@@ -59,14 +59,15 @@ const LocationBar: FC<IProps> = (props) => {
         </Text> */}
         <Input
           value={props?.searchText ?? ""}
-          className="text-lg"
+          className="text-lg flex-1"
           placeholderClass="text-custom-placeholder"
           placeholder={t("home.location_bar.searchTextPlaceholder")}
           onInput={handleInputSearchText}
         ></Input>
         <Image
           src={LocationBarIcon.Location}
-          className="size-5"
+          className="w-5 h-5 shrink-0"
+          mode="aspectFit"
           onClick={props?.onLocateClick}
         ></Image>
       </View>

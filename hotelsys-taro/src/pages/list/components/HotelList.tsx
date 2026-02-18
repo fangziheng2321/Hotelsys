@@ -113,6 +113,7 @@ const HotelList: FC<IProps> = ({
       <Toast
         visible={show}
         content={toastMsg}
+        duration={1}
         onClose={() => {
           SetShow(false);
         }}

@@ -19,6 +19,7 @@ import FunctionBar from "./components/FunctionBar";
 import { useRouter } from "@tarojs/taro";
 import { getHotelDetailById, getHotelRoomListById } from "@/api/detail";
 import DetailSkeleton from "./components/DetailSkeleton";
+import { useSearchStore } from "@/store/searchStore";
 
 interface IProps {}
 
@@ -28,12 +29,13 @@ const Index: FC<IProps> = (props) => {
   const { params } = router;
   const [loading, setLoading] = useState<boolean>(false);
   const [roomListLoading, setRoomListLoading] = useState<boolean>(false);
+  const { stayDate } = useSearchStore();
   const [hotelInfo, setHotelInfo] = useState<DetailInfoType>({
     id: 1,
     name: "",
     rate: 0,
     imgList: [],
-    score: 0.0,
+    description: "",
     address: "",
     price: 0,
     telephone: null,
@@ -74,10 +76,16 @@ const Index: FC<IProps> = (props) => {
     if (id) {
       // 请求接口获取酒店详情数据
       loadHotelDetail(id);
+    }
+  }, [params.id]);
+
+  useEffect(() => {
+    const { id } = params;
+    if (id) {
       // 请求接口获取房型数据
       loadRoomList(id);
     }
-  }, []);
+  }, [params.id, stayDate]);
 
   if (loading) {
     return <DetailSkeleton />;
@@ -99,10 +107,7 @@ const Index: FC<IProps> = (props) => {
           </View>
 
           {/* 日历与人间夜 */}
-          <View
-            className="bg-white p-4 mt-2"
-            onClick={() => loadRoomList(hotelInfo.id)}
-          >
+          <View className="bg-white p-4 mt-2">
             <Calendar />
           </View>
           {/* 房型价格列表 */}

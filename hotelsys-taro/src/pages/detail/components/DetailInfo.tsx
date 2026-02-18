@@ -17,7 +17,13 @@ import HotelComment from "./Comment";
 
 interface IProps extends DetailInfoType {}
 
-const DetailInfo: FC<IProps> = ({ name, rate, facilities, score, address }) => {
+const DetailInfo: FC<IProps> = ({
+  name,
+  rate,
+  facilities,
+  description,
+  address,
+}) => {
   const { t } = useTranslation();
 
   return (
@@ -43,7 +49,7 @@ const DetailInfo: FC<IProps> = ({ name, rate, facilities, score, address }) => {
 
       {/* 评价与地址 */}
       <View className="flex justify-between items-center h-20 gap-2">
-        <HotelComment score={score} />
+        <HotelComment description={description} />
         <Address address={address} />
       </View>
     </View>

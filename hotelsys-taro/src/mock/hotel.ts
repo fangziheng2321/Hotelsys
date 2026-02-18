@@ -10,7 +10,7 @@ export const MOCK_HOTEL_DETAIL = {
     "https://modao.cc/agent-py/media/generated_images/2026-02-03/0356c22d93a042c794e0f0ca57400f1f.jpg",
     "https://modao.cc/agent-py/media/generated_images/2026-02-03/6c6959e198984f0888aa0718f1bd992d.jpg",
   ],
-  score: 4.8,
+  description: "这家酒店是中式风格装修，舒适安逸",
   address: "浦东新区浦明路868弄3号楼",
   price: Math.floor(Math.random() * 900) + 100,
   telephone: "12345678954",

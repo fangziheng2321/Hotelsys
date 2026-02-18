@@ -3,7 +3,7 @@ export interface DetailInfoType {
   id: number | string;
   name: string;
   imgList: string[];
-  score: number;
+  description: string;
   rate: 0 | 1 | 2 | 3 | 4 | 5;
   address: string;
   price: number;

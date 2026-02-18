@@ -9,7 +9,7 @@ import React, {
 } from "react";
 import { View, Text, Image } from "@tarojs/components";
 import { useTranslation } from "react-i18next";
-import { listIcon } from "@/constant/list";
+import { hotelInfo } from "@/constant/detail";
 
 interface IProps {
   address: string;
@@ -25,7 +25,7 @@ const Address: FC<IProps> = ({ address }) => {
       </View>
       {/* 地图图标 */}
       <View className="bg-white rounded-lg w-8 h-8 p-2 flex items-center justify-center">
-        <Image src={listIcon.map} className="size-full" />
+        <Image src={hotelInfo.map} className="size-full" />
       </View>
     </View>
   );

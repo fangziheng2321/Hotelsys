@@ -14,46 +14,58 @@ import { dateFormType } from "@/pages/home/types";
 import { useTime } from "@/utils/date";
 import { ArrowRight } from "@nutui/icons-react-taro";
 import CustomTag from "@/components/CustomTag/CustomTag";
+import { useSearchStore } from "@/store/searchStore";
+import CalendarSelect from "@/components/CalendarSelect/CalendarSelect";
 
 interface IProps {}
 
 const Calendar: FC<IProps> = (props) => {
   const { t } = useTranslation();
   const { formatDate, getDayLabel, getDuration } = useTime();
-  const [dateForm, setDateForm] = useState<dateFormType>({
-    startDate: dayjs(),
-    endDate: dayjs().add(1, "day"),
-  });
+  const { stayDate, setStayDate } = useSearchStore();
+  const [isVisible, setIsVisible] = useState<boolean>(false);
 
   return (
-    <View className="flex items-center justify-between gap-4">
-      {/* 入住时间 */}
-      <View className="flex flex-col gap-1">
-        <Text className="text-xs text-gray-400">
-          {formatDate(dateForm?.startDate ?? dayjs())}
-        </Text>
-        <Text className="text-sm">
-          {getDayLabel(dateForm?.startDate ?? dayjs())}
-        </Text>
+    <View>
+      <View
+        className="flex items-center justify-between gap-4"
+        onClick={() => setIsVisible(true)}
+      >
+        {/* 入住时间 */}
+        <View className="flex flex-col gap-1">
+          <Text className="text-xs text-gray-400">
+            {formatDate(stayDate?.startDate ?? dayjs())}
+          </Text>
+          <Text className="text-sm">
+            {getDayLabel(stayDate?.startDate ?? dayjs())}
+          </Text>
+        </View>
+        {/* 间隔时间 */}
+        <CustomTag customClassName="bg-transparent text-secondary text-sm border-secondary border">
+          {`${getDuration(
+            stayDate?.startDate ?? dayjs(),
+            stayDate?.endDate ?? dayjs().add(1, "day"),
+          )}${t("home.location_bar.nights")}`}
+        </CustomTag>
+        {/* 退房时间 */}
+        <View className="flex flex-col gap-1">
+          <Text className="text-xs text-gray-400">
+            {formatDate(stayDate?.endDate ?? dayjs().add(1, "day"))}
+          </Text>
+          <Text className="text-sm">
+            {getDayLabel(stayDate?.endDate ?? dayjs().add(1, "day"))}
+          </Text>
+        </View>
+        {/* 打开日历图标 */}
+        <ArrowRight size={"1.5rem"} className="ml-auto" />
       </View>
-      {/* 间隔时间 */}
-      <CustomTag customClassName="bg-transparent text-secondary text-sm border-secondary border">
-        {`${getDuration(
-          dateForm?.startDate ?? dayjs(),
-          dateForm?.endDate ?? dayjs().add(1, "day"),
-        )}${t("home.location_bar.nights")}`}
-      </CustomTag>
-      {/* 退房时间 */}
-      <View className="flex flex-col gap-1">
-        <Text className="text-xs text-gray-400">
-          {formatDate(dateForm?.endDate ?? dayjs().add(1, "day"))}
-        </Text>
-        <Text className="text-sm">
-          {getDayLabel(dateForm?.endDate ?? dayjs().add(1, "day"))}
-        </Text>
-      </View>
-      {/* 打开日历图标 */}
-      <ArrowRight size={"1.5rem"} className="ml-auto" />
+      <CalendarSelect
+        isVisible={isVisible}
+        startDate={stayDate?.startDate}
+        endDate={stayDate?.endDate}
+        setIsVisible={setIsVisible}
+        setStayDate={setStayDate}
+      />
     </View>
   );
 };
