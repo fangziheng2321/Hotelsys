@@ -14,8 +14,8 @@ import swaggerRouter from './routes/swagger.routes';
 import healthRouter from './routes/health.routes';
 import authRouter from './routes/auth.routes';
 import hotelRouter from './routes/hotel.routes';
+import adminRouter from './routes/admin.routes';
 
-// 【新增导入】导入上传相关的中间件和控制器
 import { uploadHotelImages } from './middleware/upload.middleware';
 import * as uploadController from './controllers/upload.controller';
 import { protect, restrictTo } from './middleware/auth.middleware';
@@ -27,7 +27,6 @@ const app: Application = express();
 const PORT = process.env.PORT || 3000;
 const API_PREFIX = process.env.API_PREFIX || '/api';
 
-// --- 全局中间件配置 ---
 
 // 安全中间件
 app.use(helmet());
@@ -88,6 +87,9 @@ app.use(`${API_PREFIX}/merchant/hotels`, hotelRouter);
 
 // 6. Swagger API 文档
 app.use('/api-docs', swaggerRouter);
+
+// 7. 管理员专用路由
+app.use(`${API_PREFIX}/admin`, adminRouter);
 
 
 // --- 错误处理 ---

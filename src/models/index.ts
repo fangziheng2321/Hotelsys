@@ -3,13 +3,15 @@ import User from './User';
 import Hotel from './Hotel';
 import HotelImage from './HotelImage';
 import Room from './Room';
+import AuditLog from './AuditLog';
 
 // 注册所有模型
 const models: any = {
   User,
   Hotel,
   HotelImage,
-  Room
+  Room,
+  AuditLog 
 };
 
 // 自动执行模型中定义的 associate 关联关系

@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { HotelService } from '../services/hotel.service';
 import { ValidationError } from '../utils/AppError';
+import { AppError } from '../utils/AppError';
 
 /**
  * 保存酒店信息
@@ -31,14 +32,19 @@ export const saveHotel = async (req: Request, res: Response, next: NextFunction)
  */
 export const getMerchantHotels = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    // 从 protect 中间件获取当前登录商户的 ID
     const merchantId = (req as any).user.id;
+    // 从 query 中提取分页参数
+    const { page, pageSize } = req.query;
 
-    const hotels = await HotelService.getMerchantHotels(merchantId);
+    const result = await HotelService.getMerchantHotels(merchantId, {
+      page: page ? Number(page) : undefined,
+      pageSize: pageSize ? Number(pageSize) : undefined
+    });
 
+    // 统一返回成功响应结构 
     res.status(200).json({
       success: true,
-      data: hotels
+      data: result
     });
   } catch (error) {
     next(error);
@@ -91,5 +97,102 @@ export const updateRoomStock = async (req: Request, res: Response, next: NextFun
     });
   } catch (error) {
     next(error); 
+  }
+};
+
+
+export const getAdminHotels = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    // 从 query 获取分页参数
+    const { page, pageSize } = req.query;
+
+    const result = await HotelService.getAdminHotels({
+      page: page ? Number(page) : undefined,
+      pageSize: pageSize ? Number(pageSize) : undefined
+    });
+
+    // 返回标准响应格式
+    res.status(200).json({
+      success: true,
+      data: result
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+
+/**
+ * 管理员审核酒店接口
+ */
+export const auditHotel = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id } = req.params;
+    const { status, rejectReason } = req.body;
+    const adminId = (req as any).user.id;
+
+    const hotelId = Number(id);
+    if (isNaN(hotelId)) {
+      throw new AppError(`无效的酒店ID参数: ${id}`, 400); 
+    }
+
+    // 基础参数校验
+    if (!['approved', 'rejected'].includes(status)) {
+      throw new AppError('无效的审核状态', 400);
+    }
+    if (status === 'rejected' && !rejectReason) {
+      throw new AppError('拒绝酒店时必须填写原因', 400);
+    }
+
+    await HotelService.auditHotel({
+      hotelId,
+      adminId,
+      status,
+      rejectReason
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "审核操作成功" 
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * 管理员：切换酒店上下线状态
+ */
+export const toggleHotelStatus = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body; // Body 为 { "status": "offline" } 
+    const adminId = (req as any).user.id;
+
+    // 校验 ID 类型
+    const hotelId = Number(id);
+    if (isNaN(hotelId)) {
+      throw new AppError(`无效的酒店ID: ${id}`, 400);
+    }
+
+    // 校验目标状态是否合法
+    if (!['approved', 'offline'].includes(status)) {
+      throw new AppError('非法的状态切换请求', 400);
+    }
+
+    // 调用 Service
+    await HotelService.toggleHotelStatus({
+      hotelId,
+      adminId,
+      targetStatus: status as 'approved' | 'offline'
+    });
+
+    // 返回成功消息 
+    res.status(200).json({
+      success: true,
+      message: "状态更新成功"
+    });
+  } catch (error) {
+    next(error);
   }
 };

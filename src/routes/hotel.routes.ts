@@ -11,8 +11,7 @@ const router = Router();
 router.post('/', protect, restrictTo('merchant'), hotelController.saveHotel);
 
 // 获取商户酒店列表
-router.get('/getMerchantHotel', protect, restrictTo('merchant'), hotelController.getMerchantHotels);
-
+router.get('/', protect, restrictTo('merchant'), hotelController.getMerchantHotels);
 // 获取酒店回显详情
 // GET /api/merchant/hotels/2
 router.get('/:id', protect, restrictTo('merchant'), hotelController.getHotelDetail);

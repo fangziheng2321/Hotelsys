@@ -69,12 +69,8 @@ User.initModel(
     tableName: 'users',
     indexes: [
       {
-        name: 'idx_users_role',
-        fields: ['role']
-      },
-      {
-        name: 'idx_users_email',
-        fields: ['email']
+        name: 'idx_role_is_active',
+        fields: ['role', 'is_active']
       }
     ]
   }
