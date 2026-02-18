@@ -15,6 +15,7 @@ import healthRouter from './routes/health.routes';
 import authRouter from './routes/auth.routes';
 import hotelRouter from './routes/hotel.routes';
 import adminRouter from './routes/admin.routes';
+import homeRouter from './routes/home.routes';
 
 import { uploadHotelImages } from './middleware/upload.middleware';
 import * as uploadController from './controllers/upload.controller';
@@ -91,6 +92,9 @@ app.use('/api-docs', swaggerRouter);
 // 7. 管理员专用路由
 app.use(`${API_PREFIX}/admin`, adminRouter);
 
+// 8. 首页相关接口 
+app.use(`${API_PREFIX}/home`, homeRouter);
+
 
 // --- 错误处理 ---
 
@@ -131,8 +135,9 @@ async function startServer() {
     
     // 开发环境下自动同步表结构
     if (process.env.NODE_ENV === 'development') {
-      await sequelize.sync({ alter: true }); 
-      logger.info('数据库表结构同步完成');
+      //await sequelize.sync({ alter: true }); 
+      //logger.info('数据库表结构同步完成');
+      logger.info('数据库结构同步检查跳过');
     }
 
     app.listen(PORT, () => {

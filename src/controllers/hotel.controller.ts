@@ -196,3 +196,26 @@ export const toggleHotelStatus = async (req: Request, res: Response, next: NextF
     next(error);
   }
 };
+
+
+/**
+ * 用户端：搜索酒店
+ */
+export const searchHotels = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    // 校验参数
+    const { currentPage, pageSize } = req.body;
+    if (!currentPage || !pageSize) {
+      throw new AppError('currentPage 和 pageSize 为必填项', 400);
+    }
+
+    const result = await HotelService.searchHotels(req.body);
+
+    res.status(200).json({
+      success: true,
+      data: result
+    });
+  } catch (error) {
+    next(error);
+  }
+};

@@ -1,5 +1,6 @@
 import { Hotel, HotelImage, Room, sequelize, User } from '../models';
 import { AppError } from '../utils/AppError';
+import { Op, Sequelize } from 'sequelize';
 
 export class HotelService {
   /**
@@ -34,8 +35,8 @@ export class HotelService {
         facilities: amenities, 
         hotel_type: hotelType || 'domestic',
         merchant_id: merchantId,
-        status: 'pending', // 保存即进入审核状态
-        rejection_reason: null // 重置之前的拒绝原因
+        status: 'pending',
+        rejection_reason: null
       };
 
       if (id) {
@@ -72,8 +73,9 @@ export class HotelService {
         
         const roomData = roomTypes.map((room: any) => ({
           hotel_id: hotel.id,
-          name: room.name,            
-          bed_type: room.bedType,     
+          name: room.name,    
+          bed_count: room.bedCount || 1,
+          bed_size: room.bedSize || 1.80,          
           room_size: room.roomSize,   
           capacity: room.capacity,    
           floor: room.floor,          
@@ -146,29 +148,39 @@ export class HotelService {
    * 获取酒店完整详情（含图片和房型）
    * 使用merchantId 校验，确保商户只能看到自己的酒店详情
    */
-  static async getHotelDetail(id: number, merchantId: number) {
-    const hotel = await Hotel.findOne({
-      where: { id, merchant_id: merchantId },
-      include: [
-        {
-          model: HotelImage,
-          as: 'images',
-          attributes: ['image_url', 'is_primary', 'image_type']
-        },
-        {
-          model: Room,
-          as: 'roomTypes',
-          attributes: ['id', 'name', 'bed_type', 'room_size', 'capacity', 'floor', 'image_url', 'current_price']
-        }
-      ]
-    });
+static async getHotelDetail(id: number, merchantId: number) {
+  const hotel = await Hotel.findOne({
+    where: { id, merchant_id: merchantId },
+    attributes: [
+      'id', 'name_zh', 'address', 'city', 'district', 
+      'latitude', 'longitude', 'star_rating', 'status', 
+      'rejection_reason', 'contact_phone', 'facilities', 
+      'description', 'hotel_type', 'is_featured'
+    ],
+    include: [
+      {
+        model: HotelImage,
+        as: 'images',
+        attributes: ['image_url', 'is_primary', 'image_type']
+      },
+      {
+        model: Room,
+        as: 'roomTypes',
+        attributes: [
+          'id', 'name', 'bed_count', 'bed_size', 
+          'room_size', 'capacity', 'floor', 
+          'image_url', 'current_price', 'total_stock'
+        ]
+      }
+    ]
+  });
 
-    if (!hotel) {
-      throw new AppError('未找到该酒店或无权访问', 404);
-    }
-
-    return hotel;
+  if (!hotel) {
+    throw new AppError('未找到该酒店或无权访问', 404);
   }
+
+  return hotel;
+}
 
 
   /**
@@ -341,7 +353,196 @@ export class HotelService {
     });
   }
 
+  /**
+   * 用户端：分页搜索酒店列表
+   */
+  static async searchHotels(params: any) {
+    const { 
+      location, 
+      rate, 
+      price, 
+      facilities, 
+      currentPage = 1, 
+      pageSize = 10 
+    } = params;
 
+    const offset = (currentPage - 1) * pageSize;
+
+    // Hotel 表的过滤条件
+    const hotelWhere: any = { status: 'approved' }; // 仅展示审核通过的
+
+    if (location) {
+      hotelWhere[Op.or] = [
+        { city: { [Op.like]: `%${location}%` } },
+        { address: { [Op.like]: `%${location}%` } },
+        { name_zh: { [Op.like]: `%${location}%` } }
+      ];
+    }
+
+    if (rate) {
+      hotelWhere.star_rating = rate;
+    }
+
+    // Room 表的过滤条件（价格筛选）
+    const roomWhere: any = { is_active: true };
+    if (price) {
+      // 假设价格筛选是指“存在价格小于等于该值的房型”
+      roomWhere.current_price = { [Op.lte]: price };
+    }
+
+    // 执行查询
+    const { count, rows } = await Hotel.findAndCountAll({
+      where: hotelWhere,
+      limit: pageSize,
+      offset: offset,
+      distinct: true, // 防止 include 导致 count 计算错误
+      include: [
+        {
+          model: HotelImage,
+          as: 'images',
+          where: { is_primary: true },
+          required: false,
+          attributes: ['image_url']
+        },
+        {
+          model: Room,
+          as: 'roomTypes',
+          where: roomWhere,
+          required: price ? true : false, // 如果传了价格筛选，必须匹配有该价格房型的酒店
+          attributes: ['current_price']
+        }
+      ],
+      order: [['star_rating', 'DESC']] // 默认按星级降序
+    });
+
+    // 计算最低价并转换字段名
+    const list = rows.map(hotel => {
+      const h = hotel.toJSON();
+      
+      // 计算该酒店所有房型中的最低价
+      const minPrice = h.roomTypes && h.roomTypes.length > 0
+        ? Math.min(...h.roomTypes.map((r: any) => parseFloat(r.current_price)))
+        : 0;
+
+      return {
+        id: h.id,
+        name: h.name_zh,
+        rate: h.star_rating,
+        score: 4.5, 
+        address: h.address,
+        facilities: Array.isArray(h.facilities) ? h.facilities : [], // 设施标签
+        price: minPrice,
+        imgUrl: h.images?.[0]?.image_url || ""
+      };
+    });
+
+    return {
+      list,
+      total: count,
+      currentPage: Number(currentPage),
+      hasMore: offset + list.length < count
+    };
+
+  }
+
+    /**
+   * 用户端：获取酒店基础详情信息
+   */
+  static async getHotelInfoForUser(hotelId: number) {
+    // 查询酒店及其关联的图片和房型
+    const hotel = await Hotel.findOne({
+      where: { 
+        id: hotelId,
+        status: 'approved' // 仅展示已审核通过的
+      },
+      include: [
+        {
+          model: HotelImage,
+          as: 'images',
+          attributes: ['image_url']
+        },
+        {
+          model: Room,
+          as: 'roomTypes',
+          attributes: ['current_price']
+        }
+      ]
+    });
+
+    if (!hotel) {
+      throw new AppError('未找到相关酒店或酒店已下架', 404);
+    }
+
+    const h = hotel.toJSON();
+
+    // 计算最低价
+    const minPrice = h.roomTypes && h.roomTypes.length > 0
+      ? Math.min(...h.roomTypes.map((r: any) => parseFloat(r.current_price)))
+      : 0;
+
+    // 设施格式化：将原始 JSON 映射为带图标的对象数组
+    // 原始数据是 ["免费WIFI", "停车场"]，映射逻辑：
+    const iconMap: { [key: string]: string } = {
+      "免费WIFI": "wifi",
+      "停车场": "parking",
+      "餐厅": "restaurant"
+    };
+
+    const formattedFacilities = (Array.isArray(h.facilities) ? h.facilities : []).map((item: string) => ({
+      title: item,
+      iconKey: iconMap[item] || 'default'
+    }));
+
+    // 数据映射返回
+    return {
+      id: h.id,
+      name: h.name_zh,
+      imgList: h.images?.map((img: any) => img.image_url) || [],
+      score: h.average_rating || 4.5,
+      rate: h.star_rating,
+      address: h.address,
+      price: minPrice,
+      facilities: formattedFacilities
+    };
+  }
+
+  /**
+   * 用户端：获取酒店房型列表
+   */
+  static async getRoomListForUser(hotelId: number) {
+    // 查询该酒店下所有激活的房型
+    const rooms = await Room.findAll({
+      where: { 
+        hotel_id: hotelId,
+        is_active: true 
+      },
+      order: [['current_price', 'ASC']] // 房型按价格从低到高排序
+    });
+
+    // 数据转换
+    return rooms.map(room => {
+      const r = room.toJSON();
+
+      return {
+        id: r.id,
+        name: r.name,
+        imageUrl: r.image_url || "",
+
+        bedInfo: {
+          number: r.bed_count,
+          size: parseFloat(r.bed_size.toString())
+        },
+        area: parseInt(r.room_size) || 0,
+        occupancy: parseInt(r.capacity) || 2,
+        // 楼层、
+        floor: r.floor?.match(/\d+/g)?.map(Number) || [1, 1],
+        canCancel: true,
+        instantConfirm: true,
+        stock: r.total_stock,
+        price: parseFloat(r.current_price)
+      };
+    });
+  }
 
 
 }

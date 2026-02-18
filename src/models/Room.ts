@@ -5,7 +5,8 @@ import { BaseModel } from './BaseModel';
 export class Room extends BaseModel<Room> {
   declare hotel_id: number;
   declare name: string;           
-  declare bed_type: string;       
+  declare bed_count: number; 
+  declare bed_size: number;
   declare room_size: string;      
   declare capacity: string;       
   declare floor: string;          
@@ -13,6 +14,7 @@ export class Room extends BaseModel<Room> {
   declare total_stock: number;    
   declare current_price: number;  
   declare is_active: boolean;
+
 }
 
 Room.initModel(
@@ -25,9 +27,7 @@ Room.initModel(
       type: DataTypes.STRING(50),
       allowNull: false,
     },
-    bed_type: {
-      type: DataTypes.STRING(50),
-    },
+    
     room_size: {
       type: DataTypes.STRING(20),
     },
@@ -52,6 +52,16 @@ Room.initModel(
       type: DataTypes.BOOLEAN,
       defaultValue: true,
     },
+    bed_count: {
+      type: DataTypes.TINYINT.UNSIGNED,
+      defaultValue: 1,
+      comment: '床的数量'
+    },
+    bed_size: {
+      type: DataTypes.DECIMAL(3, 2),
+      defaultValue: 1.8,
+      comment: '床的尺寸'
+    }
   },
   {
     tableName: 'rooms',
