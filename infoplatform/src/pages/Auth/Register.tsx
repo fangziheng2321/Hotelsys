@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { authApi } from '../../services/api';
 
 const Register: React.FC = () => {
@@ -56,11 +56,16 @@ const Register: React.FC = () => {
   };
 
   return (
-    <div className="register-container">
-      <h2>用户注册</h2>
-      {error && <div className="error-message">{error}</div>}
-      {success && <div className="success-message">{success}</div>}
-      <form onSubmit={handleSubmit}>
+    <div className="auth-page">
+      <div className="auth-header">
+        <h1>酒店信息管理系统</h1>
+        <p>请注册您的账号</p>
+      </div>
+      <div className="register-container">
+        <h2>用户注册</h2>
+        {error && <div className="error-message">{error}</div>}
+        {success && <div className="success-message">{success}</div>}
+        <form onSubmit={handleSubmit}>
         <div className="form-group">
           <label>用户名</label>
           <input
@@ -95,6 +100,7 @@ const Register: React.FC = () => {
                 onChange={() => handleRoleChange('merchant')}
                 disabled={loading}
               />
+              <span className="role-icon">🏪</span>
               商户
             </label>
             <label>
@@ -106,6 +112,7 @@ const Register: React.FC = () => {
                 onChange={() => handleRoleChange('admin')}
                 disabled={loading}
               />
+              <span className="role-icon">⚙️</span>
               管理员
             </label>
           </div>
@@ -115,8 +122,9 @@ const Register: React.FC = () => {
         </button>
       </form>
       <div className="form-footer">
-        <p>已有账号？ <a href="/login">立即登录</a></p>
+        <p>已有账号？ <Link to="/login">立即登录</Link></p>
       </div>
+    </div>
     </div>
   );
 };

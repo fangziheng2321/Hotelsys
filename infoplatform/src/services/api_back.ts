@@ -88,6 +88,8 @@ export interface PaginatedResponse<T> {
 export interface PaginationParams {
   page?: number;
   pageSize?: number;
+  hotelType?: HotelType;
+  status?: HotelStatus;
 }
 
 // 登录响应
@@ -182,8 +184,8 @@ export const authApi = {
 
 export const hotelApi = {
   /**
-   * 获取当前商户的酒店列表（精简字段，支持分页）
-   * GET /hotels/getMerchantHotels?page=1&pageSize=10
+   * 获取当前商户的酒店列表（精简字段，支持分页和筛选）
+   * GET /hotels/getMerchantHotels?page=1&pageSize=10&hotelType=domestic&status=approved
    */
   getMerchantHotels: async (params: PaginationParams = {}): Promise<ApiResponse<PaginatedResponse<MerchantHotelListItem>>> => {
     const response = await api.get('/hotels/getMerchantHotels', { params });
