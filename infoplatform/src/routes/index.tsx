@@ -4,6 +4,7 @@ import Login from '../pages/Auth/Login';
 import Register from '../pages/Auth/Register';
 import HotelForm from '../pages/Hotel/HotelForm';
 import HotelList from '../pages/Hotel/HotelList';
+import HotelVisualization from '../pages/Hotel/HotelVisualization';
 import HotelAudit from '../pages/Admin/HotelAudit';
 import Layout from '../components/Layout';
 import { AuthService } from '../utils/auth';
@@ -42,6 +43,16 @@ const AppRoutes: React.FC = () => {
           <PrivateRoute requiredRole="merchant">
             <Layout>
               <HotelList />
+            </Layout>
+          </PrivateRoute>
+        } 
+      />
+      <Route 
+        path="/hotel/visualization" 
+        element={
+          <PrivateRoute>
+            <Layout>
+              <HotelVisualization />
             </Layout>
           </PrivateRoute>
         } 

@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { hotelApi, Hotel, HotelType, RoomType, PaginatedResponse, MerchantHotelListItem } from '../../services/api';
+import { hotelApi, HotelType, HotelStatus, MerchantHotelListItem, Hotel, RoomType } from '../../services/api';
+import PageHeader from '../../components/common/PageHeader';
+import PaginationInfo from '../../components/common/PaginationInfo';
+import PaginationControl from '../../components/common/PaginationControl';
+import HotelTable from '../../components/common/HotelTable';
 import RoomCountEditModal from '../../components/RoomCountEditModal';
+import { AuthService } from '../../utils/auth';
 
 const HotelList: React.FC = () => {
   const [hotels, setHotels] = useState<MerchantHotelListItem[]>([]);
@@ -11,6 +16,13 @@ const HotelList: React.FC = () => {
     total: 0,
     totalPages: 0
   });
+  
+  // 获取当前用户信息
+  const currentUser = AuthService.getCurrentUser();
+  const [filters, setFilters] = useState({
+    hotelType: '' as HotelType | '',
+    status: '' as HotelStatus | ''
+  });
   const [selectedHotel, setSelectedHotel] = useState<Hotel | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loadingDetail, setLoadingDetail] = useState(false);
@@ -18,8 +30,13 @@ const HotelList: React.FC = () => {
   const [error, setError] = useState('');
 
   useEffect(() => {
+    // 重置页码为1当筛选条件变化时
+    setPagination(prev => ({ ...prev, page: 1 }));
+  }, [filters.hotelType, filters.status]);
+
+  useEffect(() => {
     fetchHotels();
-  }, [pagination.page, pagination.pageSize]);
+  }, [pagination.page, pagination.pageSize, filters.hotelType, filters.status]);
 
   const fetchHotels = async () => {
     setLoading(true);
@@ -27,7 +44,9 @@ const HotelList: React.FC = () => {
     try {
       const response = await hotelApi.getMerchantHotels({
         page: pagination.page,
-        pageSize: pagination.pageSize
+        pageSize: pagination.pageSize,
+        hotelType: filters.hotelType || undefined,
+        status: filters.status || undefined
       });
       if (response.success && response.data) {
         setHotels(response.data.list);
@@ -46,25 +65,7 @@ const HotelList: React.FC = () => {
     }
   };
 
-  const getStatusText = (status: string) => {
-    const statusMap = {
-      pending: '审核中',
-      approved: '已发布',
-      rejected: '已拒绝',
-      offline: '已下线'
-    };
-    return statusMap[status as keyof typeof statusMap] || status;
-  };
 
-  const getHotelTypeText = (type: HotelType) => {
-    const typeMap = {
-      domestic: '国内',
-      overseas: '海外',
-      homestay: '民宿',
-      hourly: '钟点房'
-    };
-    return typeMap[type] || type;
-  };
 
   // 打开房间数量编辑弹窗 - 先请求完整详情
   const handleOpenRoomCountModal = async (hotelId: string) => {
@@ -121,60 +122,7 @@ const HotelList: React.FC = () => {
     });
   };
 
-  // 生成分页按钮
-  const renderPageButtons = () => {
-    const buttons = [];
-    const maxVisiblePages = 5;
-    let startPage = Math.max(1, pagination.page - Math.floor(maxVisiblePages / 2));
-    let endPage = Math.min(pagination.totalPages, startPage + maxVisiblePages - 1);
 
-    if (endPage - startPage < maxVisiblePages - 1) {
-      startPage = Math.max(1, endPage - maxVisiblePages + 1);
-    }
-
-    // 第一页按钮
-    if (startPage > 1) {
-      buttons.push(
-        <button key={1} onClick={() => handlePageChange(1)} className="page-btn">
-          1
-        </button>
-      );
-      if (startPage > 2) {
-        buttons.push(<span key="ellipsis1" className="page-ellipsis">...</span>);
-      }
-    }
-
-    // 中间页码按钮
-    for (let i = startPage; i <= endPage; i++) {
-      buttons.push(
-        <button
-          key={i}
-          onClick={() => handlePageChange(i)}
-          className={`page-btn ${i === pagination.page ? 'active' : ''}`}
-        >
-          {i}
-        </button>
-      );
-    }
-
-    // 最后一页按钮
-    if (endPage < pagination.totalPages) {
-      if (endPage < pagination.totalPages - 1) {
-        buttons.push(<span key="ellipsis2" className="page-ellipsis">...</span>);
-      }
-      buttons.push(
-        <button
-          key={pagination.totalPages}
-          onClick={() => handlePageChange(pagination.totalPages)}
-          className="page-btn"
-        >
-          {pagination.totalPages}
-        </button>
-      );
-    }
-
-    return buttons;
-  };
 
   if (loading) {
     return <div className="loading">加载中...</div>;
@@ -186,121 +134,54 @@ const HotelList: React.FC = () => {
 
   return (
     <div className="hotel-list-container">
-      <h2>我的酒店</h2>
-      <div className="action-bar">
-        <Link to="/hotel/add">
-          <button>添加酒店</button>
-        </Link>
-      </div>
+      <PageHeader
+        title={`${currentUser?.username}的酒店`}
+        action={
+          <Link to="/hotel/add">
+            <button className="primary-button">添加酒店</button>
+          </Link>
+        }
+      />
 
       {/* 分页信息 */}
-      <div className="pagination-info">
-        <span>共 {pagination.total} 条记录，第 {pagination.page}/{pagination.totalPages} 页</span>
-        <div className="page-size-selector">
-          <span>每页显示：</span>
-          <select
-            value={pagination.pageSize}
-            onChange={(e) => handlePageSizeChange(Number(e.target.value))}
-          >
-            <option value={5}>5</option>
-            <option value={10}>10</option>
-            <option value={20}>20</option>
-            <option value={50}>50</option>
-          </select>
-        </div>
-      </div>
+      <PaginationInfo
+        total={pagination.total}
+        page={pagination.page}
+        totalPages={pagination.totalPages}
+        pageSize={pagination.pageSize}
+        onPageSizeChange={handlePageSizeChange}
+      />
 
-      <table className="hotel-table">
-        <thead>
-          <tr>
-            <th>图片</th>
-            <th>酒店名称</th>
-            <th>酒店类型</th>
-            <th>地址</th>
-            <th>联系电话</th>
-            <th>状态</th>
-            <th>操作</th>
-          </tr>
-        </thead>
-        <tbody>
-          {hotels.map(hotel => (
-            <tr key={hotel.id}>
-              <td>
-                {hotel.firstImage ? (
-                  <img
-                    src={hotel.firstImage}
-                    alt={hotel.name}
-                    style={{
-                      width: '60px',
-                      height: '60px',
-                      objectFit: 'cover',
-                      borderRadius: '4px',
-                      border: '1px solid #ddd'
-                    }}
-                  />
-                ) : (
-                  <div
-                    style={{
-                      width: '60px',
-                      height: '60px',
-                      backgroundColor: '#f0f0f0',
-                      borderRadius: '4px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      color: '#999',
-                      fontSize: '12px',
-                      border: '1px solid #ddd'
-                    }}
-                  >
-                    无图片
-                  </div>
-                )}
-              </td>
-              <td>{hotel.name}</td>
-              <td>{getHotelTypeText(hotel.hotelType)}</td>
-              <td>{hotel.address}</td>
-              <td>{hotel.phone}</td>
-              <td>{getStatusText(hotel.status)}</td>
-              <td>
-                <Link to={`/hotel/edit/${hotel.id}`}>
-                  <button>{hotel.status === 'pending' ? '查看' : '编辑'}</button>
-                </Link>
-                {hotel.status === 'approved' && (
-                  <button
-                    onClick={() => handleOpenRoomCountModal(hotel.id)}
-                    className="btn-room-count"
-                    disabled={loadingDetail}
-                  >
-                    {loadingDetail ? '加载中...' : '编辑房间数量'}
-                  </button>
-                )}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <HotelTable
+        hotels={hotels}
+        isAdmin={false}
+        loadingDetail={loadingDetail}
+        filters={filters}
+        onFilterChange={setFilters}
+        renderActions={(hotel, loadingDetail) => (
+          <>
+            <Link to={`/hotel/edit/${hotel.id}`}>
+              <button>{hotel.status === 'pending' ? '查看' : '编辑'}</button>
+            </Link>
+            {hotel.status === 'approved' && (
+              <button
+                onClick={() => handleOpenRoomCountModal(hotel.id)}
+                className="btn-room-count"
+                disabled={loadingDetail}
+              >
+                {loadingDetail ? '加载中...' : '编辑房间数量'}
+              </button>
+            )}
+          </>
+        )}
+      />
 
       {/* 分页控制 */}
-      {pagination.totalPages > 1 && (
-        <div className="pagination">
-          <button
-            onClick={() => handlePageChange(pagination.page - 1)}
-            disabled={pagination.page === 1}
-            className="page-btn prev"
-          >
-            上一页
-          </button>
-          {renderPageButtons()}
-          <button
-            onClick={() => handlePageChange(pagination.page + 1)}
-            disabled={pagination.page === pagination.totalPages}
-            className="page-btn next"
-          >
-            下一页
-          </button>
-        </div>
-      )}
+      <PaginationControl
+        page={pagination.page}
+        totalPages={pagination.totalPages}
+        onPageChange={handlePageChange}
+      />
 
       <RoomCountEditModal
         hotel={selectedHotel}

@@ -1,0 +1,29 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": { "name": "北京" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[116.4, 40.2], [116.7, 40.2], [116.7, 39.9], [116.4, 39.9], [116.4, 40.2]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "上海" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[121.4, 31.3], [121.6, 31.3], [121.6, 31.1], [121.4, 31.1], [121.4, 31.3]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "广东" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[113.0, 24.5], [117.5, 24.5], [117.5, 20.0], [113.0, 20.0], [113.0, 24.5]]]
+      }
+    }
+  ]
+}

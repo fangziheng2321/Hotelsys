@@ -33,10 +33,16 @@ const Navbar: React.FC = () => {
             // 已登录状态
             <>
               {userRole === 'merchant' && (
-                <Link to="/hotel">我的酒店</Link>
+                <>
+                  <Link to="/hotel">{currentUser?.username}的酒店</Link>
+                  <Link to="/hotel/visualization">数据概览</Link>
+                </>
               )}
               {userRole === 'admin' && (
-                <Link to="/admin/audit">酒店审核</Link>
+                <>
+                  <Link to="/admin/audit">酒店审核</Link>
+                  <Link to="/hotel/visualization">数据概览</Link>
+                </>
               )}
               <button onClick={handleLogout}>退出</button>
             </>

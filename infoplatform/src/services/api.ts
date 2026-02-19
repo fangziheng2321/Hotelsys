@@ -36,6 +36,7 @@ export interface Hotel {
   starRating: number;
   amenities: string[];
   hotelType: HotelType;
+  region: string;
   images: string[];
   roomTypes: RoomType[];
   status: HotelStatus;
@@ -67,6 +68,7 @@ export interface AdminHotelListItem {
   status: HotelStatus;
   rejectReason?: string;
   firstImage: string;
+  hotelType: HotelType;
 }
 
 // 通用响应类型
@@ -89,6 +91,8 @@ export interface PaginatedResponse<T> {
 export interface PaginationParams {
   page?: number;
   pageSize?: number;
+  hotelType?: HotelType;
+  status?: HotelStatus;
 }
 
 // 登录响应
@@ -649,11 +653,11 @@ export const authApi = {
 
 export const hotelApi = {
   /**
-   * 获取当前商户的酒店列表（精简字段，支持分页）
-   * GET /hotels/getMerchantHotels?page=1&pageSize=10
+   * 获取当前商户的酒店列表（精简字段，支持分页和筛选）
+   * GET /hotels/getMerchantHotels?page=1&pageSize=10&hotelType=domestic&status=approved
    */
   getMerchantHotels: async (params: PaginationParams = {}): Promise<ApiResponse<PaginatedResponse<MerchantHotelListItem>>> => {
-    const { page = 1, pageSize = 10 } = params;
+    const { page = 1, pageSize = 10, hotelType, status } = params;
 
     // 真实请求（已注释）:
     // const response = await api.get('/hotels/getMerchantHotels', { params });
@@ -664,7 +668,17 @@ export const hotelApi = {
     const userStr = sessionStorage.getItem('user');
     const merchantId = userStr ? JSON.parse(userStr).id : '1';
 
-    const filteredHotels = mockHotels.filter(hotel => hotel.merchantId === merchantId);
+    // 过滤逻辑：商户ID + 酒店类型 + 状态
+    const filteredHotels = mockHotels.filter(hotel => {
+      let match = hotel.merchantId === merchantId;
+      if (hotelType) {
+        match = match && hotel.hotelType === hotelType;
+      }
+      if (status) {
+        match = match && hotel.status === status;
+      }
+      return match;
+    });
 
     // 分页逻辑
     const total = filteredHotels.length;
@@ -762,6 +776,7 @@ export const hotelApi = {
         starRating: hotel.starRating || 1,
         amenities: hotel.amenities || [],
         hotelType: hotel.hotelType || 'domestic',
+        region: hotel.region || '',
         images: hotel.images || [],
         roomTypes: hotel.roomTypes || [],
         status: 'pending',
@@ -813,6 +828,51 @@ export const hotelApi = {
         message: '酒店不存在'
       };
     }
+  },
+
+  /**
+   * 获取酒店分布和审核状态数据（用于可视化）
+   * GET /hotels/visualization
+   */
+  getHotelVisualizationData: async (): Promise<ApiResponse<{
+    provinceData: Array<{ name: string; value: number }>;
+    auditData: Array<{ name: string; value: number }>;
+  }>> => {
+    // 真实请求（已注释）:
+    // const response = await api.get('/hotels/visualization');
+    // return response.data;
+
+    // Mock 实现:
+    // 从地址中提取省市名称（前两个字）
+    const provinceMap = new Map<string, number>();
+    const auditMap = new Map<string, number>();
+
+    mockHotels.forEach(hotel => {
+      // 提取省份名称（地址前两个字）
+      const province = hotel.address.substring(0, 2);
+      provinceMap.set(province, (provinceMap.get(province) || 0) + 1);
+
+      // 统计审核状态
+      const statusName = {
+        pending: '审核中',
+        approved: '已发布',
+        rejected: '已拒绝',
+        offline: '已下线'
+      }[hotel.status];
+      auditMap.set(statusName, (auditMap.get(statusName) || 0) + 1);
+    });
+
+    // 转换为数组格式
+    const provinceData = Array.from(provinceMap.entries()).map(([name, value]) => ({ name, value }));
+    const auditData = Array.from(auditMap.entries()).map(([name, value]) => ({ name, value }));
+
+    return {
+      success: true,
+      data: {
+        provinceData,
+        auditData
+      }
+    };
   }
 };
 
@@ -824,22 +884,35 @@ export const adminApi = {
    * GET /admin/hotels?page=1&pageSize=10
    */
   getAllHotels: async (params: PaginationParams = {}): Promise<ApiResponse<PaginatedResponse<AdminHotelListItem>>> => {
-    const { page = 1, pageSize = 10 } = params;
+    const { page = 1, pageSize = 10, hotelType, status } = params;
 
     // 真实请求（已注释）:
-    // const response = await api.get('/admin/hotels', { params: { page, pageSize } });
+    // const response = await api.get('/admin/hotels', { params: { page, pageSize, hotelType, status } });
     // return response.data;
 
     // Mock 实现:
-    const total = mockHotels.length;
+    // 筛选逻辑
+    const filteredHotels = mockHotels.filter(hotel => {
+      let match = true;
+      if (hotelType) {
+        match = match && hotel.hotelType === hotelType;
+      }
+      if (status) {
+        match = match && hotel.status === status;
+      }
+      return match;
+    });
+
+    const total = filteredHotels.length;
     const totalPages = Math.ceil(total / pageSize);
     const startIndex = (page - 1) * pageSize;
     const endIndex = startIndex + pageSize;
-    const paginatedHotels = mockHotels.slice(startIndex, endIndex);
+    const paginatedHotels = filteredHotels.slice(startIndex, endIndex);
 
     const list = paginatedHotels.map(hotel => ({
       id: hotel.id,
       name: hotel.name,
+      hotelType: hotel.hotelType,
       address: hotel.address,
       phone: hotel.phone,
       merchantName: hotel.merchantName,
@@ -856,7 +929,8 @@ export const adminApi = {
         page,
         pageSize,
         totalPages
-      }
+      },
+      message: '获取成功'
     };
   },
 
@@ -945,6 +1019,51 @@ export const adminApi = {
         message: '酒店不存在'
       };
     }
+  },
+
+  /**
+   * 获取审核可视化数据（用于管理员）
+   * GET /admin/hotels/visualization
+   */
+  getAuditVisualizationData: async (): Promise<ApiResponse<{
+    provinceData: Array<{ name: string; value: number }>;
+    auditData: Array<{ name: string; value: number }>;
+  }>> => {
+    // 真实请求（已注释）:
+    // const response = await api.get('/admin/hotels/visualization');
+    // return response.data;
+
+    // Mock 实现:
+    // 从地址中提取省市名称（前两个字）
+    const provinceMap = new Map<string, number>();
+    const auditMap = new Map<string, number>();
+
+    mockHotels.forEach(hotel => {
+      // 提取省份名称（地址前两个字）
+      const province = hotel.address.substring(0, 2);
+      provinceMap.set(province, (provinceMap.get(province) || 0) + 1);
+
+      // 统计审核状态
+      const statusName = {
+        pending: '审核中',
+        approved: '已发布',
+        rejected: '已拒绝',
+        offline: '已下线'
+      }[hotel.status];
+      auditMap.set(statusName, (auditMap.get(statusName) || 0) + 1);
+    });
+
+    // 转换为数组格式
+    const provinceData = Array.from(provinceMap.entries()).map(([name, value]) => ({ name, value }));
+    const auditData = Array.from(auditMap.entries()).map(([name, value]) => ({ name, value }));
+
+    return {
+      success: true,
+      data: {
+        provinceData,
+        auditData
+      }
+    };
   }
 };
 

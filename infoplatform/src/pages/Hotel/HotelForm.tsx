@@ -17,6 +17,7 @@ const HotelForm: React.FC = () => {
     starRating: 5,
     amenities: [],
     hotelType: 'domestic',
+    region: '',
     images: [],
     roomTypes: []
   });
@@ -105,6 +106,7 @@ const HotelForm: React.FC = () => {
     if (!formData.name?.trim()) return '酒店名称不能为空';
     if (!formData.address?.trim()) return '地址不能为空';
     if (!formData.phone?.trim()) return '联系电话不能为空';
+    if (!formData.region?.trim()) return '地区不能为空';
     return null;
   };
 
@@ -146,152 +148,264 @@ const HotelForm: React.FC = () => {
       {error && <div className="error-message">{error}</div>}
       <form onSubmit={handleSubmit}>
         {isReadOnly && (
-          <div className="info-message" style={{ backgroundColor: '#FFF3E0', color: '#E65100', padding: '10px', borderRadius: '4px', marginBottom: '15px' }}>
+          <div className="info-message" style={{ backgroundColor: '#FFF3E0', color: '#E65100', padding: '10px', borderRadius: '4px', marginBottom: '20px' }}>
             当前酒店正在审核中，仅支持查看，无法编辑
           </div>
         )}
 
-        <div className="form-group">
-          <label>酒店名称 *</label>
-          <input
-            type="text"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            required
-            disabled={isReadOnly}
-          />
-        </div>
-
-        <div className="form-group">
-          <label>酒店类型 *</label>
-          <select
-            name="hotelType"
-            value={formData.hotelType}
-            onChange={handleChange}
-            required
-            disabled={isReadOnly}
-          >
-            <option value="domestic">国内</option>
-            <option value="overseas">海外</option>
-            <option value="homestay">民宿</option>
-            <option value="hourly">钟点房</option>
-          </select>
-        </div>
-
-        <div className="form-group">
-          <label>地址 *</label>
-          <input
-            type="text"
-            name="address"
-            value={formData.address}
-            onChange={handleChange}
-            required
-            disabled={isReadOnly}
-          />
-        </div>
-
-        <div className="form-group">
-          <label>联系电话 *</label>
-          <input
-            type="tel"
-            name="phone"
-            value={formData.phone}
-            onChange={handleChange}
-            required
-            disabled={isReadOnly}
-          />
-        </div>
-
-        <div className="form-group">
-          <label>酒店描述</label>
-          <textarea
-            name="description"
-            value={formData.description}
-            onChange={handleChange}
-            rows={4}
-            disabled={isReadOnly}
-          />
-        </div>
-
-        <div className="form-group">
-          <label>价格范围</label>
-          <input
-            type="text"
-            name="priceRange"
-            value={formData.priceRange}
-            onChange={handleChange}
-            placeholder="如：¥500-1000"
-            disabled={isReadOnly}
-          />
-        </div>
-
-        <div className="form-group">
-          <label>星级评分</label>
-          <div className={`star-rating ${isReadOnly ? 'disabled' : ''}`}>
-            {[1, 2, 3, 4, 5].map(star => (
-              <span
-                key={star}
-                className={star <= (formData.starRating || 0) ? 'star active' : 'star'}
-                onClick={() => !isReadOnly && handleStarRatingChange(star)}
-              >
-                ★
-              </span>
-            ))}
-          </div>
-        </div>
-
-        <div className="form-group">
-          <label>设施服务</label>
-          <div className="amenities-checkbox-group">
-            {amenityOptions.map(amenity => (
-              <label key={amenity} className={`amenity-checkbox ${isReadOnly ? 'disabled' : ''}`}>
+        {/* 基本信息卡片 */}
+        <div className="form-card">
+          <h3>基本信息</h3>
+          <div className="form-card-content">
+            <div className="form-row">
+              <div className="form-group form-half">
+                <label>酒店名称 *</label>
                 <input
-                  type="checkbox"
-                  checked={formData.amenities?.includes(amenity) || false}
-                  onChange={() => handleAmenityToggle(amenity)}
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  required
                   disabled={isReadOnly}
                 />
-                <span>{amenity}</span>
-              </label>
-            ))}
-          </div>
-        </div>
-
-        <div className="form-group">
-          <label>酒店图片</label>
-          {!isReadOnly && (
-            <div className="image-input-group">
-              <input
-                type="text"
-                value={imageUrl}
-                onChange={(e) => setImageUrl(e.target.value)}
-                placeholder="输入图片URL"
-              />
-              <button type="button" onClick={handleAddImage}>添加图片</button>
+              </div>
+              <div className="form-group form-half">
+                <label>酒店类型 *</label>
+                <select
+                  name="hotelType"
+                  value={formData.hotelType}
+                  onChange={(e) => {
+                    handleChange(e);
+                    // 当选择海外时，自动设置地区为海外
+                    if (e.target.value === 'overseas') {
+                      setFormData(prev => ({ ...prev, region: '海外' }));
+                    }
+                  }}
+                  required
+                  disabled={isReadOnly}
+                >
+                  <option value="domestic">国内</option>
+                  <option value="overseas">海外</option>
+                  <option value="homestay">民宿</option>
+                  <option value="hourly">钟点房</option>
+                </select>
+              </div>
             </div>
-          )}
-          <div className="image-preview-list">
-            {formData.images?.map((url, index) => (
-              <div key={index} className="image-preview-item">
-                <img src={url} alt={`酒店图片${index + 1}`} />
-                {!isReadOnly && (
-                  <button type="button" onClick={() => handleRemoveImage(index)}>删除</button>
+
+            <div className="form-row">
+              <div className="form-group form-half">
+                <label>地区 *</label>
+                {formData.hotelType === 'overseas' ? (
+                  <input
+                    type="text"
+                    name="region"
+                    value="海外"
+                    readOnly
+                    disabled={isReadOnly}
+                  />
+                ) : (
+                  <select
+                    name="region"
+                    value={formData.region}
+                    onChange={handleChange}
+                    required
+                    disabled={isReadOnly}
+                  >
+                    <option value="">请选择省份</option>
+                    <option value="北京">北京</option>
+                    <option value="天津">天津</option>
+                    <option value="河北">河北</option>
+                    <option value="山西">山西</option>
+                    <option value="内蒙古">内蒙古</option>
+                    <option value="辽宁">辽宁</option>
+                    <option value="吉林">吉林</option>
+                    <option value="黑龙江">黑龙江</option>
+                    <option value="上海">上海</option>
+                    <option value="江苏">江苏</option>
+                    <option value="浙江">浙江</option>
+                    <option value="安徽">安徽</option>
+                    <option value="福建">福建</option>
+                    <option value="江西">江西</option>
+                    <option value="山东">山东</option>
+                    <option value="河南">河南</option>
+                    <option value="湖北">湖北</option>
+                    <option value="湖南">湖南</option>
+                    <option value="广东">广东</option>
+                    <option value="广西">广西</option>
+                    <option value="海南">海南</option>
+                    <option value="重庆">重庆</option>
+                    <option value="四川">四川</option>
+                    <option value="贵州">贵州</option>
+                    <option value="云南">云南</option>
+                    <option value="西藏">西藏</option>
+                    <option value="陕西">陕西</option>
+                    <option value="甘肃">甘肃</option>
+                    <option value="青海">青海</option>
+                    <option value="宁夏">宁夏</option>
+                    <option value="新疆">新疆</option>
+                  </select>
                 )}
               </div>
-            ))}
+              <div className="form-group form-half">
+                <label>联系电话 *</label>
+                <input
+                  type="tel"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  required
+                  disabled={isReadOnly}
+                />
+              </div>
+            </div>
+
+            <div className="form-group">
+              <label>地址 *</label>
+              <input
+                type="text"
+                name="address"
+                value={formData.address}
+                onChange={handleChange}
+                required
+                disabled={isReadOnly}
+              />
+            </div>
+
+            <div className="form-row">
+              <div className="form-group form-half">
+                <label>价格范围</label>
+                <input
+                  type="text"
+                  name="priceRange"
+                  value={formData.priceRange}
+                  onChange={handleChange}
+                  placeholder="如：¥500-1000"
+                  disabled={isReadOnly}
+                />
+              </div>
+              <div className="form-group form-half">
+                <label>星级评分</label>
+                <div className={`star-rating ${isReadOnly ? 'disabled' : ''}`}>
+                  {[1, 2, 3, 4, 5].map(star => (
+                    <span
+                      key={star}
+                      className={star <= (formData.starRating || 0) ? 'star active' : 'star'}
+                      onClick={() => !isReadOnly && handleStarRatingChange(star)}
+                    >
+                      ★
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="form-group">
+              <label>酒店描述</label>
+              <textarea
+                name="description"
+                value={formData.description}
+                onChange={handleChange}
+                rows={4}
+                disabled={isReadOnly}
+              />
+            </div>
           </div>
         </div>
 
-        <div className="form-group">
-          <label>房型信息</label>
-          <RoomTypeForm
-            roomTypes={formData.roomTypes || []}
-            onChange={handleRoomTypesChange}
-            disabled={isReadOnly}
-          />
+        {/* 设施与服务卡片 */}
+        <div className="form-card">
+          <h3>设施与服务</h3>
+          <div className="form-card-content">
+            <div className="form-group">
+              <label>设施服务</label>
+              <div className="amenities-checkbox-group">
+                {amenityOptions.map(amenity => (
+                  <label key={amenity} className={`amenity-checkbox ${isReadOnly ? 'disabled' : ''}`}>
+                    <input
+                      type="checkbox"
+                      checked={formData.amenities?.includes(amenity) || false}
+                      onChange={() => handleAmenityToggle(amenity)}
+                      disabled={isReadOnly}
+                    />
+                    <span>{amenity}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
 
+        {/* 酒店图片卡片 */}
+        <div className="form-card">
+          <h3>酒店图片</h3>
+          <div className="form-card-content">
+            {!isReadOnly && (
+              <>
+                <div className="image-input-group">
+                  <input
+                    type="text"
+                    value={imageUrl}
+                    onChange={(e) => setImageUrl(e.target.value)}
+                    placeholder="输入图片URL"
+                  />
+                  <button type="button" onClick={handleAddImage}>添加图片</button>
+                </div>
+                <div className="local-upload-section">
+                  <label>本地上传图片</label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={(e) => {
+                      const files = e.target.files;
+                      if (files) {
+                        Array.from(files).forEach((file) => {
+                          const reader = new FileReader();
+                          reader.onload = (event) => {
+                            if (event.target?.result) {
+                              setFormData(prev => ({
+                                ...prev,
+                                images: [...(prev.images || []), event.target.result as string]
+                              }));
+                            }
+                          };
+                          reader.readAsDataURL(file);
+                        });
+                      }
+                    }}
+                  />
+                  <p className="upload-hint">支持批量上传，图片将自动转换为Base64格式</p>
+                </div>
+              </>
+            )}
+            <div className="image-preview-list">
+              {formData.images?.map((url, index) => (
+                <div key={index} className="image-preview-item">
+                  <img src={url} alt={`酒店图片${index + 1}`} />
+                  {!isReadOnly && (
+                    <button type="button" className="delete-image-btn" onClick={() => handleRemoveImage(index)}>
+                      <span className="delete-icon">−</span>
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* 房型信息卡片 */}
+        <div className="form-card">
+          <h3>房型信息</h3>
+          <div className="form-card-content">
+            <RoomTypeForm
+              roomTypes={formData.roomTypes || []}
+              onChange={handleRoomTypesChange}
+              disabled={isReadOnly}
+            />
+          </div>
+        </div>
+
+        {/* 表单操作按钮 */}
         <div className="form-actions">
           {!isReadOnly && (
             <button type="submit" disabled={loading}>

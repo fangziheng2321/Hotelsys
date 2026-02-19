@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { authApi } from '../../services/api';
 import { AuthService } from '../../utils/auth';
 
@@ -70,10 +70,15 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="login-container">
-      <h2>用户登录</h2>
-      {error && <div className="error-message">{error}</div>}
-      <form onSubmit={handleSubmit}>
+    <div className="auth-page">
+      <div className="auth-header">
+        <h1>酒店信息管理系统</h1>
+        <p>请登录您的账号</p>
+      </div>
+      <div className="login-container">
+        <h2>用户登录</h2>
+        {error && <div className="error-message">{error}</div>}
+        <form onSubmit={handleSubmit}>
         <div className="form-group">
           <label>用户名</label>
           <input
@@ -101,8 +106,9 @@ const Login: React.FC = () => {
         </button>
       </form>
       <div className="form-footer">
-        <p>还没有账号？ <a href="/register">立即注册</a></p>
+        <p>还没有账号？ <Link to="/register">立即注册</Link></p>
       </div>
+    </div>
     </div>
   );
 };
