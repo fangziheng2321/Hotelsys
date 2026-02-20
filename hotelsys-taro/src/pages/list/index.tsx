@@ -13,6 +13,7 @@ import HotelHotTags from "../home/components/HotelHotTags";
 import { useSearchStore } from "@/store/searchStore";
 import { SearchTabType } from "@/enum/home";
 import { useDebounce } from "@/hooks/useDebounce";
+import PageWrapper from "@/components/PageWrapper/PageWrapper";
 
 const List = () => {
   const pageSize = 10;
@@ -44,7 +45,7 @@ const List = () => {
       priceRange: priceRange,
       rate: rate,
     };
-  }, [type, priceRange, distance]);
+  }, [type, priceRange, distance, rate]);
   const setFilterForm = (
     tag: "type" | "distance" | "priceRange" | "rate",
     value: SearchTabType | number | number[] | null,
@@ -115,47 +116,49 @@ const List = () => {
   }, [stayDate, cityName, filterForm, facilities, debouncedHotelName]);
 
   return (
-    <View className="bg-custom-gray h-screen flex flex-col">
-      {/* 顶部 */}
-      <View className="bg-white h-fit">
-        {/* 顶部安全导航栏 */}
-        <SafeNavBar />
+    <PageWrapper>
+      <View className="bg-custom-gray dark:bg-dark-bg h-screen flex flex-col">
+        {/* 顶部 */}
+        <View className="bg-white dark:bg-dark-card h-fit">
+          {/* 顶部安全导航栏 */}
+          <SafeNavBar />
 
-        {/* 搜索栏 */}
-        <SearchBar
-          city={cityName}
-          startDate={stayDate.startDate}
-          endDate={stayDate.endDate}
-          searchText={hotelName}
-          setSearchText={setHotelName}
-          setStayDate={setStayDate}
-          onClickDate={navigateToCitySelector}
-        />
+          {/* 搜索栏 */}
+          <SearchBar
+            city={cityName}
+            startDate={stayDate.startDate}
+            endDate={stayDate.endDate}
+            searchText={hotelName}
+            setSearchText={setHotelName}
+            setStayDate={setStayDate}
+            onClickDate={navigateToCitySelector}
+          />
 
-        {/* 分隔线 */}
-        <Divide />
+          {/* 分隔线 */}
+          <Divide />
 
-        {/* 筛选框 */}
-        <FilterBar filterForm={filterForm} setFilterForm={setFilterForm} />
+          {/* 筛选框 */}
+          <FilterBar filterForm={filterForm} setFilterForm={setFilterForm} />
 
-        {/* 热门标签（设施） */}
-        <HotelHotTags
-          customClassName="p-2"
-          selectedList={facilities}
-          setSelectedList={setFacilities}
-        />
+          {/* 热门标签（设施） */}
+          <HotelHotTags
+            customClassName="p-2"
+            selectedList={facilities}
+            setSelectedList={setFacilities}
+          />
+        </View>
+
+        {/* 列表 */}
+        <View className="px-2 py-2 pb-4 flex-1 overflow-y-auto">
+          <HotelList
+            loading={loading}
+            refreshHasMore={refreshHasMore}
+            refreshList={refreshList}
+            refreshLoadMore={refreshLoadMore}
+          />
+        </View>
       </View>
-
-      {/* 列表 */}
-      <View className="px-2 py-2 pb-4 flex-1 overflow-y-auto">
-        <HotelList
-          loading={loading}
-          refreshHasMore={refreshHasMore}
-          refreshList={refreshList}
-          refreshLoadMore={refreshLoadMore}
-        />
-      </View>
-    </View>
+    </PageWrapper>
   );
 };
 

@@ -62,7 +62,9 @@ export const HotTag: FC<IHotTagProps> = ({ name, isSelected, onClick }) => {
       onClick={onClick}
       className={[
         "px-2 py-1 text-xs rounded-md flex-shrink-0 relative transition-colors duration-200 ease-in-out",
-        isSelected ? "text-white bg-primary font-bold" : "bg-custom-gray",
+        isSelected
+          ? "text-white bg-primary font-bold dark:text-dark-text"
+          : "bg-custom-gray dark:bg-dark-bg",
       ].join(" ")}
     >
       <Text>{`${t(name as any)}${isSelected ? " ·" : ""}`}</Text>

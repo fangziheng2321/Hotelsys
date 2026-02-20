@@ -15,7 +15,7 @@ import { getMockHotelPage } from "@/mock/list";
 export const getFilteredHotelListByPage = (params) => {
   const mockResult = getMockHotelPage(params);
   return request<any>({
-    url: "/hotels/search",
+    url: "/search",
     method: "POST",
     data: params,
     mockData: mockResult.data,

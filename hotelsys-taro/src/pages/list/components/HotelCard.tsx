@@ -10,11 +10,12 @@ import React, {
 import { View, Text, Image } from "@tarojs/components";
 import { useTranslation } from "react-i18next";
 import { hotelCardType } from "../types";
-import { Rate } from "@nutui/nutui-react-taro";
 import StarRate from "@/components/StarRate/StarRate";
 import CustomTag from "@/components/CustomTag/CustomTag";
 import { useCurrency } from "@/utils/currency";
 import Taro from "@tarojs/taro";
+import { getValidThumbHotelImageUrl } from "@/utils/image";
+import { HOTEL_FACILITIES } from "@/constant/facility";
 
 interface IProps extends hotelCardType {
   customClassName?: string;
@@ -31,7 +32,7 @@ const HotelCard: FC<IProps> = ({
   imgUrl,
   customClassName,
 }) => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { formatAmount } = useCurrency();
 
   /* 查看酒店详情 */
@@ -41,14 +42,19 @@ const HotelCard: FC<IProps> = ({
     });
   };
 
+  // 获取图标
+  const getFacilityLabel = (id: string) => {
+    const item = HOTEL_FACILITIES.find((facility) => facility.id === id);
+    return item ? t(item.name) : "N/A";
+  };
   return (
     <View
-      className={`bg-white rounded-2xl p-3 h-48 flex items-center gap-3 w-full ${customClassName ?? ""}`}
+      className={`bg-white dark:bg-dark-card rounded-2xl p-3 h-48 flex items-center gap-3 w-full ${customClassName ?? ""}`}
       onClick={handleViewDetail}
     >
       {/* 图片 */}
       <Image
-        src={imgUrl ?? ""}
+        src={getValidThumbHotelImageUrl(imgUrl, id)}
         className="h-full rounded-lg w-28 flex-shrink-0"
         mode="aspectFill"
       ></Image>
@@ -61,22 +67,12 @@ const HotelCard: FC<IProps> = ({
           <Text className="flex-1 text-lg font-bold line-clamp-2 min-w-0 break-all">
             {name ?? "N/A"}
           </Text>
-          {/* 星级 */}
-          <StarRate rate={rate} size="0.7rem" />
         </View>
 
-        {/* 酒店评分 */}
+        {/* 酒店星级 */}
         <View className="flex items-center gap-2">
-          {/* 评分标签 */}
-          <CustomTag customClassName="text-white">
-            {(score ?? 0).toFixed(1)}
-          </CustomTag>
-          {/* 评分评价（如果大于等于4.7分，则显示） */}
-          {score && score >= 4.7 && (
-            <Text className="text-sm text-primary">
-              {t("list.score_label")}
-            </Text>
-          )}
+          {/* 星级 */}
+          <StarRate rate={rate} size="1rem" />
         </View>
 
         {/* 酒店地址 */}
@@ -91,7 +87,7 @@ const HotelCard: FC<IProps> = ({
               key={tag}
               customClassName="bg-transparent border-secondary border border-solid text-secondary text-xs font-normal"
             >
-              {tag}
+              {getFacilityLabel(tag)}
             </CustomTag>
           ))}
         </View>

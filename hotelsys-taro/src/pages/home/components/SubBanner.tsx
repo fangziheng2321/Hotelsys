@@ -11,6 +11,7 @@ import { BannerType } from "../types";
 import { getHomeBannerList } from "@/api/home";
 import Taro from "@tarojs/taro";
 import BannerSkeleton from "./BannerSkeleton";
+import { getValidSwiperImageUrl } from "@/utils/image";
 
 const SubBanner: FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
@@ -62,7 +63,7 @@ const SubBanner: FC = () => {
             <View className="px-1 h-full box-border">
               <Image
                 onClick={() => handleClickBanner(item)}
-                src={item?.imgUrl ?? ""}
+                src={getValidSwiperImageUrl(item?.imgUrl, item.id)}
                 className="w-full h-full rounded-xl border-4 border-white box-border"
                 mode="aspectFill"
               />

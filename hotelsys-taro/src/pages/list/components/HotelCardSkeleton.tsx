@@ -5,7 +5,7 @@ interface IProps {}
 
 const HotelCardSkeleton: FC<IProps> = (props) => {
   return Array.from({ length: 3 }).map((_, index) => (
-    <View className="bg-white rounded-2xl p-3 h-48 flex items-center gap-3 w-full mb-2">
+    <View className="bg-white dark:bg-dark-card rounded-2xl p-3 h-48 flex items-center gap-3 w-full mb-2">
       {/* 图片 */}
       <View className="h-full rounded-lg w-28 flex-shrink-0 sk-bg"></View>
       <View className="h-full flex-1 flex flex-col justify-between items-start gap-2">

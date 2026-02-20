@@ -13,6 +13,7 @@ import { ArrowLeft, Share } from "@nutui/icons-react-taro";
 import { remToPx, setStatusBarStyle } from "@/utils/style";
 import Taro, { usePageScroll } from "@tarojs/taro";
 import { BaseProps } from "@nutui/nutui-react-taro";
+import { useThemeStore } from "@/store/themeStore";
 
 interface IProps extends BaseProps {
   title: string;
@@ -23,6 +24,7 @@ const SCROLL_THRESHOLD = remToPx(8);
 
 const SafeNavBar: FC<IProps> = ({ title, className }) => {
   const { t } = useTranslation();
+  const { isDark } = useThemeStore();
   // 胶囊按钮的位置信息
   const [navBarInfo, setNavBarInfo] = useState({
     top: 0,
@@ -50,7 +52,7 @@ const SafeNavBar: FC<IProps> = ({ title, className }) => {
       setNavOpacity(nextOpacity);
 
       // 更新状态栏的颜色
-      if (nextOpacity > 0.5) {
+      if (nextOpacity > 0.5 && !isDark) {
         setStatusBarStyle("black");
       } else {
         setStatusBarStyle("white");
@@ -87,7 +89,7 @@ const SafeNavBar: FC<IProps> = ({ title, className }) => {
          这个 View 负责显示白底，它的透明度随滚动变化
       */}
       <View
-        className="absolute inset-0 bg-white shadow-sm"
+        className="absolute inset-0 bg-white dark:bg-dark-bg shadow-sm"
         style={{ opacity: navOpacity }}
       ></View>
 
@@ -130,11 +132,11 @@ const SafeNavBar: FC<IProps> = ({ title, className }) => {
           >
             {/* 普通黑色返回箭头 */}
             <View className="absolute left-4" onClick={handleBack}>
-              <ArrowLeft color="black" size={"1.5rem"} />
+              <ArrowLeft size={"1.5rem"} />
             </View>
 
             {/* 标题 */}
-            <Text className="text-lg font-bold text-black max-w-[50%] truncate">
+            <Text className="text-lg font-bold text-black dark:text-dark-text max-w-[50%] truncate">
               {title}
             </Text>
           </View>

@@ -16,7 +16,7 @@ const RoomCardSkeleton: FC<IProps> = (props) => {
   const { t } = useTranslation();
 
   return (
-    <View className="flex flex-col gap-4 py-2">
+    <View className="bg-white dark:bg-dark-card flex flex-col gap-4 py-2">
       {[1, 2, 3].map((i) => (
         <View key={i} className="flex gap-3">
           {/* 左侧房型图 */}

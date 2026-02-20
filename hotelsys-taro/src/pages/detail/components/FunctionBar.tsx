@@ -44,7 +44,7 @@ const FunctioinBar: FC<IProps> = ({ price, telephone }) => {
         className="flex flex-col items-center justify-center gap-2 h-full"
         onClick={handleContact}
       >
-        <View className="bg-blue-50 p-2 size-8 rounded-full flex items-center justify-center">
+        <View className="bg-blue-50 dark:bg-dark-bg p-2 size-8 rounded-full flex items-center justify-center">
           <Phone color={"#0068f7"} size="1.5rem" />
         </View>
         <Text className="text-xs text-gray-500">

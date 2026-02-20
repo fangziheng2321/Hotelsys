@@ -10,7 +10,7 @@ export const MOCK_HOTEL_LIST: hotelCardType[] = Array.from({ length: 30 }).map(
       rate: Math.floor(Math.random() * 4) + 1,
       score: Math.random() * 4,
       address: "近外滩 · 东方明珠",
-      facilities: ["免费升房", "新中式风", "一线江景"],
+      facilities: ["免费WiFi", "停车场", "健身房"],
       price: Math.floor(Math.random() * 900) + 100,
       imgUrl: hotelImg[index % hotelImg.length],
     };

@@ -16,9 +16,10 @@ import SubBanner from "./components/SubBanner";
 import Taro from "@tarojs/taro";
 import { fetchCityByIP, useCitySelect } from "@/hooks/useCitySelect";
 import { useSearchStore } from "@/store/searchStore";
+import PageWrapper from "@/components/PageWrapper/PageWrapper";
 
 const Home = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { navigateToCitySelector, cityName } = useCitySelect();
   /* 表单数据 */
   const {
@@ -47,11 +48,11 @@ const Home = () => {
       priceLabel = `￥${priceRange[0]} - ￥${priceRange[1]}`;
     }
     if (rate) {
-      rateLabel = `${rate}星级`;
+      rateLabel = `${rate} ${t("home.filter_bar.rate")}`;
     }
     const showLabel = priceLabel + " " + rateLabel;
     return showLabel === " " ? null : showLabel;
-  }, [priceRange, rate]);
+  }, [priceRange, rate, i18n.language]);
 
   /* 修改选中搜索Tabs */
   const handleChangeTab = (type: SearchTabType) => {
@@ -98,8 +99,8 @@ const Home = () => {
   };
 
   return (
-    <>
-      <View className="bg-custom-gray min-h-screen">
+    <PageWrapper>
+      <View className="bg-custom-gray dark:bg-dark-bg min-h-screen">
         {/* 头部背景图与Slogan */}
         <Header />
 
@@ -110,7 +111,7 @@ const Home = () => {
           <SubBanner />
 
           {/* 查询区域 */}
-          <View className="bg-white w-[95%] rounded-xl mx-auto p-6 flex flex-col gap-6 mt-4">
+          <View className="bg-white dark:bg-dark-card w-[95%] rounded-xl mx-auto p-6 flex flex-col gap-6 mt-4">
             {/* 顶部Tab筛选 */}
             <SearchTabs activeType={type} onChange={handleChangeTab} />
             {/* 分隔线 */}
@@ -168,7 +169,7 @@ const Home = () => {
 
         <LanguageChange customClassName="fixed bottom-4 right-4" />
       </View>
-    </>
+    </PageWrapper>
   );
 };
 

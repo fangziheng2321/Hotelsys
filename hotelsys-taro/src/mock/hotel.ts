@@ -14,24 +14,7 @@ export const MOCK_HOTEL_DETAIL = {
   address: "浦东新区浦明路868弄3号楼",
   price: Math.floor(Math.random() * 900) + 100,
   telephone: "12345678954",
-  facilities: [
-    {
-      title: "2020年开业",
-      iconKey: FacilityIcon.CALENDAR,
-    },
-    {
-      title: "新中式风",
-      iconKey: FacilityIcon.HOUSE,
-    },
-    {
-      title: "免费停车",
-      iconKey: FacilityIcon.PARKING,
-    },
-    {
-      title: "一线江景",
-      iconKey: FacilityIcon.VIEW,
-    },
-  ],
+  facilities: ["免费WiFi", "停车场", "餐厅", "健身房", "游泳池", "会议室"],
 };
 
 // 模拟酒店房型的数据
@@ -41,10 +24,13 @@ export const MOCK_ROOM_LIST = [
     name: "经典双床房",
     imageUrl:
       "https://modao.cc/agent-py/media/generated_images/2026-02-07/0cbd04f694c84e51b8229a4407611a4b.jpg",
-    bedInfo: "2张1.2米单人床",
-    area: "40m²",
-    occupancy: "2人入住",
-    floor: "5-15层",
+    bedInfo: {
+      size: 1.2,
+      number: 2,
+    },
+    area: 40,
+    occupancy: 2,
+    floor: [5, 15],
     stock: 1,
     canCancel: true,
     instantConfirm: true,
@@ -55,10 +41,13 @@ export const MOCK_ROOM_LIST = [
     name: "禧玥大床房",
     imageUrl:
       "https://modao.cc/agent-py/media/generated_images/2026-02-07/8de0363cdbf64ed59e385d5322dcca9b.jpg",
-    bedInfo: "1张1.8米大床",
-    area: "45m²",
-    occupancy: "2人入住",
-    floor: "16-25层",
+    bedInfo: {
+      size: 1.8,
+      number: 1,
+    },
+    area: 45,
+    occupancy: 2,
+    floor: [16, 25],
     stock: 10,
     canCancel: false,
     instantConfirm: false,
@@ -69,10 +58,13 @@ export const MOCK_ROOM_LIST = [
     name: "禧玥标间",
     imageUrl:
       "https://modao.cc/agent-py/media/generated_images/2026-02-07/8de0363cdbf64ed59e385d5322dcca9b.jpg",
-    bedInfo: "1张1.5米大床",
-    area: "45m²",
-    occupancy: "1人入住",
-    floor: "16-25层",
+    bedInfo: {
+      size: 1.5,
+      number: 1,
+    },
+    area: 45,
+    occupancy: 1,
+    floor: [16, 25],
     stock: 0,
     canCancel: false,
     instantConfirm: false,

@@ -1,5 +1,6 @@
 import React, { FC, useState, useEffect, ReactNode } from "react";
 import { View, RootPortal } from "@tarojs/components";
+import PageWrapper from "../PageWrapper/PageWrapper";
 
 interface IProps {
   isVisible: boolean;
@@ -34,26 +35,28 @@ const CustomPopup: FC<IProps> = ({
 
   return (
     <RootPortal>
-      <View className="fixed inset-0 z-50">
-        <View
-          className={[
-            "absolute inset-0 bg-black/40 transition-opacity duration-200",
-            animateIn ? "opacity-100" : "opacity-0",
-          ].join(" ")}
-          onClick={onClose}
-        />
-        <View
-          className={[
-            "absolute left-0 right-0 bottom-0 transition-transform duration-200",
-            customClassName,
-            animateIn ? "translate-y-0" : "translate-y-full",
-          ].join(" ")}
-        >
-          <View className="h-full rounded-t-2xl overflow-hidden bg-white">
-            {children}
+      <PageWrapper>
+        <View className="fixed inset-0 z-50">
+          <View
+            className={[
+              "absolute inset-0 bg-black/40 transition-opacity duration-200",
+              animateIn ? "opacity-100" : "opacity-0",
+            ].join(" ")}
+            onClick={onClose}
+          />
+          <View
+            className={[
+              "absolute left-0 right-0 bottom-0 transition-transform duration-200",
+              customClassName,
+              animateIn ? "translate-y-0" : "translate-y-full",
+            ].join(" ")}
+          >
+            <View className="h-full rounded-t-2xl overflow-hidden bg-white dark:bg-dark-card">
+              {children}
+            </View>
           </View>
         </View>
-      </View>
+      </PageWrapper>
     </RootPortal>
   );
 };

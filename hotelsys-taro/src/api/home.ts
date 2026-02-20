@@ -6,7 +6,7 @@ import { MOCK_HOME_BANNER_LIST } from "@/mock/home";
  */
 export const getHomeBannerList = () => {
   return request<any>({
-    url: `/home/banners`,
+    url: `/banners`,
     method: "GET",
     mockData: MOCK_HOME_BANNER_LIST,
   });

@@ -17,6 +17,7 @@
     },
     "search_button": "查 询",
     "filter_bar": {
+      "rate": "星级",
       "placeholder": "价格/星级",
       "price_rate_select": "价格/星级选择",
       "price_select": {
@@ -63,6 +64,10 @@
     }
   },
   "detail": {
+    "info": {
+      "wordOfMouth": "口碑",
+      "referral": "推荐"
+    },
     "facility": {
       "more": "更多"
     },
@@ -73,7 +78,13 @@
       "book": "预订",
       "remaining": "剩余",
       "room": "间",
-      "onlyOneLeft": "仅剩余1间"
+      "onlyOneLeft": "仅剩余1间",
+      "instanceConfirm": "立即确认",
+      "bed_info": "{number}张{size}米床",
+      "area": "{val}m²",
+      "occupancy": "{count}人入住",
+      "floor_range": "{min}-{max}层",
+      "floor_single": "{val}层"
     },
     "function_bar": {
       "contact": "问酒店",
@@ -92,7 +103,7 @@
     "yesterday": "昨天"
   },
   "facility": {
-    "wifi": "免费Wifi",
+    "wifi": "免费WiFi",
     "parking": "停车场",
     "restaurant": "餐厅",
     "gym": "健身房",

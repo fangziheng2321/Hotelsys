@@ -16,6 +16,7 @@ import { Search } from "@nutui/icons-react-taro";
 import { listIcon } from "@/constant/list";
 import CalendarSelect from "@/components/CalendarSelect/CalendarSelect";
 import Taro from "@tarojs/taro";
+import { useThemeStore } from "@/store/themeStore";
 
 interface IProps {
   city: string;
@@ -37,6 +38,7 @@ const SearchBar: FC<IProps> = ({
   onClickDate,
 }) => {
   const { t } = useTranslation();
+  const { isDark } = useThemeStore();
   const { formatDate } = useTime();
   const [isVisible, setIsVisible] = useState<boolean>(false);
 
@@ -56,7 +58,7 @@ const SearchBar: FC<IProps> = ({
     <View className="w-full">
       <View className="flex justify-between items-center p-2 gap-2 w-full">
         {/* 搜索栏 */}
-        <View className="flex-1 flex px-4 py-2 bg-custom-gray rounded-full items-center overflow-hidden">
+        <View className="flex-1 flex px-4 py-2 bg-custom-gray dark:bg-dark-bg rounded-full items-center overflow-hidden">
           {/* 左侧的位置和日期 */}
           <View
             className={[
@@ -112,7 +114,10 @@ const SearchBar: FC<IProps> = ({
           className="flex flex-col items-center gap-1"
           onClick={() => Taro.navigateTo({ url: "/pages/map/index" })}
         >
-          <Image src={listIcon.map} className="size-4"></Image>
+          <Image
+            src={listIcon.map}
+            className={["size-4", isDark ? "invert" : ""].join(" ")}
+          ></Image>
           <View className="text-xs">{t("list.search_bar.map")}</View>
         </View>
       </View>

@@ -1,10 +1,10 @@
 {
   "home": {
     "search_tabs": {
-      "domestic": "Dome",
-      "overseas": "Over",
+      "domestic": "Domestic",
+      "overseas": "Overseas",
       "hourly": "Hourly",
-      "homestay": "Home"
+      "homestay": "Homestay"
     },
     "location_bar": {
       "myLocation": "My Location",
@@ -17,6 +17,7 @@
     },
     "search_button": "Query",
     "filter_bar": {
+      "rate": "stars",
       "placeholder": "Price/star rating",
       "price_rate_select": "Price/star selection",
       "price_select": {
@@ -81,7 +82,13 @@
       "book": "Book",
       "remaining": "Remaining",
       "room": "rooms left",
-      "onlyOneLeft": "Only 1 room left"
+      "onlyOneLeft": "Only 1 room left",
+      "instanceConfirm": "Confirm now",
+      "bed_info": "{number} {size}m Bed",
+      "area": "{val}m²",
+      "occupancy": "Max {count} Guests",
+      "floor_range": "Floor {min}-{max}",
+      "floor_single": "Floor {val}"
     },
     "function_bar": {
       "contact": "Contact",
@@ -89,6 +96,10 @@
       "makePhoneCall": {
         "empty": "The hotel has not provided contact information yet"
       }
+    },
+    "info": {
+      "wordOfMouth": "",
+      "referral": "Referral"
     }
   },
   "request": {
@@ -97,10 +108,10 @@
   },
   "facility": {
     "wifi": "Free Wifi",
-    "parking": "parking lot",
-    "restaurant": "restaurant",
-    "gym": "gym",
-    "pool": "swimming pool",
-    "meeting": "conference room"
+    "parking": "Parking lot",
+    "restaurant": "Dinner",
+    "gym": "GYM",
+    "pool": "Pool",
+    "meeting": "Meeting"
   }
 }

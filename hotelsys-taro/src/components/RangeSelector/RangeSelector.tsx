@@ -1,8 +1,8 @@
 import React, { FC, Dispatch, SetStateAction } from "react";
-import { Range } from "@nutui/nutui-react-taro";
 import { Input, View, Button } from "@tarojs/components";
 import Divide from "@/pages/home/components/Divide";
 import { presetRanges, priceRange } from "@/constant/home";
+import CustomRange from "../CustomRange/CustomRange";
 
 interface IProps {
   rangeValue: number[];
@@ -12,7 +12,7 @@ interface IProps {
 const RangeSelector: FC<IProps> = ({ rangeValue, setRangeValue }) => {
   const handleMinInput = (e) => {
     const val = parseInt(e.detail.value);
-    if (!isNaN(val)) {
+    if (!isNaN(val) && val <= priceRange.MAX && val >= priceRange.MIN) {
       setRangeValue([val, rangeValue[1]]);
     } else if (e.detail.value === "") {
       setRangeValue([0, rangeValue[1]]);
@@ -21,7 +21,7 @@ const RangeSelector: FC<IProps> = ({ rangeValue, setRangeValue }) => {
 
   const handleMaxInput = (e) => {
     const val = parseInt(e.detail.value);
-    if (!isNaN(val)) {
+    if (!isNaN(val) && val <= priceRange.MAX && val >= priceRange.MIN) {
       setRangeValue([rangeValue[0], val]);
     } else if (e.detail.value === "") {
       setRangeValue([rangeValue[0], 0]);
@@ -48,11 +48,9 @@ const RangeSelector: FC<IProps> = ({ rangeValue, setRangeValue }) => {
   return (
     <View className="flex flex-col items-center gap-6 w-full">
       {/* 范围区间滚动条 */}
-      <Range
+      <CustomRange
         min={priceRange.MIN}
         max={priceRange.MAX}
-        range
-        currentDescription={null}
         value={rangeValue}
         onChange={(val: number[]) => setRangeValue(val)}
       />
@@ -64,7 +62,6 @@ const RangeSelector: FC<IProps> = ({ rangeValue, setRangeValue }) => {
           type="number"
           value={String(rangeValue[0])}
           controlled
-          placeholder="最小值"
           onInput={handleMinInput}
         />
         {/* 到 */}
@@ -75,7 +72,6 @@ const RangeSelector: FC<IProps> = ({ rangeValue, setRangeValue }) => {
           type="number"
           value={String(rangeValue[1])}
           controlled
-          placeholder="最大值"
           onInput={handleMaxInput}
         />
       </View>
@@ -97,7 +93,7 @@ const RangeSelector: FC<IProps> = ({ rangeValue, setRangeValue }) => {
                 "w-24 h-12 flex items-center justify-center rounded-lg text-base border border-solid transition-colors duration-200",
                 isPresetSelected(index)
                   ? "bg-primary text-white border-primary"
-                  : "bg-gray-100 text-gray-600 border-transparent",
+                  : "bg-gray-100 dark:bg-dark-bg text-gray-600 dark:text-dard-text border-transparent",
               ].join(" ")}
               onClick={() => handlePresetClick(index)}
             >

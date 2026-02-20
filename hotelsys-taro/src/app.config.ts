@@ -12,9 +12,12 @@ export default defineAppConfig({
     },
   },
   permission: {
+    "scope.userFuzzyLocation": {
+      desc: "您的城市信息将用于小程序定位",
+    },
     "scope.userLocation": {
-      desc: "你的位置信息将用于小程序定位",
+      desc: "我们需要您的位置以展示附近的酒店并计算距离",
     },
   },
-  requiredPrivateInfos: ["getFuzzyLocation", "chooseLocation"],
+  requiredPrivateInfos: ["getLocation", "chooseLocation"],
 });

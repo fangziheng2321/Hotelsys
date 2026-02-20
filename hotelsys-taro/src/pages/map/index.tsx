@@ -3,8 +3,11 @@ import { View, Map } from "@tarojs/components";
 import Taro from "@tarojs/taro";
 import { MOCK_MAP_HOTELS } from "@/mock/list"; // 引入数据
 import { hotelIcon } from "@/constant/map";
+import { useThemeStore } from "@/store/themeStore";
+import { setStatusBarStyle } from "@/utils/style";
 
 const MapSearch = () => {
+  const { isDark } = useThemeStore();
   // 地图中心点（默认上海）
   const [center, setCenter] = useState({
     latitude: 31.230416,
@@ -62,6 +65,10 @@ const MapSearch = () => {
       },
     });
   }, []);
+
+  useEffect(() => {
+    isDark ? setStatusBarStyle("white") : setStatusBarStyle("black");
+  }, [isDark]);
 
   return (
     <View className="w-full h-screen">

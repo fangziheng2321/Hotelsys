@@ -20,11 +20,11 @@ import { useRouter } from "@tarojs/taro";
 import { getHotelDetailById, getHotelRoomListById } from "@/api/detail";
 import DetailSkeleton from "./components/DetailSkeleton";
 import { useSearchStore } from "@/store/searchStore";
+import PageWrapper from "@/components/PageWrapper/PageWrapper";
 
 interface IProps {}
 
-const Index: FC<IProps> = (props) => {
-  const { t } = useTranslation();
+const Index: FC<IProps> = () => {
   const router = useRouter();
   const { params } = router;
   const [loading, setLoading] = useState<boolean>(false);
@@ -88,12 +88,16 @@ const Index: FC<IProps> = (props) => {
   }, [params.id, stayDate]);
 
   if (loading) {
-    return <DetailSkeleton />;
+    return (
+      <PageWrapper>
+        <DetailSkeleton />
+      </PageWrapper>
+    );
   }
 
   return (
-    <>
-      <View className="bg-custom-gray">
+    <PageWrapper>
+      <View className="bg-custom-gray dark:bg-dark-bg">
         {/* 安全导航栏 */}
         <SafeNavBar title={hotelInfo?.name} />
 
@@ -102,25 +106,25 @@ const Index: FC<IProps> = (props) => {
 
         {/* 酒店信息 */}
         <View className="-translate-y-4 pb-24">
-          <View className=" bg-white p-4 rounded-t-2xl">
+          <View className=" bg-white dark:bg-dark-card p-4 rounded-t-2xl">
             <DetailInfo {...hotelInfo} />
           </View>
 
           {/* 日历与人间夜 */}
-          <View className="bg-white p-4 mt-2">
+          <View className="bg-white dark:bg-dark-card p-4 mt-2">
             <Calendar />
           </View>
           {/* 房型价格列表 */}
-          <View className="bg-white px-4 mt-2">
+          <View className="bg-white dark:bg-dark-card px-4 mt-2">
             <RoomList roomList={roomList} loading={roomListLoading} />
           </View>
         </View>
       </View>
       {/* 底部栏 */}
-      <View className="fixed bottom-0 left-0 right-0 px-4 py-2 bg-white">
+      <View className="fixed bottom-0 left-0 right-0 px-4 py-2 bg-white dark:bg-dark-card ">
         <FunctionBar price={hotelInfo.price} telephone={hotelInfo.telephone} />
       </View>
-    </>
+    </PageWrapper>
   );
 };
 

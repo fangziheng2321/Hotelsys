@@ -26,7 +26,7 @@ const CutomButton: FC<IProps> = ({
         "flex items-center justify-center",
         customBg
           ? customBg
-          : "bg-gradient-to-r from-primary to-secondary flex items-center justify-center shadow-lg shadow-blue-200",
+          : "bg-gradient-to-r from-primary to-secondary flex items-center justify-center shadow-lg",
         useAnimation ? "animation" : "",
       ].join(" ")}
       disabled={disabled}

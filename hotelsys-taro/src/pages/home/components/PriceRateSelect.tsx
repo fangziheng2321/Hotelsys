@@ -33,8 +33,10 @@ const PriceRateSelect: FC<IProps> = ({
 }) => {
   const { t } = useTranslation();
 
-  const [localRate, setLocalRate] = useState<number>(DEFAULT_RATE);
-  const [localRange, setLocalRange] = useState<number[]>(DEFAULT_RANGE);
+  const [localRate, setLocalRate] = useState<number>(rate || DEFAULT_RATE);
+  const [localRange, setLocalRange] = useState<number[]>(
+    priceRange || DEFAULT_RANGE,
+  );
 
   // 重置
   const handleReset = () => {
@@ -96,8 +98,8 @@ const PriceRateSelect: FC<IProps> = ({
       {/* 底部按钮 */}
       <View className="flex w-full gap-4 mt-1">
         <CustomButton
-          customClassName="w-1/2 text-base text-black p-2 rounded-lg"
-          customBg="bg-custom-gray"
+          customClassName="w-1/2 text-base text-black dark:text-dark-text p-2 rounded-lg"
+          customBg="bg-custom-gray dark:bg-dark-card"
           onClick={handleReset}
         >
           {t("home.filter_bar.price_select.reset")}

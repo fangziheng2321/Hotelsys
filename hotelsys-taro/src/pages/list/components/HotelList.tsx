@@ -93,14 +93,14 @@ const HotelList: FC<IProps> = ({
         <View className="fixed bottom-10 left-4 z-50 flex gap-2">
           {/* 返回顶部 */}
           <View
-            className=" bg-white rounded-full shadow-lg p-3 border border-gray-100 flex items-center justify-center active:opacity-70 transition-opacity duration-300"
+            className=" bg-white dark:bg-dark-bg rounded-full shadow-lg p-3 flex items-center justify-center active:opacity-70 transition-opacity duration-300"
             onClick={handleBackToTop}
           >
             <Top size={20} color="#0052D9" />
           </View>
           {/* 刷新 */}
           <View
-            className=" bg-white rounded-full shadow-lg p-3 border border-gray-100 flex items-center justify-center active:opacity-70 transition-opacity duration-300"
+            className=" bg-white dark:bg-dark-bg rounded-full shadow-lg p-3 flex items-center justify-center active:opacity-70 transition-opacity duration-300"
             onClick={() => {
               handleBackToTop();
               refresh();
