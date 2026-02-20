@@ -13,7 +13,8 @@ const HotelForm: React.FC = () => {
     address: '',
     phone: '',
     description: '',
-    priceRange: '',
+    minPrice: 0,
+    maxPrice: 0,
     starRating: 5,
     amenities: [],
     hotelType: 'domestic',
@@ -107,6 +108,9 @@ const HotelForm: React.FC = () => {
     if (!formData.address?.trim()) return '地址不能为空';
     if (!formData.phone?.trim()) return '联系电话不能为空';
     if (!formData.region?.trim()) return '地区不能为空';
+    if (formData.minPrice === undefined || formData.minPrice < 0) return '最低价格不能为负数';
+    if (formData.maxPrice === undefined || formData.maxPrice < 0) return '最高价格不能为负数';
+    if (formData.maxPrice < formData.minPrice) return '最高价格不能小于最低价格';
     return null;
   };
 
@@ -273,16 +277,32 @@ const HotelForm: React.FC = () => {
 
             <div className="form-row">
               <div className="form-group form-half">
-                <label>价格范围</label>
+                <label>最低价格</label>
                 <input
-                  type="text"
-                  name="priceRange"
-                  value={formData.priceRange}
+                  type="number"
+                  name="minPrice"
+                  value={formData.minPrice}
                   onChange={handleChange}
-                  placeholder="如：¥500-1000"
+                  placeholder="如：500"
+                  min="0"
                   disabled={isReadOnly}
                 />
               </div>
+              <div className="form-group form-half">
+                <label>最高价格</label>
+                <input
+                  type="number"
+                  name="maxPrice"
+                  value={formData.maxPrice}
+                  onChange={handleChange}
+                  placeholder="如：1000"
+                  min="0"
+                  disabled={isReadOnly}
+                />
+              </div>
+            </div>
+            
+            <div className="form-row">
               <div className="form-group form-half">
                 <label>星级评分</label>
                 <div className={`star-rating ${isReadOnly ? 'disabled' : ''}`}>

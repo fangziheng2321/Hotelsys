@@ -28,10 +28,12 @@ export type HotelType = 'domestic' | 'overseas' | 'homestay' | 'hourly';
 export interface RoomType {
   id: string;
   name: string;           // 房型名称
-  bedType: string;        // 床的规格
-  roomSize: string;       // 房间大小
-  capacity: string;       // 几人住
-  floor: string;          // 楼层
+  bedType: number;        // 床的规格
+  bedCount: number;       // 床的数量
+  roomSize: number;       // 房间大小
+  capacity: number;       // 几人住
+  minFloor: number;          // 最低楼层
+  maxFloor: number;          // 最高楼层
   image: string;          // 房型图片
   roomCount: number;      // 房间数量
   price: number;          // 房型价格（元/晚）

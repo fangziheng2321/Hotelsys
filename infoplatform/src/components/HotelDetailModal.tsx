@@ -71,7 +71,7 @@ const HotelDetailModal: React.FC<HotelDetailModalProps> = ({
               </div>
               <div className="detail-item">
                 <label>价格范围：</label>
-                <span>{hotel.priceRange}</span>
+                <span>¥{hotel.minPrice}-¥{hotel.maxPrice}</span>
               </div>
               <div className="detail-item">
                 <label>星级评分：</label>
@@ -138,8 +138,8 @@ const HotelDetailModal: React.FC<HotelDetailModalProps> = ({
                     </div>
                     <div className="room-info">
                       <h5>{room.name}</h5>
-                      <p>{room.bedType} · {room.roomSize} · {room.capacity}</p>
-                      <p>楼层：{room.floor} · 房间数：{room.roomCount}间</p>
+                      <p>{room.bedType}（米） · {room.roomSize}平方米 · {room.capacity}人</p>
+                      <p>楼层：{room.minFloor}-{room.maxFloor}层 · 房间数：{room.roomCount}间</p>
                       <p className="room-price">价格：<strong>¥{room.price}</strong>/晚</p>
                     </div>
                   </div>
