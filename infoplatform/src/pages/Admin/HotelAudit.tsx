@@ -219,6 +219,14 @@ const HotelAudit: React.FC = () => {
                 {hotel.status === 'approved' ? '下线' : '上线'}
               </button>
             )}
+            {hotel.status === 'rejected' && hotel.rejectReason && (
+              <button
+                onClick={() => alert(`拒绝原因：${hotel.rejectReason}`)}
+                className="btn-reason"
+              >
+                原因
+              </button>
+            )}
           </>
         )}
       />

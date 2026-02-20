@@ -7,6 +7,7 @@ export type UserRole = 'merchant' | 'admin';
 export interface User {
   id: string;
   username: string;
+  password?: string;
   role: UserRole;
 }
 
@@ -35,6 +36,7 @@ export interface Hotel {
   starRating: number;
   amenities: string[];
   hotelType: HotelType;
+  region: string;
   images: string[];
   roomTypes: RoomType[];
   status: HotelStatus;
@@ -54,6 +56,7 @@ export interface MerchantHotelListItem {
   hotelType: HotelType;
   status: HotelStatus;
   firstImage: string;
+  rejectReason?: string;
 }
 
 // 管理员端酒店列表项（精简字段）
@@ -66,6 +69,7 @@ export interface AdminHotelListItem {
   status: HotelStatus;
   rejectReason?: string;
   firstImage: string;
+  hotelType: HotelType;
 }
 
 // 通用响应类型
@@ -95,13 +99,13 @@ export interface PaginationParams {
 // 登录响应
 export interface LoginResponse {
   token: string;
-  user: User;
+  user: Omit<User, 'password'>;
 }
 
 // ==================== Axios 实例 ====================
 
 const api: AxiosInstance = axios.create({
-  baseURL: 'http://localhost:8080/api',
+  baseURL: 'http://localhost:3000/api', // 后端服务器地址，连接backend文件夹中的服务
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json'
@@ -166,7 +170,7 @@ export const authApi = {
    * POST /PClogin
    */
   login: async (username: string, password: string): Promise<ApiResponse<LoginResponse>> => {
-    const response = await api.post('/PClogin', { username, password });
+    const response = await api.post('/PClogin', { Username: username, Password: password });
     return response.data;
   },
 
@@ -218,6 +222,18 @@ export const hotelApi = {
   updateRoomCount: async (id: string, roomTypes: RoomType[]): Promise<ApiResponse<Hotel>> => {
     const response = await api.post(`/merchant/hotels/${id}/room-count`, { roomTypes });
     return response.data;
+  },
+
+  /**
+   * 获取酒店分布和审核状态数据（用于可视化）
+   * GET /hotels/visualization
+   */
+  getHotelVisualizationData: async (): Promise<ApiResponse<{
+    provinceData: Array<{ name: string; value: number }>;
+    auditData: Array<{ name: string; value: number }>;
+  }>> => {
+    const response = await api.get('/hotels/visualization');
+    return response.data;
   }
 };
 
@@ -261,6 +277,18 @@ export const adminApi = {
    */
   toggleHotelStatus: async (id: string, status: 'approved' | 'offline'): Promise<ApiResponse<Hotel>> => {
     const response = await api.post(`/admin/hotels/${id}/toggle-status`, { status });
+    return response.data;
+  },
+
+  /**
+   * 获取审核可视化数据（用于管理员）
+   * GET /admin/hotels/visualization
+   */
+  getAuditVisualizationData: async (): Promise<ApiResponse<{
+    provinceData: Array<{ name: string; value: number }>;
+    auditData: Array<{ name: string; value: number }>;
+  }>> => {
+    const response = await api.get('/admin/hotels/visualization');
     return response.data;
   }
 };
