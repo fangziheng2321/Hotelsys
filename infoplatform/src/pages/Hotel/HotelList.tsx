@@ -172,6 +172,14 @@ const HotelList: React.FC = () => {
                 {loadingDetail ? '加载中...' : '编辑房间数量'}
               </button>
             )}
+            {hotel.status === 'rejected' && hotel.rejectReason && (
+              <button
+                onClick={() => alert(`拒绝原因：${hotel.rejectReason}`)}
+                className="btn-reason"
+              >
+                原因
+              </button>
+            )}
           </>
         )}
       />

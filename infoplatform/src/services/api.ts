@@ -56,6 +56,7 @@ export interface MerchantHotelListItem {
   hotelType: HotelType;
   status: HotelStatus;
   firstImage: string;
+  rejectReason?: string;
 }
 
 // 管理员端酒店列表项（精简字段）
@@ -694,7 +695,8 @@ export const hotelApi = {
       phone: hotel.phone,
       hotelType: hotel.hotelType,
       status: hotel.status,
-      firstImage: hotel.images && hotel.images.length > 0 ? hotel.images[0] : ''
+      firstImage: hotel.images && hotel.images.length > 0 ? hotel.images[0] : '',
+      rejectReason: hotel.rejectReason
     }));
 
     return {
