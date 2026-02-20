@@ -17,10 +17,12 @@ export type HotelStatus = 'pending' | 'approved' | 'rejected' | 'offline';
 export interface RoomType {
   id: string;
   name: string;
-  bedType: string;
-  roomSize: string;
-  capacity: string;
-  floor: string;
+  bedType: number;
+  bedCount: number;
+  roomSize: number;
+  capacity: number;
+  minFloor: number;
+  maxFloor: number;
   image: string;
   roomCount: number;
   price: number;
@@ -32,7 +34,8 @@ export interface Hotel {
   address: string;
   phone: string;
   description: string;
-  priceRange: string;
+  minPrice: number;
+  maxPrice: number;
   starRating: number;
   amenities: string[];
   hotelType: HotelType;
@@ -128,7 +131,8 @@ const mockHotels: Hotel[] = [
     address: '北京市朝阳区建国路83号',
     phone: '010-12345678',
     description: '北京万豪酒店位于朝阳区核心商圈，交通便利，设施齐全，是商务出行和休闲度假的理想选择。',
-    priceRange: '¥800-2000',
+    minPrice: 688,
+    maxPrice: 1588,
     starRating: 5,
     amenities: ['免费WiFi', '停车场', '餐厅', '健身房', '游泳池', '会议室'],
     hotelType: 'domestic',
@@ -140,10 +144,12 @@ const mockHotels: Hotel[] = [
       {
         id: 'r1',
         name: '豪华大床房',
-        bedType: '1.8米大床',
-        roomSize: '35㎡',
-        capacity: '2人',
-        floor: '5-10层',
+        bedType: 1.8,
+        bedCount: 1,
+        roomSize: 35,
+        capacity: 2,
+        minFloor: 5,
+        maxFloor: 10,
         image: 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=400',
         roomCount: 20,
         price: 888
@@ -151,10 +157,12 @@ const mockHotels: Hotel[] = [
       {
         id: 'r2',
         name: '商务双床房',
-        bedType: '1.2米双床',
-        roomSize: '40㎡',
-        capacity: '2人',
-        floor: '8-15层',
+        bedType: 1.2,
+        bedCount: 2,
+        roomSize: 40,
+        capacity: 2,
+        minFloor: 8,
+        maxFloor: 15,
         image: 'https://images.unsplash.com/photo-1590490360182-c33d57733427?w=400',
         roomCount: 15,
         price: 688
@@ -162,10 +170,12 @@ const mockHotels: Hotel[] = [
       {
         id: 'r3',
         name: '行政套房',
-        bedType: '2.0米大床',
-        roomSize: '65㎡',
-        capacity: '2人',
-        floor: '16-20层',
+        bedType: 2.0,
+        bedCount: 1,
+        roomSize: 65,
+        capacity: 2,
+        minFloor: 16,
+        maxFloor: 20,
         image: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=400',
         roomCount: 5,
         price: 1588
@@ -183,7 +193,8 @@ const mockHotels: Hotel[] = [
     address: '上海市浦东新区世纪大道8号',
     phone: '021-87654321',
     description: '上海希尔顿酒店坐落在浦东新区，俯瞰黄浦江美景，拥有豪华客房和套房，提供一流的服务和设施。',
-    priceRange: '¥900-2500',
+    minPrice: 788,
+    maxPrice: 788,
     starRating: 5,
     amenities: ['免费WiFi', '停车场', '餐厅', '健身房', '游泳池', '会议室', 'SPA'],
     hotelType: 'domestic',
@@ -194,10 +205,12 @@ const mockHotels: Hotel[] = [
       {
         id: 'r4',
         name: '江景大床房',
-        bedType: '1.8米大床',
-        roomSize: '38㎡',
-        capacity: '2人',
-        floor: '10-20层',
+        bedType: 1.8,
+        bedCount: 1,
+        roomSize: 38,
+        capacity: 2,
+        minFloor: 10,
+        maxFloor: 20,
         image: 'https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=400',
         roomCount: 10,
         price: 788
@@ -215,7 +228,8 @@ const mockHotels: Hotel[] = [
     address: '广州市天河区珠江新城珠江西路5号',
     phone: '020-12345678',
     description: '广州四季酒店位于珠江新城核心区，拥有现代化的客房和套房，提供全方位的服务和设施。',
-    priceRange: '¥700-1800',
+    minPrice: 700,
+    maxPrice: 1800,
     starRating: 5,
     amenities: ['免费WiFi', '停车场', '餐厅', '健身房', '游泳池', '会议室'],
     hotelType: 'overseas',
@@ -234,7 +248,8 @@ const mockHotels: Hotel[] = [
     address: '深圳市南山区深南大道9028号',
     phone: '0755-87654321',
     description: '深圳香格里拉酒店位于南山区，交通便利，拥有舒适的客房和完善的设施，是商务和休闲的理想选择。',
-    priceRange: '¥600-1500',
+    minPrice: 388,
+    maxPrice: 588,
     starRating: 4,
     amenities: ['免费WiFi', '停车场', '餐厅', '健身房', '会议室'],
     hotelType: 'homestay',
@@ -247,10 +262,12 @@ const mockHotels: Hotel[] = [
       {
         id: 'r5',
         name: '标准间',
-        bedType: '1.5米大床',
-        roomSize: '25㎡',
-        capacity: '2人',
-        floor: '2-8层',
+        bedType: 1.5,
+        bedCount: 1,
+        roomSize: 25,
+        capacity: 2,
+        minFloor: 2,
+        maxFloor: 8,
         image: 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=400',
         roomCount: 8,
         price: 388
@@ -258,10 +275,12 @@ const mockHotels: Hotel[] = [
       {
         id: 'r6',
         name: '家庭房',
-        bedType: '1.8米+1.2米床',
-        roomSize: '45㎡',
-        capacity: '4人',
-        floor: '3-6层',
+        bedType: 1.8,
+        bedCount: 2,
+        roomSize: 45,
+        capacity: 4,
+        minFloor: 3,
+        maxFloor: 6,
         image: 'https://images.unsplash.com/photo-1566665797739-1674de7a421a?w=400',
         roomCount: 4,
         price: 588
@@ -279,7 +298,8 @@ const mockHotels: Hotel[] = [
     address: '成都市锦江区春熙路100号',
     phone: '028-12345678',
     description: '成都快捷酒店位于春熙路商圈，提供钟点房服务，方便快捷，价格实惠。',
-    priceRange: '¥50-200',
+    minPrice: 50,
+    maxPrice: 200,
     starRating: 2,
     amenities: ['免费WiFi', '空调', '热水'],
     hotelType: 'hourly',
@@ -297,7 +317,8 @@ const mockHotels: Hotel[] = [
     address: '杭州市西湖区杨公堤18号',
     phone: '0571-87979888',
     description: '杭州西湖国宾馆坐落于西湖核心景区，环境优美，是接待重要宾客的国宾馆。',
-    priceRange: '¥1200-3500',
+    minPrice: 2588,
+    maxPrice: 2588,
     starRating: 5,
     amenities: ['免费WiFi', '停车场', '餐厅', '健身房', '游泳池', '会议室'],
     hotelType: 'domestic',
@@ -308,10 +329,12 @@ const mockHotels: Hotel[] = [
       {
         id: 'r7',
         name: '湖景套房',
-        bedType: '2.0米大床',
-        roomSize: '80㎡',
-        capacity: '2人',
-        floor: '1-3层',
+        bedType: 2.0,
+        bedCount: 1,
+        roomSize: 80,
+        capacity: 2,
+        minFloor: 1,
+        maxFloor: 3,
         image: 'https://images.unsplash.com/photo-1590490360182-c33d57733427?w=400',
         roomCount: 6,
         price: 2588
@@ -329,7 +352,8 @@ const mockHotels: Hotel[] = [
     address: '南京市鼓楼区汉中路2号',
     phone: '025-84711888',
     description: '南京金陵饭店是南京地标性建筑，历史悠久，服务一流，是商务出行的首选。',
-    priceRange: '¥800-2200',
+    minPrice: 888,
+    maxPrice: 1888,
     starRating: 5,
     amenities: ['免费WiFi', '停车场', '餐厅', '健身房', '会议室'],
     hotelType: 'domestic',
@@ -340,10 +364,12 @@ const mockHotels: Hotel[] = [
       {
         id: 'r8',
         name: '商务大床房',
-        bedType: '1.8米大床',
-        roomSize: '35㎡',
-        capacity: '2人',
-        floor: '10-25层',
+        bedType: 1.8,
+        bedCount: 1,
+        roomSize: 35,
+        capacity: 2,
+        minFloor: 10,
+        maxFloor: 25,
         image: 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=400',
         roomCount: 15,
         price: 888
@@ -351,10 +377,12 @@ const mockHotels: Hotel[] = [
       {
         id: 'r9',
         name: '豪华套房',
-        bedType: '2.0米大床',
-        roomSize: '60㎡',
-        capacity: '2人',
-        floor: '26-30层',
+        bedType: 2.0,
+        bedCount: 1,
+        roomSize: 60,
+        capacity: 2,
+        minFloor: 26,
+        maxFloor: 30,
         image: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=400',
         roomCount: 5,
         price: 1888
@@ -372,7 +400,8 @@ const mockHotels: Hotel[] = [
     address: '西安市雁塔区曲江池西路',
     phone: '029-88886666',
     description: '西安曲江民宿位于大雁塔景区附近，古色古香的装修风格，体验地道的西安文化。',
-    priceRange: '¥200-500',
+    minPrice: 288,
+    maxPrice: 288,
     starRating: 3,
     amenities: ['免费WiFi', '停车场', '餐厅'],
     hotelType: 'homestay',
@@ -383,10 +412,12 @@ const mockHotels: Hotel[] = [
       {
         id: 'r10',
         name: '古风大床房',
-        bedType: '1.8米大床',
-        roomSize: '30㎡',
-        capacity: '2人',
-        floor: '2层',
+        bedType: 1.8,
+        bedCount: 1,
+        roomSize: 30,
+        capacity: 2,
+        minFloor: 2,
+        maxFloor: 2,
         image: 'https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=400',
         roomCount: 8,
         price: 288
@@ -404,7 +435,8 @@ const mockHotels: Hotel[] = [
     address: '三亚市海棠区海棠北路',
     phone: '0898-88889999',
     description: '三亚海棠湾度假酒店位于海滨，拥有私人沙滩，是度假休闲的绝佳选择。',
-    priceRange: '¥1500-4000',
+    minPrice: 1288,
+    maxPrice: 1288,
     starRating: 5,
     amenities: ['免费WiFi', '停车场', '餐厅', '健身房', '游泳池', '会议室', 'SPA'],
     hotelType: 'overseas',
@@ -415,10 +447,12 @@ const mockHotels: Hotel[] = [
       {
         id: 'r11',
         name: '海景大床房',
-        bedType: '1.8米大床',
-        roomSize: '45㎡',
-        capacity: '2人',
-        floor: '3-8层',
+        bedType: 1.8,
+        bedCount: 1,
+        roomSize: 45,
+        capacity: 2,
+        minFloor: 3,
+        maxFloor: 8,
         image: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=400',
         roomCount: 20,
         price: 1288
@@ -436,7 +470,8 @@ const mockHotels: Hotel[] = [
     address: '武汉市江汉区江汉路步行街',
     phone: '027-12345678',
     description: '武汉江汉路钟点房位于繁华商圈，提供灵活的钟点房服务，方便快捷。',
-    priceRange: '¥60-150',
+    minPrice: 60,
+    maxPrice: 150,
     starRating: 2,
     amenities: ['免费WiFi', '空调', '热水'],
     hotelType: 'hourly',
@@ -455,7 +490,8 @@ const mockHotels: Hotel[] = [
     address: '重庆市渝中区洪崖洞民俗风貌区',
     phone: '023-66668888',
     description: '重庆洪崖洞精品酒店位于网红景点洪崖洞，夜景绝佳，体验山城魅力。',
-    priceRange: '¥400-1000',
+    minPrice: 488,
+    maxPrice: 488,
     starRating: 4,
     amenities: ['免费WiFi', '停车场', '餐厅', '健身房', '会议室'],
     hotelType: 'domestic',
@@ -466,10 +502,12 @@ const mockHotels: Hotel[] = [
       {
         id: 'r12',
         name: '江景大床房',
-        bedType: '1.8米大床',
-        roomSize: '32㎡',
-        capacity: '2人',
-        floor: '5-12层',
+        bedType: 1.8,
+        bedCount: 1,
+        roomSize: 32,
+        capacity: 2,
+        minFloor: 5,
+        maxFloor: 12,
         image: 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=400',
         roomCount: 12,
         price: 488
@@ -487,7 +525,8 @@ const mockHotels: Hotel[] = [
     address: '厦门市思明区鼓浪屿内厝澳路',
     phone: '0592-88887777',
     description: '厦门鼓浪屿民宿位于世界文化遗产鼓浪屿，体验闽南风情和海岛风光。',
-    priceRange: '¥300-800',
+    minPrice: 388,
+    maxPrice: 388,
     starRating: 3,
     amenities: ['免费WiFi', '餐厅'],
     hotelType: 'homestay',
@@ -498,10 +537,12 @@ const mockHotels: Hotel[] = [
       {
         id: 'r13',
         name: '花园洋房',
-        bedType: '1.5米大床',
-        roomSize: '25㎡',
-        capacity: '2人',
-        floor: '1-2层',
+        bedType: 1.5,
+        bedCount: 1,
+        roomSize: 25,
+        capacity: 2,
+        minFloor: 1,
+        maxFloor: 2,
         image: 'https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?w=400',
         roomCount: 6,
         price: 388
@@ -845,13 +886,13 @@ export const hotelApi = {
     // return response.data;
 
     // Mock 实现:
-    // 从地址中提取省市名称（前两个字）
+    // 使用region字段获取省份名称，如果没有则使用地址前两个字作为fallback
     const provinceMap = new Map<string, number>();
     const auditMap = new Map<string, number>();
 
     mockHotels.forEach(hotel => {
-      // 提取省份名称（地址前两个字）
-      const province = hotel.address.substring(0, 2);
+      // 提取省份名称（优先使用region字段，否则使用地址前两个字）
+      const province = hotel.region || hotel.address.substring(0, 2);
       provinceMap.set(province, (provinceMap.get(province) || 0) + 1);
 
       // 统计审核状态
@@ -1036,13 +1077,13 @@ export const adminApi = {
     // return response.data;
 
     // Mock 实现:
-    // 从地址中提取省市名称（前两个字）
+    // 使用region字段获取省份名称，如果没有则使用地址前两个字作为fallback
     const provinceMap = new Map<string, number>();
     const auditMap = new Map<string, number>();
 
     mockHotels.forEach(hotel => {
-      // 提取省份名称（地址前两个字）
-      const province = hotel.address.substring(0, 2);
+      // 提取省份名称（优先使用region字段，否则使用地址前两个字）
+      const province = hotel.region || hotel.address.substring(0, 2);
       provinceMap.set(province, (provinceMap.get(province) || 0) + 1);
 
       // 统计审核状态

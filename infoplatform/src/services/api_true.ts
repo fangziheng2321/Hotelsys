@@ -17,10 +17,12 @@ export type HotelStatus = 'pending' | 'approved' | 'rejected' | 'offline';
 export interface RoomType {
   id: string;
   name: string;
-  bedType: string;
-  roomSize: string;
-  capacity: string;
-  floor: string;
+  bedType: number;
+  bedCount: number;
+  roomSize: number;
+  capacity: number;
+  minFloor: number;
+  maxFloor: number;
   image: string;
   roomCount: number;
   price: number;
@@ -32,7 +34,8 @@ export interface Hotel {
   address: string;
   phone: string;
   description: string;
-  priceRange: string;
+  minPrice: number;
+  maxPrice: number;
   starRating: number;
   amenities: string[];
   hotelType: HotelType;

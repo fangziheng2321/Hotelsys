@@ -15,10 +15,12 @@ const RoomTypeForm: React.FC<RoomTypeFormProps> = ({ roomTypes, onChange, disabl
   const emptyRoomType: RoomType = {
     id: '',
     name: '',
-    bedType: '',
-    roomSize: '',
-    capacity: '',
-    floor: '',
+    bedType: 1.8,
+    bedCount: 1,
+    roomSize: 30,
+    capacity: 2,
+    minFloor: 1,
+    maxFloor: 1,
     image: '',
     roomCount: 1,
     price: 0
@@ -108,42 +110,48 @@ const RoomTypeForm: React.FC<RoomTypeFormProps> = ({ roomTypes, onChange, disabl
             />
           </div>
           <div className="form-group">
-            <label>床的规格</label>
+            <label>床型（单位：米）</label>
             <input
-              type="text"
+              type="number"
+              step="0.1"
+              min="0.8"
+              max="3.0"
               value={editingRoom.bedType}
-              onChange={(e) => handleInputChange('bedType', e.target.value)}
-              placeholder="如：1.8米大床"
+              onChange={(e) => setEditingRoom({ ...editingRoom, bedType: Number(e.target.value) || 1.8 })}
+              placeholder="如：1.8"
               disabled={disabled}
             />
           </div>
           <div className="form-group">
-            <label>房间大小</label>
+            <label>床的数量</label>
             <input
-              type="text"
+              type="number"
+              min={1}
+              value={editingRoom.bedCount}
+              onChange={(e) => setEditingRoom({ ...editingRoom, bedCount: Number(e.target.value) || 1 })}
+              placeholder="如：1"
+              disabled={disabled}
+            />
+          </div>
+          <div className="form-group">
+            <label>房间大小（平方米）</label>
+            <input
+              type="number"
+              min="1"
               value={editingRoom.roomSize}
-              onChange={(e) => handleInputChange('roomSize', e.target.value)}
-              placeholder="如：35㎡"
+              onChange={(e) => setEditingRoom({ ...editingRoom, roomSize: Number(e.target.value) || 0 })}
+              placeholder="如：35"
               disabled={disabled}
             />
           </div>
           <div className="form-group">
             <label>入住人数</label>
             <input
-              type="text"
+              type="number"
+              min="1"
               value={editingRoom.capacity}
-              onChange={(e) => handleInputChange('capacity', e.target.value)}
-              placeholder="如：2人"
-              disabled={disabled}
-            />
-          </div>
-          <div className="form-group">
-            <label>楼层</label>
-            <input
-              type="text"
-              value={editingRoom.floor}
-              onChange={(e) => handleInputChange('floor', e.target.value)}
-              placeholder="如：5-10层"
+              onChange={(e) => setEditingRoom({ ...editingRoom, capacity: Number(e.target.value) || 1 })}
+              placeholder="如：2"
               disabled={disabled}
             />
           </div>
@@ -157,6 +165,34 @@ const RoomTypeForm: React.FC<RoomTypeFormProps> = ({ roomTypes, onChange, disabl
               placeholder="如：688"
               disabled={disabled}
             />
+          </div>
+          <div className="form-group" style={{ gridColumn: 'span 3' }}>
+            <div style={{ display: 'flex', gap: '20px' }}>
+              <div style={{ flex: 1 }}>
+                <label>最低楼层</label>
+                <input
+                  type="number"
+                  min="1"
+                  value={editingRoom.minFloor}
+                  onChange={(e) => setEditingRoom({ ...editingRoom, minFloor: Number(e.target.value) || 1 })}
+                  placeholder="如：5"
+                  disabled={disabled}
+                  style={{ width: '100%' }}
+                />
+              </div>
+              <div style={{ flex: 1 }}>
+                <label>最高楼层</label>
+                <input
+                  type="number"
+                  min="1"
+                  value={editingRoom.maxFloor}
+                  onChange={(e) => setEditingRoom({ ...editingRoom, maxFloor: Number(e.target.value) || 1 })}
+                  placeholder="如：10"
+                  disabled={disabled}
+                  style={{ width: '100%' }}
+                />
+              </div>
+            </div>
           </div>
           <div className="form-group room-image-upload">
             <label>房型图片</label>
@@ -221,10 +257,11 @@ const RoomTypeForm: React.FC<RoomTypeFormProps> = ({ roomTypes, onChange, disabl
               <div className="room-type-info">
                 <h4>{room.name}</h4>
                 <div className="room-type-details">
-                  <span><strong>床型：</strong>{room.bedType || '-'}</span>
-                  <span><strong>面积：</strong>{room.roomSize || '-'}</span>
-                  <span><strong>可住：</strong>{room.capacity || '-'}</span>
-                  <span><strong>楼层：</strong>{room.floor || '-'}</span>
+                  <span><strong>床型：</strong>{room.bedType || '-'}{room.bedType ? '（米）' : ''}</span>
+                  <span><strong>床数：</strong>{room.bedCount || '-'}</span>
+                  <span><strong>面积：</strong>{room.roomSize || '-'}平方米</span>
+                  <span><strong>可住：</strong>{room.capacity || '-'}人</span>
+                  <span><strong>楼层：</strong>{room.minFloor && room.maxFloor ? `${room.minFloor}-${room.maxFloor}层` : '-'}</span>
                   <span className="room-price"><strong>价格：</strong>¥{room.price}/晚</span>
                 </div>
               </div>
