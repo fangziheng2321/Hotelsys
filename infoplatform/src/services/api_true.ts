@@ -179,7 +179,7 @@ export const authApi = {
    * POST /PCregister
    */
   register: async (username: string, password: string, role: UserRole): Promise<ApiResponse<LoginResponse>> => {
-    const response = await api.post('/PCregister', { username, password, role });
+    const response = await api.post('/PCregister', { Username: username, Password: password, Role: role });
     return response.data;
   }
 };
