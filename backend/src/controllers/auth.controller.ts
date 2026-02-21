@@ -8,10 +8,10 @@ import logger from '../config/logger';
  */
 export const register = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { Username, Password, Role, Email } = req.body;
+    const { username, password, Role, Email } = req.body;
 
     // 1. 基础存在性校验
-    if (!Username || !Password) {
+    if (!username || !password) {
         res.status(400).json({ 
         success: false, 
         message: '用户名和密码不能为空' 
@@ -20,13 +20,13 @@ export const register = async (req: Request, res: Response, next: NextFunction):
 
     // 2. 调用 Service (Service 内部会进行权限校验)
     await AuthService.registerUser({
-      username: Username,
-      password_hash: Password,
+      username: username,
+      password_hash: password,
       role: Role,
       email: Email
     });
 
-    logger.info(`新用户注册成功 [Role: ${Role || 'customer'}]: ${Username}`);
+    logger.info(`新用户注册成功 [Role: ${Role || 'customer'}]: ${username}`);
 
     res.status(201).json({
       success: true,
@@ -45,12 +45,12 @@ export const register = async (req: Request, res: Response, next: NextFunction):
  */
 export const login = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { Username, Password } = req.body;
+    const { username, password } = req.body;
 
     // 1. 调用 Service 执行登录逻辑
-    const result = await AuthService.loginUser(Username, Password);
+    const result = await AuthService.loginUser(username, password);
 
-    logger.info(`用户登录成功: ${Username}`);
+    logger.info(`用户登录成功: ${username}`);
 
     // 2. 返回结果
     res.json({

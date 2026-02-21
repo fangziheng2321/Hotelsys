@@ -5,7 +5,7 @@ import { Hotel, HotelImage } from '../models';
 export class HomeService {
   /**
    * 获取首页轮播图列表
-   * 拉取前 5 个标记为推荐(is_featured)且已发布的酒店
+   * 拉取前 5 个已发布的酒店
    */
   static async getHomeBanners() {
     const featuredHotels = await Hotel.findAll({
@@ -26,7 +26,7 @@ export class HomeService {
       attributes: ['id', 'name_zh']
     });
 
-    // 数据映射：严格对齐 API_DOCUMENTATION.md 中的 BannerType 结构
+    // BannerType 结构
     return featuredHotels.map(hotel => ({
       id: hotel.id,
       name: hotel.name_zh,

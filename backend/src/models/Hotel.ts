@@ -19,6 +19,7 @@ class Hotel extends BaseModel<Hotel> {
   declare description?: string;
   declare hotel_type: 'domestic' | 'overseas' | 'homestay' | 'hourly';
   declare images?: HotelImage[];
+  declare opening_time: string;
 
   // 定义关联关系的声明
   static associate(models: any) {
@@ -36,6 +37,7 @@ Hotel.initModel(
     district: DataTypes.STRING(50),
     latitude: DataTypes.DECIMAL(10, 8),
     longitude: DataTypes.DECIMAL(11, 8),
+    opening_time: DataTypes.STRING(10),
     star_rating: {
       type: DataTypes.TINYINT.UNSIGNED,
       allowNull: false,
@@ -46,7 +48,7 @@ Hotel.initModel(
       defaultValue: 'draft'
     },
     rejection_reason: DataTypes.TEXT,
-    is_featured: { type: DataTypes.BOOLEAN, defaultValue: false },
+    is_featured: { type: DataTypes.BOOLEAN, defaultValue: true },
     contact_phone: DataTypes.STRING(20),
     facilities: { type: DataTypes.JSON },
     description: DataTypes.TEXT,

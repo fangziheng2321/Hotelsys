@@ -39,8 +39,9 @@ CREATE TABLE hotels (
   district VARCHAR(50),
   latitude DECIMAL(10, 8),
   longitude DECIMAL(11, 8),
-  is_featured BOOLEAN DEFAULT FALSE,
+  is_featured BOOLEAN DEFAULT TRUE,
   hotel_type ENUM('domestic', 'overseas', 'homestay', 'hourly') DEFAULT 'domestic' COMMENT '酒店类型',
+  opening_time VARCHAR(10),
   FOREIGN KEY (merchant_id) REFERENCES users(id) ON DELETE CASCADE,
   INDEX idx_city_status (city, status),
   INDEX idx_hotel_type (hotel_type)

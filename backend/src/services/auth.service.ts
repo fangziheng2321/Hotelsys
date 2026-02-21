@@ -34,12 +34,12 @@ private static readonly ALLOWED_PUBLIC_ROLES = ['customer', 'merchant'];
 
     // 3. 密码加密
     const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(userData.password_hash, salt);
+    const hashedpassword = await bcrypt.hash(userData.password_hash, salt);
 
     // 4. 写入数据库
     const newUser = await User.create({
       username: userData.username,
-      password_hash: hashedPassword,
+      password_hash: hashedpassword,
       role: requestedRole, // 此时的 role 已通过白名单校验
       email: userData.email || `${userData.username}@example.com`,
       is_active: true
@@ -55,7 +55,7 @@ private static readonly ALLOWED_PUBLIC_ROLES = ['customer', 'merchant'];
     
     console.log('--- 调试登录输入 ---');
     console.log('Username:', username);
-    console.log('Password_plain:', password_plain);
+    console.log('password_plain:', password_plain);
 
     // 1. 获取用户
     const user = await User.findOne({ where: { username } });
