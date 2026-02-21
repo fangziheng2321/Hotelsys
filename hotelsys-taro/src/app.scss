@@ -20,6 +20,11 @@ page {
   /* 日历组件 */
   --nutui-calendar-choose-background-color: var(--brand-color-light);
 
+  /* 单选按钮背景颜色 */
+  --nutui-radio-button-background: var(--brand-color-light);
+  --nutui-color-primary-light-pressed: var(--brand-color-light);
+
+  --nutui-radiogroup-radio-margin: 0;
   /* 2. 暗黑模式 */
   .dark {
     /* 
@@ -29,17 +34,14 @@ page {
   */
     --brand-color: #4b9cff; /* 这是一个更亮的蓝色 */
     --brand-color-secondary: #6d5fea;
-    --brand-color-light: #cde2ff;
-
-    /* 主色调 */
-    --nutui-color-primary: var(--brand-color);
-
-    /* 按钮样式 */
+    --brand-color-light: #18181b; /* 主色调 */
+    --nutui-color-primary: var(--brand-color); /* 按钮样式 */
     --nutui-color-primary-stop-1: var(--brand-color);
-    --nutui-color-primary-stop-2: var(--brand-color);
-
-    /* 日历组件 */
+    --nutui-color-primary-stop-2: var(--brand-color); /* 日历组件 */
     --nutui-calendar-choose-background-color: var(--brand-color-light);
+    /* 单选按钮背景颜色 */
+    --nutui-radio-button-background: var(--brand-color-light);
+    --nutui-color-primary-light-pressed: var(--brand-color-light);
   }
 }
 

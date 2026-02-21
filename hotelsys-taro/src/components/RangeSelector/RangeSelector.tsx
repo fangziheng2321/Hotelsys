@@ -6,10 +6,15 @@ import CustomRange from "../CustomRange/CustomRange";
 
 interface IProps {
   rangeValue: number[];
+  ancestorId: string;
   setRangeValue: Dispatch<SetStateAction<number[]>>;
 }
 
-const RangeSelector: FC<IProps> = ({ rangeValue, setRangeValue }) => {
+const RangeSelector: FC<IProps> = ({
+  ancestorId,
+  rangeValue,
+  setRangeValue,
+}) => {
   const handleMinInput = (e) => {
     const val = parseInt(e.detail.value);
     if (!isNaN(val) && val <= priceRange.MAX && val >= priceRange.MIN) {
@@ -49,6 +54,7 @@ const RangeSelector: FC<IProps> = ({ rangeValue, setRangeValue }) => {
     <View className="flex flex-col items-center gap-6 w-full">
       {/* 范围区间滚动条 */}
       <CustomRange
+        ancestorId={ancestorId}
         min={priceRange.MIN}
         max={priceRange.MAX}
         value={rangeValue}

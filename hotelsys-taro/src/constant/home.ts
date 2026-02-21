@@ -1,4 +1,6 @@
 import Location from "@/assets/LocationBar/location.svg";
+import light from "@/assets/Theme/light.svg";
+import dark from "@/assets/Theme/dark.svg";
 
 export const bannerList = [
   "https://modao.cc/agent-py/media/generated_images/2026-02-02/d645948199e8445fab6b2651c7cda8bd.jpg",
@@ -27,3 +29,9 @@ export const priceRange = {
 
 // 价格标签
 export const presetRanges = [0, 200, 300, 500, 700, 900, 1000];
+
+// 主题
+export const themeIcon = {
+  light,
+  dark,
+};

@@ -35,6 +35,7 @@ const FilterBar: FC<IProps> = ({
   return (
     <View
       onClick={() => setIsVisible(true)}
+      id="filter_bar"
       className={[
         label ? "font-bold" : "text-custom-placeholder",
         "text-lg  truncate",

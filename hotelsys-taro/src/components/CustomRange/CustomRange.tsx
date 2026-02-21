@@ -7,44 +7,55 @@ interface IProps {
   min: number;
   max: number;
   value: number[];
+  ancestorId: string;
   onChange: (val: number[]) => void;
 }
 
 // 设定滑块宽度  w-6
 const THUMB_WIDTH = remToPx(1.5);
 
-const CustomRange: React.FC<IProps> = ({ min, max, value, onChange }) => {
+const CustomRange: React.FC<IProps> = ({
+  min,
+  max,
+  value,
+  onChange,
+  ancestorId,
+}) => {
   const [rect, setRect] = useState({ width: 0, left: 0 });
   const [isDragging, setIsDragging] = useState(true);
 
-  const { page } = Taro.getCurrentInstance();
   const trackId = useMemo(
     () => `range-track-${Math.random().toString(36).slice(2, 9)}`,
     [],
   );
 
-  // 获取容器尺寸
-  const updateRect = () => {
+  // 获取容器宽度和位置
+  const updateRect = (retryCount = 0) => {
     const query = Taro.createSelectorQuery();
-    const currentScope = page || Taro.getCurrentInstance().page;
-    if (currentScope) query.in(currentScope);
 
     query
-      .select(`#${trackId}`)
+      .select(`#${ancestorId} >>> .${trackId}`)
       .boundingClientRect((res) => {
-        if (res) {
+        if (res && (res as { width: number }).width > 0) {
           setRect({
             width: (res as { width: number }).width,
             left: (res as { left: number }).left,
           });
+        } else {
+          // 如果没找到，且重试次数小于 5 次，延迟 50ms 再试一次
+          if (retryCount < 5) {
+            setTimeout(() => updateRect(retryCount + 1), 50);
+          }
         }
       })
       .exec();
   };
 
   useEffect(() => {
-    // 延迟获取，确保布局完成
-    setTimeout(updateRect, 200);
+    // 使用 nextTick 确保 DOM 树已经更新
+    Taro.nextTick(() => {
+      setTimeout(() => updateRect(0), 100);
+    });
   }, []);
 
   // === 核心计算逻辑 ===
@@ -124,8 +135,10 @@ const CustomRange: React.FC<IProps> = ({ min, max, value, onChange }) => {
     <View className="py-3 w-full px-2" catchMove>
       {/* 轨道背景 (灰色) */}
       <View
-        id={trackId}
-        className="relative w-full h-2 bg-gray-200 dark:bg-dark-bg rounded-full"
+        className={[
+          "relative w-full h-2 bg-gray-200 dark:bg-dark-bg rounded-full",
+          trackId,
+        ].join(" ")}
       >
         {/* === 中间高亮进度条 === */}
         <View

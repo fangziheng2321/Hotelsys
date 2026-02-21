@@ -7,6 +7,8 @@ interface IProps {
   customClassName?: string;
   onClose: () => void;
   children: ReactNode;
+  id?: string;
+  position?: "bottom" | "right" | "left";
 }
 
 const CustomPopup: FC<IProps> = ({
@@ -14,6 +16,8 @@ const CustomPopup: FC<IProps> = ({
   customClassName,
   onClose,
   children,
+  id,
+  position = "bottom",
 }) => {
   const [renderVisible, setRenderVisible] = useState(false);
   const [animateIn, setAnimateIn] = useState(false);
@@ -33,32 +37,88 @@ const CustomPopup: FC<IProps> = ({
     return null;
   }
 
-  return (
-    <RootPortal>
-      <PageWrapper>
-        <View className="fixed inset-0 z-50">
-          <View
-            className={[
-              "absolute inset-0 bg-black/40 transition-opacity duration-200",
-              animateIn ? "opacity-100" : "opacity-0",
-            ].join(" ")}
-            onClick={onClose}
-          />
-          <View
-            className={[
-              "absolute left-0 right-0 bottom-0 transition-transform duration-200",
-              customClassName,
-              animateIn ? "translate-y-0" : "translate-y-full",
-            ].join(" ")}
-          >
-            <View className="h-full rounded-t-2xl overflow-hidden bg-white dark:bg-dark-card">
-              {children}
+  if (position === "bottom") {
+    return (
+      <RootPortal>
+        <PageWrapper>
+          <View id={id} className="fixed inset-0 z-50">
+            <View
+              className={[
+                "absolute inset-0 bg-black/40 transition-opacity duration-200",
+                animateIn ? "opacity-100" : "opacity-0",
+              ].join(" ")}
+              onClick={onClose}
+            />
+            <View
+              className={[
+                "absolute left-0 right-0 bottom-0 transition-transform duration-200",
+                customClassName,
+                animateIn ? "translate-y-0" : "translate-y-full",
+              ].join(" ")}
+            >
+              <View className="h-full rounded-t-2xl overflow-hidden bg-white dark:bg-dark-card">
+                {children}
+              </View>
             </View>
           </View>
-        </View>
-      </PageWrapper>
-    </RootPortal>
-  );
+        </PageWrapper>
+      </RootPortal>
+    );
+  } else if (position === "right") {
+    return (
+      <RootPortal>
+        <PageWrapper>
+          <View id={id} className="fixed inset-0 z-50">
+            <View
+              className={[
+                "absolute inset-0 bg-black/40 transition-opacity duration-200",
+                animateIn ? "opacity-100" : "opacity-0",
+              ].join(" ")}
+              onClick={onClose}
+            />
+            <View
+              className={[
+                "absolute top-0 right-0 bottom-0 transition-transform duration-200",
+                customClassName,
+                animateIn ? "translate-x-0" : "translate-x-full",
+              ].join(" ")}
+            >
+              <View className="h-full rounded-l-2xl overflow-hidden bg-white dark:bg-dark-card">
+                {children}
+              </View>
+            </View>
+          </View>
+        </PageWrapper>
+      </RootPortal>
+    );
+  } else if (position === "left") {
+    return (
+      <RootPortal>
+        <PageWrapper>
+          <View id={id} className="fixed inset-0 z-50">
+            <View
+              className={[
+                "absolute inset-0 bg-black/40 transition-opacity duration-200",
+                animateIn ? "opacity-100" : "opacity-0",
+              ].join(" ")}
+              onClick={onClose}
+            />
+            <View
+              className={[
+                "absolute top-0 left-0 bottom-0 transition-transform duration-200",
+                customClassName,
+                animateIn ? "translate-x-0" : "-translate-x-full",
+              ].join(" ")}
+            >
+              <View className="h-full rounded-r-2xl overflow-hidden bg-white dark:bg-dark-card">
+                {children}
+              </View>
+            </View>
+          </View>
+        </PageWrapper>
+      </RootPortal>
+    );
+  }
 };
 
 export default CustomPopup;

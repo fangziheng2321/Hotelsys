@@ -34,9 +34,12 @@ const PriceRateFilterPanel: FC<IProps> = ({
     handleClose(menuId);
   };
 
+  const ancestorId = "price-rate-filter-panel";
+
   return (
-    <View className="mx-[-48rpx] my-[-24rpx]">
+    <View id={ancestorId} className="mx-[-48rpx] my-[-24rpx]">
       <PriceRateSelect
+        ancestorId={ancestorId}
         priceRange={priceRange}
         setPriceRange={setPriceRange}
         rate={rate}

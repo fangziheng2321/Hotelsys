@@ -42,11 +42,14 @@ const PriceRateSelectPop: FC<IProps> = ({
   const handleClose = () => {
     return setIsVisible(false);
   };
+
+  const ancestorId = "home-custom-popup";
   return (
     <CustomPopup
       isVisible={isVisible}
       onClose={() => setIsVisible(false)}
       customClassName="h-fit"
+      id={ancestorId}
     >
       <View className="flex justify-center items-center p-3">
         <Text className="text-base font-bold">
@@ -54,6 +57,7 @@ const PriceRateSelectPop: FC<IProps> = ({
         </Text>
       </View>
       <PriceRateSelect
+        ancestorId={ancestorId}
         priceRange={priceRange}
         setPriceRange={setPriceRange}
         rate={rate}

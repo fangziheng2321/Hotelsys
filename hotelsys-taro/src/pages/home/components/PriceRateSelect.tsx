@@ -19,6 +19,7 @@ interface IProps {
   rate: number | null;
   setRate: Dispatch<SetStateAction<number | null>>;
   handleClose: () => void;
+  ancestorId: string;
 }
 
 const DEFAULT_RANGE = [priceRangeValue.MIN, priceRangeValue.MAX];
@@ -30,6 +31,7 @@ const PriceRateSelect: FC<IProps> = ({
   rate,
   setRate,
   handleClose,
+  ancestorId,
 }) => {
   const { t } = useTranslation();
 
@@ -80,12 +82,16 @@ const PriceRateSelect: FC<IProps> = ({
   return (
     <View className="flex flex-col h-full p-4 gap-3">
       {/* 标题 */}
-      <View>
+      <View id="price-rate-select">
         <View className="text-sm font-bold mb-4">
           - {t("home.filter_bar.price_select.title")}
         </View>
         {/* 价格选择 */}
-        <RangeSelector rangeValue={localRange} setRangeValue={setLocalRange} />
+        <RangeSelector
+          ancestorId={ancestorId}
+          rangeValue={localRange}
+          setRangeValue={setLocalRange}
+        />
       </View>
       <Divide />
       {/* 星级选择 */}

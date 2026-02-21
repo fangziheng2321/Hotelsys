@@ -20,4 +20,5 @@ export default defineAppConfig({
     },
   },
   requiredPrivateInfos: ["getLocation", "chooseLocation"],
+  darkmode: true,
 });

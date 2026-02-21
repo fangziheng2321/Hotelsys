@@ -1,5 +1,16 @@
 {
   "home": {
+    "setting": {
+      "welcome": "欢迎您",
+      "systemSetting": "系统设置",
+      "language": "语言设置",
+      "darkMode": "夜间模式",
+      "theme": {
+        "light": "日间",
+        "dark": "夜间",
+        "auto": "自动"
+      }
+    },
     "search_tabs": {
       "domestic": "国内",
       "overseas": "海外",

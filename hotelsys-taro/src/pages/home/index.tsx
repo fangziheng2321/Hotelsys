@@ -167,7 +167,7 @@ const Home = () => {
           </View>
         </View>
 
-        <LanguageChange customClassName="fixed bottom-4 right-4" />
+        {/* <LanguageChange customClassName="fixed bottom-4 right-4" /> */}
       </View>
     </PageWrapper>
   );
