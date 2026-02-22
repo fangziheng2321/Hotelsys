@@ -85,6 +85,8 @@ app.post(
 
 // 5. 酒店业务路由 (创建/更新)
 app.use(`${API_PREFIX}/merchant/hotels`, hotelRouter);
+//api/hotels/... (列表/可视化)
+app.use(`${API_PREFIX}/hotels`, hotelRouter);
 
 // 6. Swagger API 文档
 app.use('/api-docs', swaggerRouter);

@@ -1,102 +1,160 @@
 import { Hotel, HotelImage, Room, sequelize, User } from '../models';
 import { AppError } from '../utils/AppError';
 import { Op, WhereOptions } from 'sequelize';
+import redis from '../config/redis';
+import { HomeService } from './home.service';
 
 export class HotelService {
+
+  // 定义缓存键名前缀
+  private static readonly CACHE_KEYS = {
+    DETAIL: (id: string | number) => `hotel:detail:${id}`,
+    DETAIL_USER: (id: string | number) => `hotel:detail:user:${id}`, 
+    ROOMS_USER: (id: string | number) => `hotel:rooms:user:${id}`,   
+    LIST_MERCHANT: (id: number) => `hotel:list:merchant:${id}`,
+    LIST_ADMIN: 'hotel:list:admin',
+    VIZ_MERCHANT: (id: number) => `hotel:viz:merchant:${id}`,
+    VIZ_ADMIN: 'hotel:viz:admin',
+    SEARCH: 'hotel:search'
+  };
+
+  // 设置统一的过期时间（10分钟）
+  private static readonly TTL = 600;
+
+  /**
+   * 清理相关缓存
+   * 只要数据发生变动（增删改），就必须清理受影响的缓存
+   */
+  private static async clearHotelCaches(hotelId?: number | string, merchantId?: number) {
+    const keysToDel: string[] = [this.CACHE_KEYS.VIZ_ADMIN, this.CACHE_KEYS.LIST_ADMIN];
+
+    if (hotelId) {
+      keysToDel.push(this.CACHE_KEYS.DETAIL(hotelId));
+      keysToDel.push(this.CACHE_KEYS.DETAIL_USER(hotelId)); 
+      keysToDel.push(this.CACHE_KEYS.ROOMS_USER(hotelId));   
+    }
+    
+    if (merchantId) {
+      keysToDel.push(this.CACHE_KEYS.VIZ_MERCHANT(merchantId));
+      keysToDel.push(this.CACHE_KEYS.LIST_MERCHANT(merchantId));
+    }
+
+    // 批量删除
+    if (keysToDel.length > 0) {
+      await redis.del(...keysToDel);
+    }
+
+    await HomeService.clearHomeCache();
+  }
+
   /**
    * 有 ID 则更新，无 ID 则创建
    * 接口：/merchant/hotels
    */
   static async saveHotel(payload: any, merchantId: number) {
     const { 
-      id, 
-      name, 
-      address, 
-      city,       
-      district,   
-      phone, 
-      description, 
-      opening_time,
-      starRating, 
-      amenities, 
-      hotelType, 
-      isFeatured,
-      images, 
-      roomTypes 
+      id, name, address, phone, description, opening_time, 
+      starRating, amenities, hotelType, region, images, roomTypes 
     } = payload;
 
-    // 使用非托管事务，确保多表操作的原子性
     return await sequelize.transaction(async (t) => {
       let hotel;
       
-      // 构造酒店主表数据
+      // 属性映射
       const hotelData: any = {
-            name_zh: name,
-            address,
-            city,             
-            district,         
-            contact_phone: phone,
-            description,
-            opening_time,
-            star_rating: starRating,
-            facilities: amenities, 
-            hotel_type: hotelType || 'domestic',
-            is_featured: isFeatured || true, 
-            merchant_id: merchantId,
-            status: 'pending',
-            rejection_reason: null
-          };
+        name_zh: name,
+        address,
+        city: region,             
+        contact_phone: phone,
+        description,
+        opening_time,
+        star_rating: starRating,  
+        facilities: amenities,    
+        hotel_type: hotelType || 'domestic',
+        merchant_id: merchantId,
+        status: 'pending',        
+        rejection_reason: null
+      };
 
       if (id) {
-        // 更新：必须校验归属权，防止 A 商户通过 ID 修改 B 商户的酒店
-        hotel = await Hotel.findOne({ 
-          where: { id, merchant_id: merchantId }, 
-          transaction: t 
-        });
-        
+        hotel = await Hotel.findOne({ where: { id, merchant_id: merchantId }, transaction: t });
         if (!hotel) throw new AppError('酒店不存在或无权操作', 404);
         await hotel.update(hotelData, { transaction: t });
       } else {
-        // 创建
         hotel = await Hotel.create(hotelData, { transaction: t });
       }
 
-      // 同步酒店图片 (先删除旧数据，再批量插入)
+      // 3. 房型更新
+      if (roomTypes && Array.isArray(roomTypes)) {
+        // 获取数据库中现有的房型 ID
+        const currentRooms = await Room.findAll({
+          where: { hotel_id: hotel.id },
+          attributes: ['id'],
+          transaction: t
+        });
+        const currentRoomIds = currentRooms.map(r => r.id);
+
+        // 筛选需要被软删除的 ID
+        const incomingRoomIds = roomTypes.filter((r: any) => r.id).map((r: any) => Number(r.id));
+        const idsToDelete = currentRoomIds.filter(cid => !incomingRoomIds.includes(cid));
+
+        if (idsToDelete.length > 0) {
+          // 执行软删除
+          await Room.destroy({ where: { id: idsToDelete }, transaction: t });
+        }
+
+        // 循环执行 Upsert
+        for (const room of roomTypes) {
+          const roomPayload = {
+            hotel_id: hotel.id,
+            name: room.name,
+            bed_count: Number(room.bedCount || 1), 
+            bed_size: Number(room.bedType || 1.80), 
+            room_size: String(room.roomSize),
+            capacity: String(room.capacity),
+            floor: `${room.minFloor || 1}-${room.maxFloor || 1}`, 
+            image_url: room.image,
+            total_stock: Number(room.roomCount || 0), 
+            current_price: Number(room.price || 0),
+            is_active: true
+          };
+
+          if (room.id && currentRoomIds.includes(Number(room.id))) {
+            // 更新房型
+            await Room.update(roomPayload, { 
+              where: { id: room.id, hotel_id: hotel.id }, 
+              transaction: t 
+            });
+          } else {
+            // 创建新房型
+            await Room.create(roomPayload, { transaction: t });
+          }
+        }
+      }
+
+      // 4. 图片更新
       if (images && Array.isArray(images)) {
+        const currentImages = await HotelImage.findAll({
+          where: { hotel_id: hotel.id },
+          attributes: ['id', 'image_url'],
+          transaction: t
+        });
+
+        const currentImageIds = currentImages.map(img => img.id);
         await HotelImage.destroy({ where: { hotel_id: hotel.id }, transaction: t });
-        
+
         const imageData = images.map((url: string, index: number) => ({
           hotel_id: hotel.id,
           image_url: url,
-          is_primary: index === 0, // 默认第一张为主图
+          is_primary: index === 0, 
           uploaded_by: merchantId
         }));
-        
         await HotelImage.bulkCreate(imageData, { transaction: t });
       }
 
-      // 同步房型信息
-      if (roomTypes && Array.isArray(roomTypes)) {
-        await Room.destroy({ where: { hotel_id: hotel.id }, transaction: t });
-        
-        const roomData = roomTypes.map((room: any) => ({
-          hotel_id: hotel.id,
-          name: room.name,    
-          bed_count: Number(room.bedCount || room.bed_count || 1),
-          bed_size: Number(room.bedSize || room.bed_size || 1.80),          
-          room_size: room.roomSize || room.room_size,   
-          capacity: room.capacity,    
-          floor: room.floor,          
-          image_url: room.image || room.image_url,      
-          total_stock: Number(room.roomCount || room.total_stock || 10),
-          current_price: Number(room.price || room.current_price || 0),
-          is_active: true
-        }));
-        
-        await Room.bulkCreate(roomData, { transaction: t });
-      }
-
-      return { id: hotel.id };
+      await this.clearHotelCaches(hotel.id, merchantId);
+      
+      return true;
     });
   }
 
@@ -105,22 +163,196 @@ export class HotelService {
    * 获取商户自己的酒店列表
    * GET /api/merchant/hotels?page=1&pageSize=10
    */
-  static async getMerchantHotels(merchantId: number, query: { page?: number; pageSize?: number }) {
-    // 解析分页参数
+  static async getMerchantHotels(
+  merchantId: number, 
+  query: { page?: number; pageSize?: number; hotelType?: string; status?: string }
+) {
+  // 分页参数
+  const page = Math.max(1, Number(query.page) || 1);
+  const pageSize = Number(query.pageSize) || 10;
+  const offset = (page - 1) * pageSize;
+
+  // 构建动态 WHERE 条件
+  const whereClause: any = { merchant_id: merchantId };
+
+  // 酒店类型筛选
+  if (query.hotelType) {
+    whereClause.hotel_type = query.hotelType;
+  }
+
+  // 状态筛选
+  if (query.status) {
+    whereClause.status = query.status;
+  }
+
+  // 查询
+  const { count, rows } = await Hotel.findAndCountAll({
+    where: whereClause, 
+    limit: pageSize,
+    offset: offset,
+    include: [
+      {
+        model: HotelImage,
+        as: 'images',
+        where: { is_primary: true },
+        required: false,
+        attributes: ['image_url']
+      }
+    ],
+    order: [['created_at', 'DESC']]
+  });
+
+  // 数据映射
+  const list = rows.map(hotel => {
+    const h = hotel.toJSON();
+    return {
+      id: h.id.toString(),
+      name: h.name_zh,
+      address: h.address,
+      phone: h.contact_phone,
+      hotelType: h.hotel_type,
+      status: h.status,
+      firstImage: h.images?.[0]?.image_url || ""
+    };
+  });
+
+  return {
+    list,
+    total: count,
+    page,
+    pageSize,
+    totalPages: Math.ceil(count / pageSize)
+  };
+}
+
+  /**
+   * 获取酒店完整详情
+   * 使用merchantId 校验，确保商户只能看到自己的酒店详情
+   */
+  static async getHotelDetail(id: number, merchantId: number) {
+    const cacheKey = this.CACHE_KEYS.DETAIL(id);
+    const cached = await redis.get(cacheKey);
+    if (cached) return JSON.parse(cached);
+
+    const hotel = await Hotel.findOne({
+      where: { id, merchant_id: merchantId },
+      include: [{ model: HotelImage, as: 'images' }, { model: Room, as: 'roomTypes' }]
+    });
+
+    if (!hotel) throw new AppError('未找到酒店', 404);
+
+    const h = hotel.toJSON();
+    const prices = h.roomTypes?.map((r: any) => parseFloat(r.current_price)) || [];
+    
+    const result = {
+      id: h.id.toString(),
+      name: h.name_zh,
+      address: h.address,
+      phone: h.contact_phone,
+      description: h.description || "",
+      opening_time: h.opening_time,
+      minPrice: prices.length > 0 ? Math.min(...prices) : 0,
+      maxPrice: prices.length > 0 ? Math.max(...prices) : 0,
+      starRating: h.star_rating,
+      amenities: h.facilities || [],
+      hotelType: h.hotel_type,
+      region: h.city || h.district, 
+      images: h.images?.map((img: any) => img.image_url) || [],
+      roomTypes: h.roomTypes?.map((room: any) => ({
+        id: room.id.toString(),
+        name: room.name,
+        bedType: parseFloat(room.bed_size),
+        bedCount: room.bed_count,
+        roomSize: parseInt(room.room_size) || 0,
+        capacity: parseInt(room.capacity) || 2,
+        minFloor: room.floor?.split('-')[0] || 1,
+        maxFloor: room.floor?.split('-')[1] || 1,
+        image: room.image_url || "",
+        roomCount: room.total_stock,
+        price: parseFloat(room.current_price)
+      })) || []
+    };
+
+    await redis.setex(cacheKey, this.TTL, JSON.stringify(result));
+    return result;
+  }
+
+
+  /**
+   * 更新房间库存
+   * 校验酒店归属权 -> 校验房型归属权 -> 仅更新库存
+   */
+  static async updateRoomStock(hotelId: number, merchantId: number, roomTypes: any[]) {
+    // 查找酒店并校验归属权及状态
+    const hotel = await Hotel.findOne({
+      where: { id: hotelId, merchant_id: merchantId }
+    });
+
+    if (!hotel) {
+      throw new AppError('未找到相关酒店信息，无权操作', 403);
+    }
+
+    // 只有已发布的酒店才能直接改库存 
+    if (hotel.status !== 'approved') {
+      throw new AppError('只有已发布(approved)状态的酒店才能直接修改房间数量', 400);
+    }
+
+    // 开启事务进行批量更新
+    const result = await sequelize.transaction(async (t) => {
+      for (const roomItem of roomTypes) {
+        const { id: roomId, roomCount } = roomItem;
+        const room = await Room.findOne({ where: { id: roomId, hotel_id: hotelId }, transaction: t });
+        if (room) {
+          await room.update({ total_stock: Number(roomCount) }, { transaction: t });
+        }
+      }
+      return true;
+    });
+
+    // 更新库存后清理缓存
+    await this.clearHotelCaches(hotelId, merchantId);
+    return result;
+
+  }
+
+/**
+   * 管理员获取全局酒店列表 
+   * /admin/hotels?page=1&pageSize=10
+   */
+  static async getAdminHotels(query: {page?: number; pageSize?: number; hotelType?: string; status?: string 
+  }) {
+    // 分页参数
     const page = Math.max(1, Number(query.page) || 1);
     const pageSize = Number(query.pageSize) || 10;
     const offset = (page - 1) * pageSize;
 
-    // 带有计数的查询
+    const whereClause: any = {};
+
+    // hotelType筛选条件
+    if (query.hotelType) {
+      whereClause.hotel_type = query.hotelType;
+    }
+
+    // status筛选条件
+    if (query.status) {
+      whereClause.status = query.status;
+    }
+
+    // 查询
     const { count, rows } = await Hotel.findAndCountAll({
-      where: { merchant_id: merchantId },
+      where: whereClause, 
       limit: pageSize,
       offset: offset,
       include: [
         {
+          model: User,
+          as: 'merchant',
+          attributes: ['username'] 
+        },
+        {
           model: HotelImage,
           as: 'images',
-          where: { is_primary: true }, // 仅拉取首图
+          where: { is_primary: true },
           required: false,
           attributes: ['image_url']
         }
@@ -133,153 +365,7 @@ export class HotelService {
       const h = hotel.toJSON();
       return {
         id: h.id.toString(),
-        name: h.name_zh,           // name_zh -> name 
-        address: h.address,
-        phone: h.contact_phone,    // contact_phone -> phone 
-        hotelType: h.hotel_type,
-        status: h.status,
-        firstImage: h.images?.[0]?.image_url || "" // 主图URL -> firstImage 
-      };
-    });
-
-    // 返回符合文档要求的 data 结构 
-    return {
-      list,
-      total: count,
-      page,
-      pageSize,
-      totalPages: Math.ceil(count / pageSize)
-    };
-  }
-
-  /**
-   * 获取酒店完整详情（含图片和房型）
-   * 使用merchantId 校验，确保商户只能看到自己的酒店详情
-   */
-  static async getHotelDetail(id: number, merchantId: number) {
-    const hotel = await Hotel.findOne({
-      where: { id, merchant_id: merchantId },
-      include: [
-        { model: HotelImage, as: 'images', attributes: ['image_url'] },
-        { model: Room, as: 'roomTypes' }
-      ]
-    });
-
-    if (!hotel) {
-      throw new AppError('未找到该酒店或无权访问', 404);
-    }
-
-    const h = hotel.toJSON();
-
-    // 数据映射
-    return {
-      id: h.id,
-      name: h.name_zh,
-      address: h.address,
-      city: h.city,
-      district: h.district,
-      phone: h.contact_phone,
-      description: h.description,
-      opening_time:h.opening_time,
-      starRating: h.star_rating,
-      amenities: h.facilities,
-      hotelType: h.hotel_type,
-      isFeatured: h.is_featured,
-      images: h.images?.map((img: any) => img.image_url) || [],
-      roomTypes: h.roomTypes?.map((room: any) => ({
-        id: room.id,
-        name: room.name,
-        bedCount: room.bed_count,
-        bedSize: room.bed_size,
-        roomSize: room.room_size,
-        capacity: room.capacity,
-        floor: room.floor,
-        image: room.image_url,
-        roomCount: room.total_stock,
-        price: room.current_price
-      })) || h.roomTypes?.map((room: any) => ({ 
-        id: room.id,
-        name: room.name,
-        bedCount: room.bed_count,
-        bedSize: room.bed_size,
-        roomSize: room.room_size,
-        capacity: room.capacity,
-        floor: room.floor,
-        image: room.image_url,
-        roomCount: room.total_stock,
-        price: room.current_price
-      }))
-    };
-  }
-
-
-  /**
-   * 更新房间库存
-   * 校验酒店归属权 -> 校验房型归属权 -> 仅更新库存
-   */
-  static async updateRoomStock(hotelId: number, roomId: number, merchantId: number, newStock: number) {
-    // 确保该酒店确实属于该商户
-    const hotel = await Hotel.findOne({
-      where: { id: hotelId, merchant_id: merchantId }
-    });
-
-    if (!hotel) {
-      throw new AppError('未找到相关酒店信息，无权操作', 403);
-    }
-
-    // 找到对应的房型
-    const room = await Room.findOne({
-      where: { id: roomId, hotel_id: hotelId }
-    });
-
-    if (!room) {
-      throw new AppError('未找到该房型信息', 404);
-    }
-
-    // 更新
-    // 不修改酒店的 status，不会触发重新审核
-    await room.update({ total_stock: newStock });
-
-    return room;
-  }
-
-/**
-   * 管理员获取全局酒店列表 
-   * /admin/hotels?page=1&pageSize=10
-   */
-  static async getAdminHotels(query: { page?: number; pageSize?: number }) {
-    // 处理分页参数，pageSize 可选值：5, 10, 20, 50 
-    const page = Math.max(1, Number(query.page) || 1);
-    const pageSize = Number(query.pageSize) || 10;
-    const offset = (page - 1) * pageSize;
-
-    // 查询数据并关联商户名与主图
-    const { count, rows } = await Hotel.findAndCountAll({
-      limit: pageSize,
-      offset: offset,
-      include: [
-        {
-          model: User,
-          as: 'merchant',
-          attributes: ['username'] // 获取 merchantName 
-        },
-        {
-          model: HotelImage,
-          as: 'images',
-          where: { is_primary: true },
-          required: false, // 没有主图也返回酒店信息
-          attributes: ['image_url'] // 获取 firstImage 
-        }
-      ],
-      order: [['created_at', 'DESC']]
-    });
-
-    // 数据映射：将数据库字段转换为前端字段名 
-    const list = rows.map(hotel => {
-      const h = hotel.toJSON();
-      return {
-        id: h.id.toString(),
-        name: h.name_zh, // name_zh 映射为 name
+        name: h.name_zh, 
         address: h.address,
         phone: h.contact_phone,
         merchantName: h.merchant?.username || '未知商户',  
@@ -289,13 +375,77 @@ export class HotelService {
       };
     });
 
-    // 返回文档要求的响应结构 
     return {
       list,
       total: count,
       page,
       pageSize,
       totalPages: Math.ceil(count / pageSize)
+    };
+  }
+
+
+  /**
+ * 管理员获取酒店完整详情
+ */
+  static async getAdminHotelDetail(id: number) {
+    // 查询酒店，关联商户、图片和房型
+    const hotel = await Hotel.findByPk(id, {
+      include: [
+        { model: User, as: 'merchant', attributes: ['id', 'username'] },
+        { model: HotelImage, as: 'images', attributes: ['image_url'] },
+        { model: Room, as: 'roomTypes' }
+      ]
+    });
+
+    if (!hotel) {
+      throw new AppError('酒店不存在', 404);
+    }
+
+    const h = hotel.toJSON();
+
+    // 计算价格区间
+    const prices = h.roomTypes?.map((r: any) => parseFloat(r.current_price)) || [];
+    const minPrice = prices.length > 0 ? Math.min(...prices) : 0;
+    const maxPrice = prices.length > 0 ? Math.max(...prices) : 0;
+
+    // 数据映射
+    return {
+      id: h.id.toString(),
+      name: h.name_zh,                // name_zh -> name
+      address: h.address,
+      phone: h.contact_phone,         // contact_phone -> phone
+      description: h.description || "",
+      minPrice: minPrice,
+      maxPrice: maxPrice,
+      starRating: h.star_rating,      // star_rating -> starRating
+      amenities: h.facilities || [],  // facilities -> amenities
+      hotelType: h.hotel_type,
+      region: h.city || h.district,   
+      images: h.images?.map((img: any) => img.image_url) || [],
+      
+      roomTypes: h.roomTypes?.map((room: any) => {
+        const floors = room.floor?.match(/\d+/g)?.map(Number) || [1, 1];
+        return {
+          id: room.id.toString(),
+          name: room.name,
+          bedType: parseFloat(room.bed_size),
+          bedCount: room.bed_count,
+          roomSize: parseInt(room.room_size) || 0,
+          capacity: parseInt(room.capacity) || 2,
+          minFloor: floors[0],
+          maxFloor: floors[1] || floors[0],
+          image: room.image_url || "",
+          roomCount: room.total_stock,
+          price: parseFloat(room.current_price)
+        };
+      }) || [],
+
+      status: h.status,
+      merchantId: h.merchant_id.toString(),
+      merchantName: h.merchant?.username || "未知商户",
+      createdAt: h.created_at,
+      updatedAt: h.updated_at
     };
   }
 
@@ -335,6 +485,8 @@ export class HotelService {
         reason: rejectReason || '审批通过'
       }, { transaction: t });
 
+      // 清理缓存
+      await this.clearHotelCaches(hotelId, hotel.merchant_id);
       return true;
     });
   }
@@ -379,6 +531,8 @@ export class HotelService {
         reason: targetStatus === 'offline' ? '管理员执行强制下线' : '管理员恢复上线'
       }, { transaction: t });
 
+      // 状态变更后清理缓存，防止用户搜到下架酒店
+      await this.clearHotelCaches(hotelId, hotel.merchant_id);
       return true;
     });
   }
@@ -515,6 +669,12 @@ export class HotelService {
    * 用户端：获取酒店基础详情信息
    */
   static async getHotelInfoForUser(hotelId: number) {
+    const cacheKey = this.CACHE_KEYS.DETAIL_USER(hotelId);
+    
+    // 优先读缓存
+    const cached = await redis.get(cacheKey);
+    if (cached) return JSON.parse(cached);
+
     const hotel = await Hotel.findOne({
       where: { 
         id: hotelId,
@@ -548,7 +708,7 @@ export class HotelService {
     const facilitiesArray = Array.isArray(h.facilities) ? h.facilities : [];
 
     // 数据映射
-    return {
+    const result = {
       id: h.id,
       name: h.name_zh,
       imgList: h.images?.map((img: any) => img.image_url) || [],
@@ -559,12 +719,21 @@ export class HotelService {
       contactPhone: h.contact_phone || "",
       facilities: facilitiesArray
     };
+    // 写入缓存
+    await redis.setex(cacheKey, this.TTL, JSON.stringify(result));
+    return result;
   }
 
   /**
    * 用户端：获取酒店房型列表
    */
   static async getRoomListForUser(hotelId: number) {
+    const cacheKey = this.CACHE_KEYS.ROOMS_USER(hotelId);
+
+    // 性能优化：优先读缓存
+    const cached = await redis.get(cacheKey);
+    if (cached) return JSON.parse(cached);
+
     // 查询该酒店下所有激活的房型
     const rooms = await Room.findAll({
       where: { 
@@ -575,7 +744,7 @@ export class HotelService {
     });
 
     // 数据转换
-    return rooms.map(room => {
+    const result = rooms.map(room => {
       const r = room.toJSON();
 
       return {
@@ -596,6 +765,82 @@ export class HotelService {
         price: parseFloat(r.current_price)
       };
     });
+
+    // 写入缓存
+    await redis.setex(cacheKey, this.TTL, JSON.stringify(result));
+    return result;
+  }
+
+
+    /**
+   * 商户获取酒店可视化数据,统计各城市分布及各状态比例
+   */
+  static async getMerchantVisualization(merchantId: number) {
+    const cacheKey = this.CACHE_KEYS.VIZ_MERCHANT(merchantId);
+    
+    // 查缓存
+    const cached = await redis.get(cacheKey);
+    if (cached) return JSON.parse(cached);
+
+    // 查数据库
+    const cityStats = await Hotel.findAll({
+      where: { merchant_id: merchantId },
+      attributes: [[sequelize.fn('COUNT', sequelize.col('id')), 'value'], [sequelize.col('city'), 'name']],
+      group: ['city'],
+      raw: true
+    });
+
+    const statusStats = await Hotel.findAll({
+      where: { merchant_id: merchantId },
+      attributes: [[sequelize.fn('COUNT', sequelize.col('id')), 'value'], [sequelize.col('status'), 'statusEnum']],
+      group: ['status'],
+      raw: true
+    });
+
+    const statusMap: { [key: string]: string } = {
+      'pending': '审核中', 'approved': '已发布', 'rejected': '已拒绝', 'offline': '已下线'
+    };
+
+    const result = {
+      provinceData: cityStats.map((item: any) => ({ name: item.name || '未知', value: parseInt(item.value) })),
+      auditData: statusStats.map((item: any) => ({ name: statusMap[item.statusEnum] || item.statusEnum, value: parseInt(item.value) }))
+    };
+
+    // 写入缓存 
+    await redis.setex(cacheKey, this.TTL, JSON.stringify(result));
+    return result;
+  }
+
+
+    /**
+   * 管理员获取全局酒店可视化数据，统计全平台酒店的城市分布及各状态比例 
+   */
+  static async getAdminVisualization() {
+    const cacheKey = this.CACHE_KEYS.VIZ_ADMIN;
+    const cached = await redis.get(cacheKey);
+    if (cached) return JSON.parse(cached);
+
+    const cityStats = await Hotel.findAll({
+      attributes: [[sequelize.fn('COUNT', sequelize.col('id')), 'value'], [sequelize.col('city'), 'name']],
+      group: ['city'], raw: true
+    });
+
+    const statusStats = await Hotel.findAll({
+      attributes: [[sequelize.fn('COUNT', sequelize.col('id')), 'value'], [sequelize.col('status'), 'statusEnum']],
+      group: ['status'], raw: true
+    });
+
+    const statusMap: { [key: string]: string } = {
+      'pending': '审核中', 'approved': '已发布', 'rejected': '已拒绝', 'offline': '已下线'
+    };
+
+    const result = {
+      provinceData: cityStats.map((item: any) => ({ name: item.name || '未知', value: parseInt(item.value) })),
+      auditData: statusStats.map((item: any) => ({ name: statusMap[item.statusEnum] || item.statusEnum, value: parseInt(item.value) }))
+    };
+
+    await redis.setex(cacheKey, this.TTL, JSON.stringify(result));
+    return result;
   }
 
 

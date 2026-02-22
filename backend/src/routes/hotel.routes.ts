@@ -11,7 +11,11 @@ const router = Router();
 router.post('/', protect, restrictTo('merchant'), hotelController.saveHotel);
 
 // 获取商户酒店列表
-router.get('/', protect, restrictTo('merchant'), hotelController.getMerchantHotels);
+router.get('/getMerchantHotels', protect, restrictTo('merchant'), hotelController.getMerchantHotels);
+
+// GET /api/merchant/hotels/visualization
+router.get('/visualization', protect, restrictTo('merchant'), hotelController.getMerchantVisualization);
+
 // 获取酒店回显详情
 // GET /api/merchant/hotels/2
 router.get('/:id', protect, restrictTo('merchant'), hotelController.getHotelDetail);
@@ -20,3 +24,4 @@ router.get('/:id', protect, restrictTo('merchant'), hotelController.getHotelDeta
 // POST /api/merchant/hotels/:id/room-count
 router.post('/:id/room-count', protect, restrictTo('merchant'), hotelController.updateRoomStock);
 export default router; 
+

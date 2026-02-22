@@ -12,14 +12,11 @@ export const saveHotel = async (req: Request, res: Response, next: NextFunction)
   try {
     const merchantId = (req as any).user.id; 
 
-    // 捕捉返回结果
-    const result = await HotelService.saveHotel(req.body, merchantId);
+    await HotelService.saveHotel(req.body, merchantId);
 
-    // 按照接口文档要求的格式返回
     res.status(200).json({
       success: true,
-      message: "酒店保存成功",
-      data: result
+      message: "酒店保存成功"
     });
   } catch (error) {
     next(error);
@@ -33,15 +30,15 @@ export const saveHotel = async (req: Request, res: Response, next: NextFunction)
 export const getMerchantHotels = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const merchantId = (req as any).user.id;
-    // 从 query 中提取分页参数
-    const { page, pageSize } = req.query;
+    const { page, pageSize, hotelType, status } = req.query;
 
     const result = await HotelService.getMerchantHotels(merchantId, {
       page: page ? Number(page) : undefined,
-      pageSize: pageSize ? Number(pageSize) : undefined
+      pageSize: pageSize ? Number(pageSize) : undefined,
+      hotelType: hotelType as string, 
+      status: status as string 
     });
 
-    // 统一返回成功响应结构 
     res.status(200).json({
       success: true,
       data: result
@@ -79,39 +76,37 @@ export const updateRoomStock = async (req: Request, res: Response, next: NextFun
   try {
     const hotelId = Number(req.params.id);
     const merchantId = (req as any).user.id;
-    const { roomId, stock } = req.body;
+    const { roomTypes } = req.body; 
 
-    if (stock === undefined || stock < 0) {
-      throw new ValidationError('库存数量不合法'); 
+    if (!Array.isArray(roomTypes)) {
+      throw new AppError('无效的请求格式，roomTypes 必须为数组', 400);
     }
 
-    const updatedRoom = await HotelService.updateRoomStock(hotelId, roomId, merchantId, stock);
+    await HotelService.updateRoomStock(hotelId, merchantId, roomTypes);
 
     res.status(200).json({
       success: true,
-      message: '库存更新成功',
-      data: {
-        roomId: updatedRoom.id,
-        currentStock: updatedRoom.total_stock
-      }
+      message: '房间数量更新成功'
     });
   } catch (error) {
     next(error); 
   }
 };
 
-
+/**
+ * 管理员获取全局酒店列表 
+ */
 export const getAdminHotels = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    // 从 query 获取分页参数
-    const { page, pageSize } = req.query;
+    const { page, pageSize, hotelType, status } = req.query;
 
     const result = await HotelService.getAdminHotels({
       page: page ? Number(page) : undefined,
-      pageSize: pageSize ? Number(pageSize) : undefined
+      pageSize: pageSize ? Number(pageSize) : undefined,
+      hotelType: hotelType as string, 
+      status: status as string        
     });
 
-    // 返回标准响应格式
     res.status(200).json({
       success: true,
       data: result
@@ -121,6 +116,24 @@ export const getAdminHotels = async (req: Request, res: Response, next: NextFunc
   }
 };
 
+
+/**
+ * 管理员：获取指定酒店详情
+ */
+export const getAdminHotelDetail = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id } = req.params;
+
+    const hotel = await HotelService.getAdminHotelDetail(Number(id));
+
+    res.status(200).json({
+      success: true,
+      data: hotel
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
 /**
  * 管理员审核酒店接口
@@ -214,6 +227,40 @@ export const searchHotels = async (req: Request, res: Response, next: NextFuncti
     res.status(200).json({
       success: true,
       data: result
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * 商户：获取可视化统计数据
+ */
+export const getMerchantVisualization = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const merchantId = (req as any).user.id;
+
+    const stats = await HotelService.getMerchantVisualization(merchantId);
+
+    res.status(200).json({
+      success: true,
+      data: stats
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * 管理员：获取全平台可视化统计数据
+ */
+export const getAdminVisualization = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const stats = await HotelService.getAdminVisualization();
+
+    res.status(200).json({
+      success: true,
+      data: stats
     });
   } catch (error) {
     next(error);

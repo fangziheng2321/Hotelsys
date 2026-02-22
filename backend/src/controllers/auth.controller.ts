@@ -3,22 +3,22 @@ import { AuthService } from '../services/auth.service';
 import logger from '../config/logger';
 
 /**
- * @description 处理用户注册
  * 管理系统登录/注册
  */
 export const register = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { username, password, Role, Email } = req.body;
 
-    // 1. 基础存在性校验
-    if (!username || !password) {
-        res.status(400).json({ 
+    // 存在性校验
+    if (!username || !password || !Role) {
+      res.status(400).json({ 
         success: false, 
-        message: '用户名和密码不能为空' 
+        message: '用户名、密码和注册角色不能为空' 
       });
+      return;
     }
 
-    // 2. 调用 Service (Service 内部会进行权限校验)
+    // 调用 Service
     await AuthService.registerUser({
       username: username,
       password_hash: password,
@@ -26,22 +26,19 @@ export const register = async (req: Request, res: Response, next: NextFunction):
       email: Email
     });
 
-    logger.info(`新用户注册成功 [Role: ${Role || 'customer'}]: ${username}`);
+    logger.info(`新用户注册成功 [Role: ${Role}]: ${username}`); //
 
     res.status(201).json({
       success: true,
       message: '注册成功'
     });
   } catch (error) {
-    // 如果 Service 抛出 403 越权错误，会被这里的 next(error) 捕获
-    // 并由 app.ts 中的全局错误处理器返回标准 JSON
-    next(error);
+    next(error); //
   }
 };
 
 /**
- * @description 处理用户登录
- * 支持商户和管理员两个角色 
+ * 用户登录
  */
 export const login = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
