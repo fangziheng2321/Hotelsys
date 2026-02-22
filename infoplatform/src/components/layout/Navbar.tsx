@@ -1,6 +1,8 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { AuthService } from '../utils/auth';
+import { AuthService } from '../../utils/auth';
+import ThemeToggle from '../common/ThemeToggle';
+import AsyncButton from '../common/AsyncButton';
 
 const Navbar: React.FC = () => {
   const navigate = useNavigate();
@@ -35,16 +37,22 @@ const Navbar: React.FC = () => {
               {userRole === 'merchant' && (
                 <>
                   <Link to="/hotel">{currentUser?.username}的酒店</Link>
-                  <Link to="/hotel/visualization">数据概览</Link>
+                  <div className="navbar-right-group">
+                    <Link to="/hotel/visualization">数据概览</Link>
+                    <ThemeToggle />
+                  </div>
                 </>
               )}
               {userRole === 'admin' && (
                 <>
                   <Link to="/admin/audit">酒店审核</Link>
-                  <Link to="/hotel/visualization">数据概览</Link>
+                  <div className="navbar-right-group">
+                    <Link to="/hotel/visualization">数据概览</Link>
+                    <ThemeToggle />
+                  </div>
                 </>
               )}
-              <button onClick={handleLogout}>退出</button>
+              <AsyncButton onClick={handleLogout} variant="secondary">退出</AsyncButton>
             </>
           )}
         </div>

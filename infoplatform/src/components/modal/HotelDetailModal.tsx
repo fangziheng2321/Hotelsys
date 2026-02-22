@@ -1,5 +1,6 @@
 import React from 'react';
-import { Hotel, HotelType } from '../mock/data';
+import { Hotel, HotelType } from '../../mock/data';
+import AsyncButton from '../common/AsyncButton';
 
 interface HotelDetailModalProps {
   hotel: Hotel | null;
@@ -45,7 +46,7 @@ const HotelDetailModal: React.FC<HotelDetailModalProps> = ({
       <div className="modal-container detail-modal">
         <div className="modal-header">
           <h3>酒店详情 - {hotel.name}</h3>
-          <button className="modal-close" onClick={onClose}>×</button>
+          <AsyncButton onClick={onClose} variant="secondary" className="modal-close">×</AsyncButton>
         </div>
         
         <div className="modal-body detail-body">
@@ -175,9 +176,9 @@ const HotelDetailModal: React.FC<HotelDetailModalProps> = ({
         </div>
         
         <div className="modal-footer">
-          <button className="btn-cancel" onClick={onClose}>
+          <AsyncButton onClick={onClose} variant="secondary">
             关闭
-          </button>
+          </AsyncButton>
         </div>
       </div>
     </div>

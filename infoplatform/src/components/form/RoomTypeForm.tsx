@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { RoomType } from '../mock/data';
+import { RoomType } from '../../mock/data';
+import AsyncButton from '../common/AsyncButton';
 
 interface RoomTypeFormProps {
   roomTypes: RoomType[];
@@ -137,7 +138,7 @@ const RoomTypeForm: React.FC<RoomTypeFormProps> = ({ roomTypes, onChange, disabl
             <label>房间大小（平方米）</label>
             <input
               type="number"
-              min="1"
+              min={1}
               value={editingRoom.roomSize}
               onChange={(e) => setEditingRoom({ ...editingRoom, roomSize: Number(e.target.value) || 0 })}
               placeholder="如：35"
@@ -148,7 +149,7 @@ const RoomTypeForm: React.FC<RoomTypeFormProps> = ({ roomTypes, onChange, disabl
             <label>入住人数</label>
             <input
               type="number"
-              min="1"
+              min={1}
               value={editingRoom.capacity}
               onChange={(e) => setEditingRoom({ ...editingRoom, capacity: Number(e.target.value) || 1 })}
               placeholder="如：2"
@@ -217,12 +218,12 @@ const RoomTypeForm: React.FC<RoomTypeFormProps> = ({ roomTypes, onChange, disabl
           </div>
         </div>
         <div className="room-form-actions">
-          <button type="button" onClick={handleSave} disabled={disabled} className="btn-primary">
+          <AsyncButton type="button" onClick={handleSave} disabled={disabled} variant="primary">
             保存
-          </button>
-          <button type="button" onClick={handleCancel} disabled={disabled} className="btn-secondary">
+          </AsyncButton>
+          <AsyncButton type="button" onClick={handleCancel} disabled={disabled} variant="secondary">
             取消
-          </button>
+          </AsyncButton>
         </div>
       </div>
     );
@@ -233,9 +234,9 @@ const RoomTypeForm: React.FC<RoomTypeFormProps> = ({ roomTypes, onChange, disabl
       <div className="room-type-header">
         <h3>房型信息</h3>
         {!disabled && !editingRoom && (
-          <button type="button" onClick={handleAdd} className="btn-add">
+          <AsyncButton type="button" onClick={handleAdd} variant="primary">
             + 添加房型
-          </button>
+          </AsyncButton>
         )}
       </div>
 
@@ -267,22 +268,22 @@ const RoomTypeForm: React.FC<RoomTypeFormProps> = ({ roomTypes, onChange, disabl
               </div>
               {!disabled && (
                 <div className="room-type-actions">
-                  <button
+                  <AsyncButton
                     type="button"
                     onClick={() => handleEdit(room)}
-                    className="btn-edit"
+                    variant="primary"
                     title="编辑"
                   >
                     编辑
-                  </button>
-                  <button
+                  </AsyncButton>
+                  <AsyncButton
                     type="button"
                     onClick={() => handleDelete(room.id)}
-                    className="btn-delete"
+                    variant="danger"
                     title="删除"
                   >
                     删除
-                  </button>
+                  </AsyncButton>
                 </div>
               )}
             </div>

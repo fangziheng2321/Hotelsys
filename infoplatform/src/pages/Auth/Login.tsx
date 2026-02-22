@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { authApi } from '../../services/api';
 import { AuthService } from '../../utils/auth';
+import AsyncButton from '../../components/common/AsyncButton';
 
 const Login: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -101,9 +102,9 @@ const Login: React.FC = () => {
             disabled={loading}
           />
         </div>
-        <button type="submit" disabled={loading}>
-          {loading ? '登录中...' : '登录'}
-        </button>
+        <AsyncButton type="submit" loading={loading} loadingText="登录中..." variant="primary">
+          登录
+        </AsyncButton>
       </form>
       <div className="form-footer">
         <p>还没有账号？ <Link to="/register">立即注册</Link></p>

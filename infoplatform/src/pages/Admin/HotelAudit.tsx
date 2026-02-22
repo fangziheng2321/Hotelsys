@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { adminApi, Hotel, AdminHotelListItem, HotelType, HotelStatus } from '../../services/api';
-import HotelDetailModal from '../../components/HotelDetailModal';
+import HotelDetailModal from '../../components/modal/HotelDetailModal';
 import PageHeader from '../../components/common/PageHeader';
 import PaginationInfo from '../../components/common/PaginationInfo';
 import PaginationControl from '../../components/common/PaginationControl';
 import HotelTable from '../../components/common/HotelTable';
+import AsyncButton from '../../components/common/AsyncButton';
 
 
 const HotelAudit: React.FC = () => {
@@ -183,49 +184,51 @@ const HotelAudit: React.FC = () => {
         onFilterChange={setFilters}
         renderActions={(hotel, loadingDetail) => (
           <>
-            <button
+            <AsyncButton
               onClick={() => handleOpenDetailModal(hotel.id)}
               disabled={loadingDetail}
-              className="btn-detail"
+              variant="info"
+              loading={loadingDetail}
+              loadingText="加载中..."
             >
-              {loadingDetail ? '加载中...' : '详情'}
-            </button>
+              详情
+            </AsyncButton>
             {hotel.status === 'pending' && (
               <>
-                <button
+                <AsyncButton
                   onClick={() => handleApprove(hotel.id)}
-                  className="btn-approve"
+                  variant="success"
                 >
                   通过
-                </button>
-                <button
+                </AsyncButton>
+                <AsyncButton
                   onClick={() => {
                     const reason = window.prompt('请输入拒绝原因：');
                     if (reason) {
                       handleReject(hotel.id, reason);
                     }
                   }}
-                  className="btn-reject"
+                  variant="danger"
                 >
                   拒绝
-                </button>
+                </AsyncButton>
               </>
             )}
             {(hotel.status === 'approved' || hotel.status === 'offline') && (
-              <button
+              <AsyncButton
                 onClick={() => handleToggleStatus(hotel.id, hotel.status)}
-                className={hotel.status === 'approved' ? 'btn-offline' : 'btn-restore'}
+                variant={hotel.status === 'approved' ? 'secondary' : 'success'}
               >
                 {hotel.status === 'approved' ? '下线' : '上线'}
-              </button>
+              </AsyncButton>
             )}
             {hotel.status === 'rejected' && hotel.rejectReason && (
-              <button
+              <AsyncButton
                 onClick={() => alert(`拒绝原因：${hotel.rejectReason}`)}
-                className="btn-reason"
+                variant="danger"
               >
                 原因
-              </button>
+              </AsyncButton>
             )}
           </>
         )}

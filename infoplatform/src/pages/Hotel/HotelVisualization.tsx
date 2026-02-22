@@ -3,6 +3,7 @@ import { hotelApi, adminApi, HotelStatus } from '../../services/api';
 import PageHeader from '../../components/common/PageHeader';
 import * as echarts from 'echarts';
 import { AuthService } from '../../utils/auth';
+import { ThemeService } from '../../utils/theme';
 
 // 注册中国地图
 import chinaMapData from '../../assets/map/china.json';
@@ -89,29 +90,227 @@ const HotelVisualization: React.FC = () => {
     };
   }, [currentLevel, currentProvince]);
 
+  // 主题变化监听
+  useEffect(() => {
+    // 当主题变化时，重新更新图表
+    const updateChartsOnThemeChange = () => {
+      if (!mapChart.current || !pieChart.current) return;
+      
+      // 检测当前是否为夜间模式
+      const isDarkMode = ThemeService.isDarkMode();
+
+      // 根据主题设置文字颜色
+      const textColor = isDarkMode ? '#e0e0e0' : '#333';
+      const subTextColor = isDarkMode ? '#69b1ff' : '#1890ff';
+
+      // 更新地图图表
+      const mapOption = {
+        backgroundColor: 'transparent',
+        title: {
+          text: currentLevel === 'country' ? '全国酒店分布' : `${currentProvince}酒店分布`,
+          left: 'center',
+          textStyle: {
+            fontSize: 16,
+            fontWeight: 'bold',
+            color: textColor
+          },
+          subtext: currentLevel === 'province' ? '点击返回全国视图' : '',
+          subtextStyle: {
+            color: subTextColor,
+            cursor: 'pointer'
+          },
+          triggerEvent: true
+        },
+        tooltip: {
+          trigger: 'item',
+          formatter: '{b}: {c}家酒店',
+          textStyle: {
+            color: textColor
+          },
+          backgroundColor: isDarkMode ? 'rgba(51, 51, 51, 0.9)' : 'rgba(255, 255, 255, 0.9)',
+          borderColor: isDarkMode ? '#444' : '#ddd',
+          borderWidth: 1
+        },
+        visualMap: {
+          min: 0,
+          max: currentLevel === 'country' ? 10 : 5,
+          left: 'left',
+          top: 'bottom',
+          text: ['高', '低'],
+          textStyle: {
+            color: textColor
+          },
+          calculable: true,
+          inRange: {
+            color: isDarkMode 
+              ? ['#333', '#69b1ff', '#1890ff', '#096dd9'] // 夜间模式颜色
+              : ['#f5f5f5', '#ff6b6b', '#ee5a52', '#c0392b'] // 白天模式颜色
+          },
+          backgroundColor: isDarkMode ? 'rgba(45, 45, 45, 0.8)' : 'rgba(255, 255, 255, 0.8)',
+          borderColor: isDarkMode ? '#444' : '#ddd'
+        },
+        series: [
+          {
+            name: '酒店数量',
+            type: 'map',
+            map: 'china',
+            roam: true,
+            itemStyle: {
+              areaColor: isDarkMode ? '#333' : '#f0f0f0',
+              borderColor: isDarkMode ? '#555' : '#ccc',
+              borderWidth: 1
+            },
+            emphasis: {
+              itemStyle: {
+                areaColor: isDarkMode ? '#444' : '#e0e0e0',
+                borderColor: isDarkMode ? '#69b1ff' : '#1890ff',
+                borderWidth: 2
+              },
+              label: {
+                color: isDarkMode ? '#fff' : '#000',
+                fontWeight: 'bold'
+              }
+            },
+            label: {
+              show: true,
+              fontSize: 10,
+              color: isDarkMode ? '#e0e0e0' : '#333',
+              fontWeight: 'bold'
+            },
+            data: hotelData
+          }
+        ]
+      };
+
+      mapChart.current.setOption(mapOption);
+
+      // 定义审核状态颜色映射
+      const statusColors = {
+        '已发布': '#52c41a',
+        '审核中': '#1890ff',
+        '已拒绝': '#ff4d4f',
+        '已下线': '#8c8c8c'
+      };
+
+      // 更新饼图图表
+      const pieOption = {
+        backgroundColor: 'transparent',
+        title: {
+          text: '审核状态分布',
+          left: 'center',
+          textStyle: {
+            fontSize: 14,
+            fontWeight: 'bold',
+            color: textColor
+          }
+        },
+        tooltip: {
+          trigger: 'item',
+          formatter: '{b}: {c}家 ({d}%)',
+          textStyle: {
+            color: textColor
+          },
+          backgroundColor: isDarkMode ? 'rgba(51, 51, 51, 0.9)' : 'rgba(255, 255, 255, 0.9)',
+          borderColor: isDarkMode ? '#444' : '#ddd',
+          borderWidth: 1
+        },
+        series: [
+          {
+            name: '审核状态',
+            type: 'pie',
+            radius: ['40%', '70%'],
+            center: ['50%', '40%'],
+            data: auditData.map(item => ({
+              ...item,
+              itemStyle: {
+                color: isDarkMode 
+                  ? { // 夜间模式颜色
+                      '已发布': '#52c41a',
+                      '审核中': '#69b1ff',
+                      '已拒绝': '#ff4d4f',
+                      '已下线': '#8c8c8c'
+                    }[item.name] || '#8c8c8c'
+                  : statusColors[item.name] || '#8c8c8c'
+              }
+            })),
+            emphasis: {
+              itemStyle: {
+                shadowBlur: 10,
+                shadowOffsetX: 0,
+                shadowColor: isDarkMode ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.5)'
+              }
+            },
+            label: {
+              show: false
+            },
+            labelLine: {
+              show: false
+            }
+          }
+        ]
+      };
+
+      pieChart.current.setOption(pieOption);
+    };
+
+    // 使用MutationObserver监听body类名变化
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.attributeName === 'class') {
+          updateChartsOnThemeChange();
+        }
+      });
+    });
+
+    // 观察body元素的类名变化
+    observer.observe(document.body, {
+      attributes: true,
+      attributeFilter: ['class']
+    });
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [hotelData, auditData, currentLevel, currentProvince]);
+
   // 更新图表数据
   useEffect(() => {
     if (loading || !mapChart.current || !pieChart.current) return;
 
+    // 检测当前是否为夜间模式
+    const isDarkMode = ThemeService.isDarkMode();
+
+    // 根据主题设置文字颜色
+    const textColor = isDarkMode ? '#e0e0e0' : '#333';
+    const subTextColor = isDarkMode ? '#69b1ff' : '#1890ff';
+
     // 更新地图图表
     const mapOption = {
+      backgroundColor: 'transparent',
       title: {
         text: currentLevel === 'country' ? '全国酒店分布' : `${currentProvince}酒店分布`,
         left: 'center',
         textStyle: {
           fontSize: 16,
-          fontWeight: 'bold'
+          fontWeight: 'bold',
+          color: textColor
         },
         subtext: currentLevel === 'province' ? '点击返回全国视图' : '',
         subtextStyle: {
-          color: '#1890ff',
+          color: subTextColor,
           cursor: 'pointer'
         },
         triggerEvent: true
       },
       tooltip: {
         trigger: 'item',
-        formatter: '{b}: {c}家酒店'
+        formatter: '{b}: {c}家酒店',
+        textStyle: {
+          color: textColor
+        },
+        backgroundColor: isDarkMode ? 'rgba(51, 51, 51, 0.9)' : 'rgba(255, 255, 255, 0.9)',
+        borderColor: isDarkMode ? '#444' : '#ddd',
+        borderWidth: 1
       },
       visualMap: {
         min: 0,
@@ -119,10 +318,17 @@ const HotelVisualization: React.FC = () => {
         left: 'left',
         top: 'bottom',
         text: ['高', '低'],
+        textStyle: {
+          color: textColor
+        },
         calculable: true,
         inRange: {
-          color: ['#f5f5f5', '#ff6b6b', '#ee5a52', '#c0392b']
-        }
+          color: isDarkMode 
+            ? ['#333', '#69b1ff', '#1890ff', '#096dd9'] // 夜间模式颜色
+            : ['#f5f5f5', '#ff6b6b', '#ee5a52', '#c0392b'] // 白天模式颜色
+        },
+        backgroundColor: isDarkMode ? 'rgba(45, 45, 45, 0.8)' : 'rgba(255, 255, 255, 0.8)',
+        borderColor: isDarkMode ? '#444' : '#ddd'
       },
       series: [
         {
@@ -130,9 +336,27 @@ const HotelVisualization: React.FC = () => {
           type: 'map',
           map: 'china',
           roam: true,
+          itemStyle: {
+            areaColor: isDarkMode ? '#333' : '#f0f0f0',
+            borderColor: isDarkMode ? '#555' : '#ccc',
+            borderWidth: 1
+          },
+          emphasis: {
+            itemStyle: {
+              areaColor: isDarkMode ? '#444' : '#e0e0e0',
+              borderColor: isDarkMode ? '#69b1ff' : '#1890ff',
+              borderWidth: 2
+            },
+            label: {
+              color: isDarkMode ? '#fff' : '#000',
+              fontWeight: 'bold'
+            }
+          },
           label: {
             show: true,
-            fontSize: 10
+            fontSize: 10,
+            color: isDarkMode ? '#e0e0e0' : '#333',
+            fontWeight: 'bold'
           },
           data: hotelData
         }
@@ -177,17 +401,25 @@ const HotelVisualization: React.FC = () => {
 
     // 更新饼图图表
     const pieOption = {
+      backgroundColor: 'transparent',
       title: {
         text: '审核状态分布',
         left: 'center',
         textStyle: {
           fontSize: 14,
-          fontWeight: 'bold'
+          fontWeight: 'bold',
+          color: textColor
         }
       },
       tooltip: {
         trigger: 'item',
-        formatter: '{b}: {c}家 ({d}%)'
+        formatter: '{b}: {c}家 ({d}%)',
+        textStyle: {
+          color: textColor
+        },
+        backgroundColor: isDarkMode ? 'rgba(51, 51, 51, 0.9)' : 'rgba(255, 255, 255, 0.9)',
+        borderColor: isDarkMode ? '#444' : '#ddd',
+        borderWidth: 1
       },
       series: [
         {
@@ -198,14 +430,21 @@ const HotelVisualization: React.FC = () => {
           data: auditData.map(item => ({
             ...item,
             itemStyle: {
-              color: statusColors[item.name] || '#8c8c8c'
+              color: isDarkMode 
+                ? { // 夜间模式颜色
+                    '已发布': '#52c41a',
+                    '审核中': '#69b1ff',
+                    '已拒绝': '#ff4d4f',
+                    '已下线': '#8c8c8c'
+                  }[item.name] || '#8c8c8c'
+                : statusColors[item.name] || '#8c8c8c'
             }
           })),
           emphasis: {
             itemStyle: {
               shadowBlur: 10,
               shadowOffsetX: 0,
-              shadowColor: 'rgba(0, 0, 0, 0.5)'
+              shadowColor: isDarkMode ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.5)'
             }
           },
           label: {
@@ -219,7 +458,7 @@ const HotelVisualization: React.FC = () => {
     };
 
     pieChart.current.setOption(pieOption);
-  }, [loading, hotelData, auditData]);
+  }, [loading, hotelData, auditData, currentLevel, currentProvince, userRole]);
 
   return (
     <div className="hotel-visualization-container">

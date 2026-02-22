@@ -6,7 +6,7 @@ import HotelForm from '../pages/Hotel/HotelForm';
 import HotelList from '../pages/Hotel/HotelList';
 import HotelVisualization from '../pages/Hotel/HotelVisualization';
 import HotelAudit from '../pages/Admin/HotelAudit';
-import Layout from '../components/Layout';
+import Layout from '../components/layout/Layout';
 import { AuthService } from '../utils/auth';
 
 // 私有路由组件
