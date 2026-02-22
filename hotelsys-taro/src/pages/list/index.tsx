@@ -37,7 +37,7 @@ const List = () => {
   } = useSearchStore();
 
   const { cityName, navigateToCitySelector } = useCitySelect();
-  const [distance, setDistance] = useState<number | null>(null);
+  const [distance, setDistance] = useState<number[] | null>(null);
   const filterForm = useMemo(() => {
     return {
       type: type,
@@ -55,7 +55,7 @@ const List = () => {
         setType(value as SearchTabType);
         break;
       case "distance":
-        setDistance(value as number);
+        setDistance(value as number[]);
         break;
       case "priceRange":
         setPriceRange(value as number[]);

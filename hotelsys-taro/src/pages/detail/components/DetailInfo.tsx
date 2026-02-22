@@ -29,19 +29,21 @@ const DetailInfo: FC<IProps> = ({
   return (
     <View className="relative flex flex-col gap-6">
       {/* 口碑推荐 */}
-      <View className="absolute right-4 -top-12 w-16 h-16 bg-gradient-to-br from-orange-100 to-amber-50 rounded-lg shadow-sm flex flex-col items-center justify-center border border-orange-200">
-        <Text className="text-sm text-orange-800 font-bold">
-          {t("detail.info.wordOfMouth")}
-        </Text>
-        <Text className="text-sm text-orange-800 font-bold">
-          {t("detail.info.referral")}
-        </Text>
-      </View>
+      {rate >= 4 && (
+        <View className="absolute right-4 -top-12 w-16 h-16 bg-gradient-to-br from-orange-100 to-amber-50 rounded-lg shadow-sm flex flex-col items-center justify-center border border-orange-200">
+          <Text className="text-sm text-orange-800 font-bold">
+            {t("detail.info.wordOfMouth")}
+          </Text>
+          <Text className="text-sm text-orange-800 font-bold">
+            {t("detail.info.referral")}
+          </Text>
+        </View>
+      )}
 
       {/* 酒店基础信息 */}
       <View className="flex flex-col gap-2 mt-6">
         {/* 名字 */}
-        <Text className="text-xl font-bold text-gray-900 dark:text-dark-text leading-tight truncate">
+        <Text className="text-xl font-bold text-gray-900 dark:text-dark-text leading-tight line-clamp-2">
           {name ?? "N/A"}
         </Text>
         {/* 星级 */}

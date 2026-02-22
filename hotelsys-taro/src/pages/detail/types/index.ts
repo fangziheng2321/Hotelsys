@@ -8,7 +8,7 @@ export interface DetailInfoType {
   address: string;
   price: number;
   facilities: string[];
-  telephone: null | string;
+  contactPhone: null | string;
 }
 
 // 设施

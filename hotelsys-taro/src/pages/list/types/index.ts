@@ -7,7 +7,7 @@ export interface hotTagType {
 /* 筛选表单 */
 export interface filterFormType {
   type: string | null;
-  distance: number | null;
+  distance: number[] | null;
   priceRange: number[] | null;
   rate: number | null;
 }

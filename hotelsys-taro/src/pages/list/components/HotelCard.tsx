@@ -16,6 +16,7 @@ import { useCurrency } from "@/utils/currency";
 import Taro from "@tarojs/taro";
 import { getValidThumbHotelImageUrl } from "@/utils/image";
 import { HOTEL_FACILITIES } from "@/constant/facility";
+import { useSearchStore } from "@/store/searchStore";
 
 interface IProps extends hotelCardType {
   customClassName?: string;
@@ -34,6 +35,8 @@ const HotelCard: FC<IProps> = ({
 }) => {
   const { t } = useTranslation();
   const { formatAmount } = useCurrency();
+  // 已被选择的标签
+  const selectedFacilities = useSearchStore((state) => state.facilities);
 
   /* 查看酒店详情 */
   const handleViewDetail = () => {
@@ -41,6 +44,22 @@ const HotelCard: FC<IProps> = ({
       url: `/pages/detail/index?id=${id}`,
     });
   };
+
+  // UI展示的设施
+  const UIFacilities = useMemo(() => {
+    const list = Array.isArray(facilities) ? facilities : [];
+    const selectedSet = new Set(selectedFacilities);
+    const selected: { value: string; selected: boolean }[] = [];
+    const unSelected: { value: string; selected: boolean }[] = [];
+    list.forEach((item) => {
+      if (selectedSet.has(item)) {
+        selected.push({ value: item, selected: true });
+      } else {
+        unSelected.push({ value: item, selected: false });
+      }
+    });
+    return [...selected, ...unSelected];
+  }, [facilities, selectedFacilities]);
 
   // 获取图标
   const getFacilityLabel = (id: string) => {
@@ -82,12 +101,17 @@ const HotelCard: FC<IProps> = ({
 
         {/* 酒店标签 */}
         <View className="flex flex-wrap gap-2 items-center">
-          {facilities?.slice(0, 3).map((tag) => (
+          {UIFacilities?.map((tag) => (
             <CustomTag
-              key={tag}
-              customClassName="bg-transparent border-secondary border border-solid text-secondary text-xs font-normal"
+              key={tag.value}
+              customClassName={[
+                " border-secondary border border-solid  text-xs font-normal",
+                tag.selected
+                  ? "bg-secondary text-white"
+                  : "bg-transparent text-secondary",
+              ].join(" ")}
             >
-              {getFacilityLabel(tag)}
+              {getFacilityLabel(tag.value)}
             </CustomTag>
           ))}
         </View>

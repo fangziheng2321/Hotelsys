@@ -1,17 +1,7 @@
-import React, {
-  FC,
-  useState,
-  useEffect,
-  useMemo,
-  useCallback,
-  useContext,
-  useRef,
-  Dispatch,
-  SetStateAction,
-} from "react";
+import React, { FC, useMemo, useRef } from "react";
 import { View, Text } from "@tarojs/components";
 import { useTranslation } from "react-i18next";
-import { ConfigProvider, Menu, Button } from "@nutui/nutui-react-taro";
+import { ConfigProvider, Menu } from "@nutui/nutui-react-taro";
 import { Filter, FilterF } from "@nutui/icons-react-taro";
 import DistanceFilterPanel from "./DistanceFilterPanel";
 import { FilterType } from "../enums";
@@ -33,52 +23,56 @@ const FilterBar: FC<IProps> = ({ filterForm, setFilterForm }) => {
   const hasFiltered = useMemo(() => {
     return Object.values(filterForm).some((value) => value !== null);
   }, [filterForm]);
-  const menuList = [
-    {
-      id: "type",
-      type: FilterType.TYPE,
-      isCustom: false,
-      title: t("list.filter_bar.type"),
-      customTitleIcon: null,
-      options: [
-        {
-          text: t("home.search_tabs.domestic"),
-          value: SearchTabType.DOMESTIC,
-        },
-        {
-          text: t("home.search_tabs.overseas"),
-          value: SearchTabType.OVERSEAS,
-        },
-        {
-          text: t("home.search_tabs.hourly"),
-          value: SearchTabType.HOURLY,
-        },
-        {
-          text: t("home.search_tabs.homestay"),
-          value: SearchTabType.HOMESTAY,
-        },
-      ],
-    },
-    {
-      id: "distance",
-      isCustom: false,
-      type: FilterType.DISTANCE,
-      customTitleIcon: null,
-      title: t("list.filter_bar.distance"),
-      options: [
-        { text: "0-100m", value: 100 },
-        { text: "100-500m", value: 500 },
-        { text: "500-1000m", value: 1000 },
-      ],
-    },
-    {
-      id: "priceRate",
-      isCustom: true,
-      type: FilterType.PRICERATE,
-      customTitleIcon: null,
-      title: t("list.filter_bar.price"),
-    },
-  ];
+
+  const menuList = useMemo(
+    () => [
+      {
+        id: "type",
+        type: FilterType.TYPE,
+        isCustom: false,
+        title: t("list.filter_bar.type"),
+        customTitleIcon: null,
+        options: [
+          {
+            text: t("home.search_tabs.domestic"),
+            value: SearchTabType.DOMESTIC,
+          },
+          {
+            text: t("home.search_tabs.overseas"),
+            value: SearchTabType.OVERSEAS,
+          },
+          {
+            text: t("home.search_tabs.hourly"),
+            value: SearchTabType.HOURLY,
+          },
+          {
+            text: t("home.search_tabs.homestay"),
+            value: SearchTabType.HOMESTAY,
+          },
+        ],
+      },
+      {
+        id: "distance",
+        isCustom: false,
+        type: FilterType.DISTANCE,
+        customTitleIcon: null,
+        title: t("list.filter_bar.distance"),
+        options: [
+          { text: "0-100m", value: "0-100" },
+          { text: "100-500m", value: "100-500" },
+          { text: "500-1000m", value: "500-1000" },
+        ],
+      },
+      {
+        id: "priceRate",
+        isCustom: true,
+        type: FilterType.PRICERATE,
+        customTitleIcon: null,
+        title: t("list.filter_bar.price"),
+      },
+    ],
+    [],
+  );
 
   /* 关闭函数 */
   const handleClose = (id: number) => {
@@ -130,6 +124,14 @@ const FilterBar: FC<IProps> = ({ filterForm, setFilterForm }) => {
     nutuiMenuContentMaxHeight: "auto",
   };
 
+  // 避免数组比较，改成字符串`min-max`
+  const distanceValue = useMemo(() => {
+    if (!filterForm.distance) {
+      return null;
+    }
+    return `${filterForm.distance[0]}-${filterForm.distance[1]}`;
+  }, [filterForm.distance]);
+
   return (
     <View className="flex items-center justify-between">
       <ConfigProvider className="flex-1" theme={customTheme}>
@@ -141,10 +143,25 @@ const FilterBar: FC<IProps> = ({ filterForm, setFilterForm }) => {
               }}
               key={item.id}
               title={item.title}
-              value={filterForm[item.id]}
+              value={
+                item.id === "distance" ? distanceValue : filterForm[item.id]
+              }
               options={item.isCustom ? undefined : item.options}
               titleIcon={item.customTitleIcon ?? undefined}
-              onChange={(option) => setFilterForm(item.id as any, option.value)}
+              onChange={(option) => {
+                if (item.id === "distance") {
+                  const [start, end] = String(option.value)
+                    .split("-")
+                    .map((value) => Number(value));
+                  if (Number.isFinite(start) && Number.isFinite(end)) {
+                    setFilterForm("distance", [start, end]);
+                  } else {
+                    setFilterForm("distance", null);
+                  }
+                  return;
+                }
+                setFilterForm(item.id as any, option.value);
+              }}
             >
               {item.isCustom && renderPanel(item)}
             </Menu.Item>

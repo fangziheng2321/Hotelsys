@@ -13,7 +13,7 @@ export const MOCK_HOTEL_DETAIL = {
   description: "这家酒店是中式风格装修，舒适安逸",
   address: "浦东新区浦明路868弄3号楼",
   price: Math.floor(Math.random() * 900) + 100,
-  telephone: "12345678954",
+  contactPhone: "12345678954",
   facilities: ["免费WiFi", "停车场", "餐厅", "健身房", "游泳池", "会议室"],
 };
 

@@ -38,7 +38,7 @@ const Index: FC<IProps> = () => {
     description: "",
     address: "",
     price: 0,
-    telephone: null,
+    contactPhone: null,
     facilities: [],
   });
   const [roomList, setRoomList] = useState<RoomType[]>([]);
@@ -122,7 +122,10 @@ const Index: FC<IProps> = () => {
       </View>
       {/* 底部栏 */}
       <View className="fixed bottom-0 left-0 right-0 px-4 py-2 bg-white dark:bg-dark-card ">
-        <FunctionBar price={hotelInfo.price} telephone={hotelInfo.telephone} />
+        <FunctionBar
+          price={hotelInfo.price}
+          contactPhone={hotelInfo.contactPhone}
+        />
       </View>
     </PageWrapper>
   );

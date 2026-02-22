@@ -16,23 +16,23 @@ import Taro from "@tarojs/taro";
 
 interface IProps {
   price: number;
-  telephone: null | string;
+  contactPhone: null | string;
 }
 
-const FunctioinBar: FC<IProps> = ({ price, telephone }) => {
+const FunctioinBar: FC<IProps> = ({ price, contactPhone }) => {
   const { t } = useTranslation();
   const { formatAmount } = useCurrency();
 
   // 联系酒店
   const handleContact = () => {
-    if (!telephone) {
+    if (!contactPhone) {
       Taro.showToast({
         title: t("detail.function_bar.makePhoneCall.empty"),
         icon: "error",
       });
       return;
     }
-    Taro.makePhoneCall({ phoneNumber: telephone }).catch((error) =>
+    Taro.makePhoneCall({ phoneNumber: contactPhone }).catch((error) =>
       console.log(error),
     );
   };
