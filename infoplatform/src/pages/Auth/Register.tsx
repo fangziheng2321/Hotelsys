@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { authApi } from '../../services/api';
+import AsyncButton from '../../components/common/AsyncButton';
 
 const Register: React.FC = () => {
   const [formData, setFormData] = useState({

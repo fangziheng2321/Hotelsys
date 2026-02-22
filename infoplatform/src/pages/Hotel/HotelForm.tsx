@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { hotelApi, Hotel, HotelType } from '../../services/api';
-import RoomTypeForm from '../../components/RoomTypeForm';
+import RoomTypeForm from '../../components/form/RoomTypeForm';
+import AsyncButton from '../../components/common/AsyncButton';
 
 const HotelForm: React.FC = () => {
   const navigate = useNavigate();
@@ -428,13 +429,22 @@ const HotelForm: React.FC = () => {
         {/* 表单操作按钮 */}
         <div className="form-actions">
           {!isReadOnly && (
-            <button type="submit" disabled={loading}>
-              {loading ? '保存中...' : '保存'}
-            </button>
+            <AsyncButton 
+              type="submit" 
+              loading={loading}
+              loadingText="保存中..."
+              variant="primary"
+            >
+              保存
+            </AsyncButton>
           )}
-          <button type="button" onClick={() => navigate('/hotel')}>
+          <AsyncButton 
+            type="button" 
+            onClick={() => navigate('/hotel')}
+            variant="secondary"
+          >
             {isReadOnly ? '返回' : '取消'}
-          </button>
+          </AsyncButton>
         </div>
       </form>
     </div>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Hotel, RoomType } from '../mock/data';
+import { Hotel, RoomType } from '../../mock/data';
+import AsyncButton from '../common/AsyncButton';
 
 interface RoomCountEditModalProps {
   hotel: Hotel | null;
@@ -57,7 +58,9 @@ const RoomCountEditModal: React.FC<RoomCountEditModalProps> = ({
       <div className="modal-container">
         <div className="modal-header">
           <h3>编辑房间数量 - {hotel.name}</h3>
-          <button className="modal-close" onClick={onClose}>×</button>
+          <AsyncButton onClick={onClose} variant="secondary" style={{ padding: '5px 10px', fontSize: '16px' }}>
+            ×
+          </AsyncButton>
         </div>
         
         <div className="modal-body">
@@ -79,7 +82,7 @@ const RoomCountEditModal: React.FC<RoomCountEditModalProps> = ({
                     </div>
                     <div className="room-details">
                       <h4>{roomType.name}</h4>
-                      <p>{roomType.bedType} · {roomType.roomSize} · {roomType.capacity}</p>
+                      <p>{roomType.bedType}（米） · {roomType.roomSize}平方米 · {roomType.capacity}人</p>
                       <p className="room-price">¥{roomType.price}/晚</p>
                     </div>
                   </div>
@@ -103,20 +106,22 @@ const RoomCountEditModal: React.FC<RoomCountEditModalProps> = ({
         </div>
         
         <div className="modal-footer">
-          <button 
-            className="btn-cancel" 
+          <AsyncButton 
             onClick={onClose}
             disabled={saving}
+            variant="secondary"
           >
             取消
-          </button>
-          <button 
-            className="btn-save" 
+          </AsyncButton>
+          <AsyncButton 
             onClick={handleSave}
             disabled={saving || roomTypes.length === 0}
+            variant="primary"
+            loading={saving}
+            loadingText="保存中..."
           >
-            {saving ? '保存中...' : '保存'}
-          </button>
+            保存
+          </AsyncButton>
         </div>
       </div>
     </div>

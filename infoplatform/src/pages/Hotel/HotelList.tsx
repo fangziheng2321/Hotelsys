@@ -5,7 +5,8 @@ import PageHeader from '../../components/common/PageHeader';
 import PaginationInfo from '../../components/common/PaginationInfo';
 import PaginationControl from '../../components/common/PaginationControl';
 import HotelTable from '../../components/common/HotelTable';
-import RoomCountEditModal from '../../components/RoomCountEditModal';
+import AsyncButton from '../../components/common/AsyncButton';
+import RoomCountEditModal from '../../components/modal/RoomCountEditModal';
 import { AuthService } from '../../utils/auth';
 
 const HotelList: React.FC = () => {
@@ -137,8 +138,8 @@ const HotelList: React.FC = () => {
       <PageHeader
         title={`${currentUser?.username}的酒店`}
         action={
-          <Link to="/hotel/add">
-            <button className="primary-button">添加酒店</button>
+          <Link to="/hotel/add" style={{ textDecoration: 'none' }}>
+            <AsyncButton variant="primary">添加酒店</AsyncButton>
           </Link>
         }
       />
@@ -160,25 +161,28 @@ const HotelList: React.FC = () => {
         onFilterChange={setFilters}
         renderActions={(hotel, loadingDetail) => (
           <>
-            <Link to={`/hotel/edit/${hotel.id}`}>
-              <button>{hotel.status === 'pending' ? '查看' : '编辑'}</button>
+            <Link to={`/hotel/edit/${hotel.id}`} style={{ textDecoration: 'none' }}>
+              <AsyncButton variant={hotel.status === 'pending' ? 'info' : 'primary'}>
+                {hotel.status === 'pending' ? '查看' : '编辑'}
+              </AsyncButton>
             </Link>
             {hotel.status === 'approved' && (
-              <button
+              <AsyncButton
                 onClick={() => handleOpenRoomCountModal(hotel.id)}
-                className="btn-room-count"
-                disabled={loadingDetail}
+                variant="secondary"
+                loading={loadingDetail}
+                loadingText="加载中..."
               >
-                {loadingDetail ? '加载中...' : '编辑房间数量'}
-              </button>
+                编辑房间数量
+              </AsyncButton>
             )}
             {hotel.status === 'rejected' && hotel.rejectReason && (
-              <button
+              <AsyncButton
                 onClick={() => alert(`拒绝原因：${hotel.rejectReason}`)}
-                className="btn-reason"
+                variant="danger"
               >
                 原因
-              </button>
+              </AsyncButton>
             )}
           </>
         )}

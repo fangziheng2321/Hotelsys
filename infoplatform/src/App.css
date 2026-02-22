@@ -12,7 +12,48 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: #f5f5f5;
+  color: #333;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
+
+/* 夜间模式样式 */
+body.dark-mode {
+  background-color: #1a1a1a;
+  color: #e0e0e0;
+}
+
+body.dark-mode .main-content {
+  background-color: #1a1a1a;
+}
+
+/* 主题切换按钮样式 */
+.theme-toggle-btn {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  transition: background-color 0.3s ease;
+  margin-left: 10px;
+}
+
+.theme-toggle-btn:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+body.dark-mode .theme-toggle-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* 导航栏右侧组样式 */
+.navbar-right-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+
 
 #root {
   width: 100%;
@@ -45,6 +86,11 @@ body {
   background-color: #333;
   color: white;
   padding: 10px 0;
+  transition: background-color 0.3s ease;
+}
+
+body.dark-mode .navbar {
+  background-color: #222;
 }
 
 .navbar-container {
@@ -97,6 +143,12 @@ body {
   background-color: rgba(255, 255, 255, 0.1);
 }
 
+body.dark-mode .navbar-links button:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+
+
 /* 页脚样式 */
 .footer {
   background-color: #333;
@@ -104,6 +156,11 @@ body {
   padding: 20px 0;
   text-align: center;
   margin-top: auto;
+  transition: background-color 0.3s ease;
+}
+
+body.dark-mode .footer {
+  background-color: #222;
 }
 
 .footer-container {
@@ -111,6 +168,7 @@ body {
   margin: 0 auto;
   padding: 0 20px;
 }
+
 
 /* 登录/注册页面整体布局 */
 .auth-page {
@@ -121,6 +179,11 @@ body {
   align-items: center;
   padding: 20px;
   background-color: #f5f5f5;
+  transition: background-color 0.3s ease;
+}
+
+.dark-mode .auth-page {
+  background-color: #1a1a1a;
 }
 
 /* 系统标题 */
@@ -134,11 +197,21 @@ body {
   font-weight: bold;
   color: #333;
   margin-bottom: 10px;
+  transition: color 0.3s ease;
+}
+
+.dark-mode .auth-header h1 {
+  color: #e0e0e0;
 }
 
 .auth-header p {
   font-size: 1.1rem;
   color: #666;
+  transition: color 0.3s ease;
+}
+
+.dark-mode .auth-header p {
+  color: #b0b0b0;
 }
 
 /* 登录框样式 */
@@ -151,6 +224,13 @@ body {
   border-radius: 12px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   background-color: white;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.dark-mode .login-container, .dark-mode .register-container {
+  background-color: #2d2d2d;
+  border-color: #444;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
 /* 酒店表单容器 */
@@ -163,6 +243,13 @@ body {
   border-radius: 12px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   background-color: white;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+body.dark-mode .hotel-form-container {
+  background-color: #2d2d2d;
+  border-color: #444;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
 /* 表单卡片样式 */
@@ -172,6 +259,12 @@ body {
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   overflow: hidden;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+body.dark-mode .form-card {
+  border-color: #444;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .form-card h3 {
@@ -182,10 +275,23 @@ body {
   font-size: 16px;
   font-weight: 600;
   color: #333;
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+body.dark-mode .form-card h3 {
+  background-color: #333;
+  border-bottom-color: #444;
+  color: #e0e0e0;
 }
 
 .form-card-content {
   padding: 20px;
+  background-color: white;
+  transition: background-color 0.3s ease;
+}
+
+body.dark-mode .form-card-content {
+  background-color: #2d2d2d;
 }
 
 /* 表单行布局 */
@@ -223,10 +329,19 @@ body {
   cursor: pointer;
   font-size: 14px;
   white-space: nowrap;
+  transition: background-color 0.3s ease;
 }
 
 .image-input-group button:hover {
   background-color: #45a049;
+}
+
+body.dark-mode .image-input-group button {
+  background-color: #45a049;
+}
+
+body.dark-mode .image-input-group button:hover {
+  background-color: #3d8b40;
 }
 
 /* 本地上传部分 */
@@ -236,6 +351,12 @@ body {
   background-color: #f9f9f9;
   border-radius: 8px;
   border: 1px solid #e0e0e0;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+body.dark-mode .local-upload-section {
+  background-color: #333;
+  border-color: #444;
 }
 
 .local-upload-section label {
@@ -243,6 +364,11 @@ body {
   margin-bottom: 10px;
   font-weight: 500;
   color: #333;
+  transition: color 0.3s ease;
+}
+
+body.dark-mode .local-upload-section label {
+  color: #e0e0e0;
 }
 
 .local-upload-section input[type="file"] {
@@ -255,7 +381,13 @@ body {
   font-size: 12px;
   color: #666;
   line-height: 1.4;
+  transition: color 0.3s ease;
 }
+
+body.dark-mode .upload-hint {
+  color: #b0b0b0;
+}
+
 
 /* 表单操作按钮 */
 .form-actions {
@@ -402,12 +534,22 @@ body {
   border: 1px solid #e0e0e0;
 }
 
+body.dark-mode .amenities-checkbox-group {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  padding: 10px;
+  background-color: #2d2d2d;
+  border-radius: 8px;
+  border: 1px solid #444;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
 .amenity-checkbox {
   display: flex;
   align-items: center;
   gap: 8px;
   padding: 8px 12px;
-  background-color: white;
   border-radius: 6px;
   border: 1px solid #e0e0e0;
   cursor: pointer;
@@ -416,7 +558,6 @@ body {
 
 .amenity-checkbox:hover {
   border-color: #4CAF50;
-  background-color: #f0f8f0;
 }
 
 .amenity-checkbox input[type="checkbox"] {
@@ -590,6 +731,235 @@ body {
   box-shadow: 0 2px 6px rgba(255, 68, 68, 0.3);
 }
 
+/* 夜间模式样式 */
+/* 表单操作按钮 */
+body.dark-mode .form-actions {
+  border-top-color: #444;
+}
+
+body.dark-mode .form-actions button[type="submit"] {
+  background-color: #45a049;
+}
+
+body.dark-mode .form-actions button[type="submit"]:hover {
+  background-color: #3d8b40;
+}
+
+body.dark-mode .form-actions button[type="submit"]:disabled {
+  background-color: #555;
+}
+
+body.dark-mode .form-actions button[type="button"] {
+  background-color: #333;
+  color: #e0e0e0;
+  border-color: #444;
+}
+
+body.dark-mode .form-actions button[type="button"]:hover {
+  background-color: #444;
+}
+
+/* 登录标题 */
+body.dark-mode .login-container h2, body.dark-mode .register-container h2 {
+  color: #e0e0e0;
+}
+
+/* 表单元素 */
+body.dark-mode .form-group label {
+  color: #e0e0e0;
+}
+
+body.dark-mode .form-group input, body.dark-mode .form-group textarea, body.dark-mode .form-group select {
+  background-color: #333;
+  border-color: #444;
+  color: #e0e0e0;
+}
+
+body.dark-mode .form-group input::placeholder, body.dark-mode .form-group textarea::placeholder {
+  color: #999;
+}
+
+/* 设施服务复选框 */
+body.dark-mode .amenity-checkbox {
+  border-color: #444;
+}
+
+body.dark-mode .amenity-checkbox:hover {
+  border-color: #4CAF50;
+}
+
+body.dark-mode .amenity-checkbox span {
+  color: #e0e0e0;
+}
+
+body.dark-mode .amenity-checkbox input[type="checkbox"]:checked + span {
+  color: #4CAF50;
+}
+
+body.dark-mode .amenity-checkbox.disabled:hover {
+  border-color: #444;
+  background-color: #333;
+}
+
+/* 图片上传 */
+body.dark-mode .upload-button {
+  background-color: #333;
+  border-color: #444;
+  color: #e0e0e0;
+}
+
+body.dark-mode .upload-button:hover {
+  background-color: #444;
+  border-color: #555;
+}
+
+body.dark-mode .upload-hint {
+  color: #999;
+}
+
+body.dark-mode .image-preview-item {
+  border-color: #444;
+}
+
+/* 表格样式 */
+body.dark-mode table {
+  background-color: #2d2d2d;
+}
+
+body.dark-mode th, body.dark-mode td {
+  border-bottom-color: #444;
+  color: #e0e0e0;
+}
+
+body.dark-mode th {
+  background-color: #333;
+}
+
+/* 模态框样式 */
+body.dark-mode .modal-container {
+  background-color: #2d2d2d;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-mode .modal-header {
+  border-bottom-color: #444;
+}
+
+body.dark-mode .modal-header h3 {
+  color: #e0e0e0;
+}
+
+body.dark-mode .modal-close {
+  color: #666;
+}
+
+body.dark-mode .modal-close:hover {
+  color: #e0e0e0;
+}
+
+body.dark-mode .modal-footer {
+  border-top-color: #444;
+}
+
+/* 按钮通用样式 */
+body.dark-mode .btn-cancel {
+  background-color: #333;
+  color: #e0e0e0;
+  border-color: #444;
+}
+
+body.dark-mode .btn-cancel:hover {
+  background-color: #444;
+}
+
+body.dark-mode .btn-save {
+  background-color: #45a049;
+}
+
+body.dark-mode .btn-save:hover {
+  background-color: #3d8b40;
+}
+
+/* 卡片样式 */
+body.dark-mode .detail-room-card {
+  background-color: #2d2d2d;
+  border-color: #444;
+}
+
+body.dark-mode .room-info h5 {
+  color: #e0e0e0;
+}
+
+body.dark-mode .room-info p {
+  color: #b0b0b0;
+}
+
+/* 详情页样式 */
+body.dark-mode .detail-section {
+  border-bottom-color: #444;
+}
+
+body.dark-mode .detail-section h4 {
+  color: #e0e0e0;
+  border-bottom-color: #4caf50;
+}
+
+body.dark-mode .detail-item label {
+  color: #b0b0b0;
+}
+
+body.dark-mode .detail-item span {
+  color: #e0e0e0;
+}
+
+body.dark-mode .detail-description {
+  color: #b0b0b0;
+}
+
+body.dark-mode .amenity-tag {
+  background-color: #1a237e;
+  color: #90caf9;
+}
+
+body.dark-mode .detail-images img {
+  border-color: #444;
+}
+
+body.dark-mode .reject-reason-box {
+  background-color: #2d2d2d;
+  color: #e0e0e0;
+  border-color: #444;
+}
+
+/* 状态标签样式 */
+body.dark-mode .status-pending {
+  color: #ff9800;
+}
+
+body.dark-mode .status-approved {
+  color: #4caf50;
+}
+
+body.dark-mode .status-rejected {
+  color: #f44336;
+}
+
+body.dark-mode .status-offline {
+  color: #9e9e9e;
+}
+
+/* 主内容区 */
+body.dark-mode .main-content {
+  background-color: #1a1a1a;
+}
+
+/* 数据概览和切换按钮在一行 */
+.navbar-right-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .delete-icon {
   display: block;
   font-weight: bold;
@@ -613,6 +983,7 @@ body {
   border: 1px solid #e9ecef;
   flex-wrap: wrap;
   gap: 20px;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .filter-section {
@@ -632,6 +1003,7 @@ body {
   font-weight: 500;
   color: #495057;
   white-space: nowrap;
+  transition: color 0.3s ease;
 }
 
 .filter-group select {
@@ -641,6 +1013,7 @@ body {
   font-size: 1rem;
   background-color: white;
   cursor: pointer;
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
 }
 
 .filter-group select:focus {
@@ -656,15 +1029,18 @@ body {
   font-size: 0.9rem;
   flex-wrap: wrap;
   color: #666;
+  transition: color 0.3s ease;
 }
 
 .total-count {
   font-weight: 500;
   color: #495057;
+  transition: color 0.3s ease;
 }
 
 .page-info {
   color: #6c757d;
+  transition: color 0.3s ease;
 }
 
 .page-size-selector {
@@ -675,6 +1051,7 @@ body {
   padding: 4px 10px;
   border-radius: 4px;
   border: 1px solid #e9ecef;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .page-size-selector select {
@@ -684,6 +1061,7 @@ body {
   background-color: white;
   font-size: 0.9rem;
   cursor: pointer;
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
 }
 
 .page-size-selector select:focus {
@@ -691,6 +1069,46 @@ body {
   border-color: #80bdff;
   box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
 }
+
+/* 夜间模式样式 */
+body.dark-mode .pagination-info {
+  background-color: #333;
+  border-color: #444;
+}
+
+body.dark-mode .filter-group label {
+  color: #e0e0e0;
+}
+
+body.dark-mode .filter-group select {
+  background-color: #444;
+  border-color: #555;
+  color: #e0e0e0;
+}
+
+body.dark-mode .page-info-section {
+  color: #b0b0b0;
+}
+
+body.dark-mode .total-count {
+  color: #e0e0e0;
+}
+
+body.dark-mode .page-info {
+  color: #b0b0b0;
+}
+
+body.dark-mode .page-size-selector {
+  background-color: #444;
+  border-color: #555;
+}
+
+body.dark-mode .page-size-selector select {
+  background-color: #444;
+  border-color: #555;
+  color: #e0e0e0;
+}
+
 
 .pagination {
   display: flex;
@@ -766,30 +1184,16 @@ body {
   font-weight: 600;
 }
 
-/* 主要按钮样式 */
-.primary-button {
-  padding: 10px 20px;
-  background-color: #6c757d;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-size: 1rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
+/* 夜间模式样式 */
+body.dark-mode .page-header {
+  border-bottom-color: #555;
 }
 
-.primary-button:hover {
-  background-color: #5a6268;
-  transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(108, 117, 125, 0.3);
+body.dark-mode .page-header h2 {
+  color: #e0e0e0;
 }
 
-.primary-button:active {
-  background-color: #545b62;
-  transform: translateY(0);
-  box-shadow: 0 1px 2px rgba(108, 117, 125, 0.3);
-}
+
 
 .hotel-table {
   width: 100%;
@@ -855,6 +1259,10 @@ body {
 
 .hotel-table tr:hover {
   background-color: #f5f5f5;
+}
+
+body.dark-mode .hotel-table tr:hover {
+  background-color: #333;
 }
 
 /* 按钮样式 */
@@ -1118,6 +1526,7 @@ button {
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
 .btn-edit {
@@ -1136,6 +1545,107 @@ button {
 
 .btn-delete:hover {
   background-color: #d32f2f;
+}
+
+/* 夜间模式样式 */
+body.dark-mode .room-type-form {
+  background-color: #2d2d2d;
+  border: 1px solid #444;
+}
+
+body.dark-mode .room-type-header h3 {
+  color: #e0e0e0;
+}
+
+body.dark-mode .no-room-types {
+  color: #b0b0b0;
+}
+
+body.dark-mode .room-type-card {
+  background-color: #333;
+  border: 1px solid #444;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+body.dark-mode .room-type-info h4 {
+  color: #e0e0e0;
+}
+
+body.dark-mode .room-type-details {
+  color: #b0b0b0;
+}
+
+body.dark-mode .room-type-details span {
+  color: #b0b0b0;
+}
+
+body.dark-mode .btn-add {
+  background-color: #45a049;
+}
+
+body.dark-mode .btn-add:hover {
+  background-color: #3d8b40;
+}
+
+body.dark-mode .btn-edit {
+  background-color: #1976D2;
+}
+
+body.dark-mode .btn-edit:hover {
+  background-color: #1565C0;
+}
+
+body.dark-mode .btn-delete {
+  background-color: #d32f2f;
+}
+
+body.dark-mode .btn-delete:hover {
+  background-color: #c62828;
+}
+
+body.dark-mode .room-type-edit-form {
+  background-color: #2d2d2d;
+  border: 1px solid #444;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-mode .room-type-edit-form h4 {
+  color: #e0e0e0;
+  border-bottom-color: #444;
+}
+
+body.dark-mode .room-image-preview .no-image {
+  background-color: #333;
+  border-color: #444;
+  color: #999;
+}
+
+body.dark-mode .room-image-preview .upload-btn {
+  background-color: #333;
+  border-color: #444;
+  color: #e0e0e0;
+}
+
+body.dark-mode .room-image-preview .upload-btn:hover {
+  background-color: #444;
+}
+
+body.dark-mode .room-form-actions button.btn-primary {
+  background-color: #45a049;
+}
+
+body.dark-mode .room-form-actions button.btn-primary:hover {
+  background-color: #3d8b40;
+}
+
+body.dark-mode .room-form-actions button.btn-secondary {
+  background-color: #333;
+  color: #e0e0e0;
+  border-color: #444;
+}
+
+body.dark-mode .room-form-actions button.btn-secondary:hover {
+  background-color: #444;
 }
 
 /* 房型编辑表单 */
@@ -1524,6 +2034,55 @@ button {
   border-color: #4CAF50;
 }
 
+/* 夜间模式样式 */
+body.dark-mode .room-count-item {
+  background-color: #2d2d2d;
+  border: 1px solid #444;
+}
+
+body.dark-mode .room-image {
+  background-color: #333;
+}
+
+body.dark-mode .room-image .no-image {
+  color: #999;
+}
+
+body.dark-mode .room-details h4 {
+  color: #e0e0e0;
+}
+
+body.dark-mode .room-details p {
+  color: #b0b0b0;
+}
+
+body.dark-mode .room-count-input-group label {
+  color: #b0b0b0;
+}
+
+body.dark-mode .room-count-input {
+  background-color: #333;
+  border-color: #444;
+  color: #e0e0e0;
+}
+
+body.dark-mode .room-count-input:focus {
+  border-color: #4CAF50;
+}
+
+body.dark-mode .btn-room-count {
+  background-color: #45a049;
+  color: white;
+}
+
+body.dark-mode .btn-room-count:hover {
+  background-color: #3d8b40;
+}
+
+body.dark-mode .no-room-types-message {
+  color: #b0b0b0;
+}
+
 /* 弹窗响应式 */
 @media (max-width: 768px) {
   .modal-container {
@@ -1656,23 +2215,20 @@ button {
   font-weight: 500;
 }
 
+/* 仅设置字体颜色，不设置背景色 */
 .status-pending {
-  background-color: #FFF3E0;
   color: #E65100;
 }
 
 .status-approved {
-  background-color: #E8F5E9;
   color: #2E7D32;
 }
 
 .status-rejected {
-  background-color: #FFEBEE;
   color: #C62828;
 }
 
 .status-offline {
-  background-color: #F5F5F5;
   color: #616161;
 }
 
@@ -2031,6 +2587,24 @@ button {
   color: #1890ff;
 }
 
+/* 夜间模式样式 */
+body.dark-mode .audit-status-counts {
+  background-color: #2d2d2d;
+  border-top-color: #444;
+}
+
+body.dark-mode .status-count-item {
+  border-bottom-color: #444;
+}
+
+body.dark-mode .status-name-with-dot {
+  color: #e0e0e0;
+}
+
+body.dark-mode .status-count {
+  color: #69b1ff;
+}
+
 /* 响应式设计 */
 @media (max-width: 768px) {
   .visualization-content {
@@ -2046,4 +2620,114 @@ button {
     width: 100%;
     height: 400px;
   }
+}
+
+/* 异步按钮样式 */
+.async-button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.button-primary {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.button-primary:hover:not(.button-disabled) {
+  background-color: #45a049;
+}
+
+.button-secondary {
+  background-color: #6c757d;
+  color: white;
+}
+
+.button-secondary:hover:not(.button-disabled) {
+  background-color: #5a6268;
+}
+
+.button-danger {
+  background-color: #dc3545;
+  color: white;
+}
+
+.button-danger:hover:not(.button-disabled) {
+  background-color: #c82333;
+}
+
+.button-success {
+  background-color: #28a745;
+  color: white;
+}
+
+.button-success:hover:not(.button-disabled) {
+  background-color: #218838;
+}
+
+.button-info {
+  background-color: #419bfb;
+  color: white;
+}
+
+.button-info:hover:not(.button-disabled) {
+  background-color: #257cd9;
+}
+
+.button-disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* 夜间模式 */
+body.dark-mode .async-button {
+  transition: all 0.3s ease;
+}
+
+body.dark-mode .button-primary {
+  background-color: #45a049;
+}
+
+body.dark-mode .button-primary:hover:not(.button-disabled) {
+  background-color: #3d8b40;
+}
+
+body.dark-mode .button-secondary {
+  background-color: #5a6268;
+}
+
+body.dark-mode .button-secondary:hover:not(.button-disabled) {
+  background-color: #4e555b;
+}
+
+body.dark-mode .button-danger {
+  background-color: #c82333;
+}
+
+body.dark-mode .button-danger:hover:not(.button-disabled) {
+  background-color: #b21f2d;
+}
+
+body.dark-mode .button-success {
+  background-color: #218838;
+}
+
+body.dark-mode .button-success:hover:not(.button-disabled) {
+  background-color: #1e7e34;
+}
+
+body.dark-mode .button-info {
+  background-color: #0069d9;
+}
+
+body.dark-mode .button-info:hover:not(.button-disabled) {
+  background-color: #0056b3;
 }
