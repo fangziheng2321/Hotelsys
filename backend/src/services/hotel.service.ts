@@ -207,7 +207,7 @@ export class HotelService {
         attributes: ['image_url']
       }
     ],
-    order: [['created_at', 'DESC']]
+    order: [['id', 'ASC']]
   });
 
   // 数据映射
@@ -374,7 +374,7 @@ export class HotelService {
           attributes: ['image_url']
         }
       ],
-      order: [['created_at', 'DESC']]
+      order: [['id', 'ASC']]
     });
 
     // 数据映射
@@ -658,7 +658,7 @@ export class HotelService {
           required: Object.keys(roomWhere).length > 0 // 有价格筛选则必须匹配房型
         }
       ],
-      order: [['id', 'DESC']]
+      order: [['id', 'ASC']]
     });
 
     return {
