@@ -68,3 +68,6 @@ coverage/
 
 # Optional stylelint cache
 .stylelintcache
+
+# Backend config
+backend/src/config/

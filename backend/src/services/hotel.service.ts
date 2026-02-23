@@ -370,6 +370,7 @@ export class HotelService {
         phone: h.contact_phone,
         merchantName: h.merchant?.username || '未知商户',  
         status: h.status,
+        hotelType: h.hotel_type,
         rejectReason: h.rejection_reason || null,  
         firstImage: h.images?.[0]?.image_url || ""  
       };

@@ -22,22 +22,29 @@ const HotelList: React.FC = () => {
   const currentUser = AuthService.getCurrentUser();
   const [filters, setFilters] = useState({
     hotelType: '' as HotelType | '',
-    status: '' as HotelStatus | ''
+    status: '' as HotelStatus | '',
+    search: ''
   });
+  const [searchInput, setSearchInput] = useState('');
   const [selectedHotel, setSelectedHotel] = useState<Hotel | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loadingDetail, setLoadingDetail] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  // 搜索提交函数
+  const handleSearchSubmit = () => {
+    setFilters({ ...filters, search: searchInput });
+  };
+
   useEffect(() => {
     // 重置页码为1当筛选条件变化时
     setPagination(prev => ({ ...prev, page: 1 }));
-  }, [filters.hotelType, filters.status]);
+  }, [filters.hotelType, filters.status, filters.search]);
 
   useEffect(() => {
     fetchHotels();
-  }, [pagination.page, pagination.pageSize, filters.hotelType, filters.status]);
+  }, [pagination.page, pagination.pageSize, filters.hotelType, filters.status, filters.search]);
 
   const fetchHotels = async () => {
     setLoading(true);
@@ -47,7 +54,8 @@ const HotelList: React.FC = () => {
         page: pagination.page,
         pageSize: pagination.pageSize,
         hotelType: filters.hotelType || undefined,
-        status: filters.status || undefined
+        status: filters.status || undefined,
+        search: filters.search || undefined
       });
       if (response.success && response.data) {
         setHotels(response.data.list);
@@ -74,15 +82,63 @@ const HotelList: React.FC = () => {
     try {
       const response = await hotelApi.getHotelById(hotelId);
       if (response.success) {
-        if (response.data.status === 'approved' && response.data.roomTypes.length > 0) {
-          setSelectedHotel(response.data);
+        console.log('API返回的完整数据:', response.data); // 添加日志
+        
+        // 处理房型数据，确保所有需要的字段都存在且类型正确
+        const hotelData = { ...response.data };
+        
+        // 确保 roomTypes 是数组
+        if (!Array.isArray(hotelData.roomTypes)) {
+          console.error('roomTypes 不是数组:', hotelData.roomTypes);
+          alert('获取房型信息失败：数据格式错误');
+          return;
+        }
+        
+        // 处理每个房型
+        hotelData.roomTypes = hotelData.roomTypes.map((room: any) => {
+          console.log('原始房型数据:', room); // 添加日志
+          
+          // 清理并转换 maxFloor
+          let cleanedMaxFloor = room.maxFloor;
+          if (typeof cleanedMaxFloor === 'string') {
+            // 移除 "层" 字和其他非数字字符
+            cleanedMaxFloor = cleanedMaxFloor.replace(/[^0-9]/g, '');
+          }
+          
+          return {
+            ...room,
+            id: room.id || '',
+            name: room.name || '未知房型',
+            minFloor: Number(room.minFloor) || 1,
+            maxFloor: Number(cleanedMaxFloor) || 1,
+            roomCount: Number(room.roomCount) || 0,
+            bedType: Number(room.bedType) || 1.8,
+            roomSize: Number(room.roomSize) || 30,
+            capacity: Number(room.capacity) || 2,
+            price: Number(room.price) || 0,
+            image: room.image || ''
+          };
+        });
+        
+        console.log('处理后的房型数据:', hotelData.roomTypes); // 添加日志
+        
+        // 检查房型数量
+        if (hotelData.roomTypes.length > 0) {
+          setSelectedHotel(hotelData);
           setIsModalOpen(true);
         } else {
+          console.log('无法打开弹窗的原因:', {
+            status: hotelData.status,
+            roomTypesLength: hotelData.roomTypes.length
+          });
           alert('该酒店暂无可编辑的房型');
         }
       } else {
         alert('获取酒店详情失败：' + response.message);
       }
+    } catch (error) {
+      console.error('获取酒店详情出错:', error);
+      alert('网络错误，请稍后重试');
     } finally {
       setLoadingDetail(false);
     }
@@ -144,13 +200,17 @@ const HotelList: React.FC = () => {
         }
       />
 
-      {/* 分页信息 */}
+      {/* 分页信息和搜索 */}
       <PaginationInfo
         total={pagination.total}
         page={pagination.page}
         totalPages={pagination.totalPages}
         pageSize={pagination.pageSize}
         onPageSizeChange={handlePageSizeChange}
+        search={filters.search}
+        searchInput={searchInput}
+        onSearchInputChange={setSearchInput}
+        onSearchSubmit={handleSearchSubmit}
       />
 
       <HotelTable
