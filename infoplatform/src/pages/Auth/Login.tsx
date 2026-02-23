@@ -63,8 +63,15 @@ const Login: React.FC = () => {
       } else {
         setError(response.message || '登录失败');
       }
-    } catch (err) {
-      setError('网络错误，请稍后重试');
+    } catch (err: any) {
+      // 解析错误信息，显示后端返回的具体错误
+      if (err.response?.data?.message) {
+        setError(err.response.data.message);
+      } else if (err.response?.data?.error?.message) {
+        setError(err.response.data.error.message);
+      } else {
+        setError('网络错误，请稍后重试');
+      }
     } finally {
       setLoading(false);
     }

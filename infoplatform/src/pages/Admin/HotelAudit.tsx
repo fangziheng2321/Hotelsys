@@ -18,22 +18,29 @@ const HotelAudit: React.FC = () => {
   });
   const [filters, setFilters] = useState({
     hotelType: '' as HotelType | '',
-    status: '' as HotelStatus | ''
+    status: '' as HotelStatus | '',
+    search: ''
   });
+  const [searchInput, setSearchInput] = useState('');
   const [selectedHotel, setSelectedHotel] = useState<Hotel | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [loadingDetail, setLoadingDetail] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  // 搜索提交函数
+  const handleSearchSubmit = () => {
+    setFilters({ ...filters, search: searchInput });
+  };
+
   useEffect(() => {
     // 重置页码为1当筛选条件变化时
     setPagination(prev => ({ ...prev, page: 1 }));
-  }, [filters.hotelType, filters.status]);
+  }, [filters.hotelType, filters.status, filters.search]);
 
   useEffect(() => {
     fetchHotels();
-  }, [pagination.page, pagination.pageSize, filters.hotelType, filters.status]);
+  }, [pagination.page, pagination.pageSize, filters.hotelType, filters.status, filters.search]);
 
   const fetchHotels = async () => {
     setLoading(true);
@@ -43,7 +50,8 @@ const HotelAudit: React.FC = () => {
         page: pagination.page,
         pageSize: pagination.pageSize,
         hotelType: filters.hotelType || undefined,
-        status: filters.status || undefined
+        status: filters.status || undefined,
+        search: filters.search || undefined
       });
       if (response.success && response.data) {
         setHotels(response.data.list);
@@ -167,13 +175,17 @@ const HotelAudit: React.FC = () => {
     <div className="hotel-audit-container">
       <PageHeader title="酒店审核管理" />
 
-      {/* 分页信息 */}
+      {/* 分页信息和搜索 */}
       <PaginationInfo
         total={pagination.total}
         page={pagination.page}
         totalPages={pagination.totalPages}
         pageSize={pagination.pageSize}
         onPageSizeChange={handlePageSizeChange}
+        search={filters.search}
+        searchInput={searchInput}
+        onSearchInputChange={setSearchInput}
+        onSearchSubmit={handleSearchSubmit}
       />
 
       <HotelTable

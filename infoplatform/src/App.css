@@ -1199,6 +1199,7 @@ body.dark-mode .page-header h2 {
   width: 100%;
   border-collapse: collapse;
   margin-top: 20px;
+  table-layout: fixed;
 }
 
 .hotel-table th, .hotel-table td {
@@ -1211,6 +1212,81 @@ body.dark-mode .page-header h2 {
   background-color: #f2f2f2;
   font-weight: bold;
   min-width: 100px;
+  white-space: nowrap;
+}
+
+/* 列宽设置 */
+.hotel-table th.col-image,
+.hotel-table td.col-image {
+  width: 10%;
+}
+
+.hotel-table th.col-name,
+.hotel-table td.col-name {
+  width: 15%;
+  min-width: 150px;
+}
+
+.hotel-table th.col-type,
+.hotel-table td.col-type {
+  width: 10%;
+  min-width: 100px;
+}
+
+.hotel-table th.col-address,
+.hotel-table td.col-address {
+  width: 15%;
+  min-width: 150px;
+}
+
+.hotel-table th.col-phone,
+.hotel-table td.col-phone {
+  width: 10%;
+  min-width: 120px;
+}
+
+.hotel-table th.col-merchant,
+.hotel-table td.col-merchant {
+  width: 12%;
+  min-width: 120px;
+}
+
+.hotel-table th.col-status,
+.hotel-table td.col-status {
+  width: 10%;
+  min-width: 100px;
+}
+
+.hotel-table th.col-actions {
+  width: 22%;
+  min-width: 200px;
+}
+
+.hotel-table td.col-actions {
+  width: 20%;
+  min-width: 200px;
+  white-space: nowrap;
+  padding: 8px 12px;
+  text-align: left;
+}
+
+/* 操作按钮样式 */
+.hotel-table td.col-actions button {
+  display: inline-block;
+  margin-right: 8px;
+  margin-bottom: 4px;
+  vertical-align: middle;
+}
+
+/* 文本溢出处理 */
+.hotel-table td.col-name,
+.hotel-table td.col-address,
+.hotel-table td.col-phone,
+.hotel-table td.col-merchant {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
 }
 
 /* 表头筛选下拉框样式 */

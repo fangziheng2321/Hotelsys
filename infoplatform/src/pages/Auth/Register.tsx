@@ -43,9 +43,9 @@ const Register: React.FC = () => {
           password: formData.password
         }));
         // 3秒后跳转到登录页
-        setTimeout(() => {
-          navigate('/login');
-        }, 3000);
+        //setTimeout(() => {
+        //  navigate('/login');
+        //}, 3000);
       } else {
         setError(response.message || '注册失败');
       }

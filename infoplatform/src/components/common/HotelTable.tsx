@@ -27,32 +27,32 @@ const HotelTable: React.FC<HotelTableProps> = ({
     <table className="hotel-table">
       <thead>
         <tr>
-          <th>图片</th>
-          <th>酒店名称</th>
-          <th>
+          <th className="col-image">图片</th>
+          <th className="col-name">酒店名称</th>
+          <th className="col-type">
             <HeaderFilter
               value={filters.hotelType}
               onChange={(value) => onFilterChange({ ...filters, hotelType: value as HotelType })}
               options={hotelTypeOptions}
             />
           </th>
-          <th>地址</th>
-          <th>电话</th>
-          {isAdmin && <th>商户名称</th>}
-          <th>
+          <th className="col-address">地址</th>
+          <th className="col-phone">电话</th>
+          {isAdmin && <th className="col-merchant">商户名称</th>}
+          <th className="col-status">
             <HeaderFilter
               value={filters.status}
               onChange={(value) => onFilterChange({ ...filters, status: value as HotelStatus })}
               options={hotelStatusOptions}
             />
           </th>
-          <th>操作</th>
+          <th className="col-actions">操作</th>
         </tr>
       </thead>
       <tbody>
         {hotels.map(hotel => (
           <tr key={hotel.id}>
-            <td>
+            <td className="col-image">
               {hotel.firstImage ? (
                 <img
                   src={hotel.firstImage}
@@ -84,13 +84,13 @@ const HotelTable: React.FC<HotelTableProps> = ({
                 </div>
               )}
             </td>
-            <td>{hotel.name}</td>
-            <td>{getHotelTypeText(hotel.hotelType)}</td>
-            <td>{hotel.address}</td>
-            <td>{hotel.phone}</td>
-            {isAdmin && <td>{(hotel as AdminHotelListItem).merchantName}</td>}
-            <td className={`status-${hotel.status}`}>{getStatusText(hotel.status)}</td>
-            <td>
+            <td className="col-name">{hotel.name}</td>
+            <td className="col-type">{getHotelTypeText(hotel.hotelType)}</td>
+            <td className="col-address">{hotel.address}</td>
+            <td className="col-phone">{hotel.phone}</td>
+            {isAdmin && <td className="col-merchant">{(hotel as AdminHotelListItem).merchantName}</td>}
+            <td className={`col-status status-${hotel.status}`}>{getStatusText(hotel.status)}</td>
+            <td className="col-actions">
               {renderActions ? renderActions(hotel, loadingDetail) : (
                 // 默认操作按钮（如果没有提供 renderActions）
                 <span>无操作</span>

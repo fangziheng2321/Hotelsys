@@ -88,6 +88,10 @@ const HotelDetailModal: React.FC<HotelDetailModalProps> = ({
                 <label>商户名称：</label>
                 <span>{hotel.merchantName}</span>
               </div>
+              <div className="detail-item">
+                <label>开业时间：</label>
+                <span>{hotel.opening_time || '未知'}</span>
+              </div>
             </div>
           </div>
 
