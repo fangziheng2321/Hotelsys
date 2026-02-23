@@ -585,9 +585,7 @@ export class HotelService {
     // 非 null 校验
     if (location) {
       whereClause[Op.or] = [
-        { city: { [Op.like]: `%${location}%` } },
-        { district: { [Op.like]: `%${location}%` } },
-        { address: { [Op.like]: `%${location}%` } }
+        { city: { [Op.like]: `%${location}%` } }
       ];
     }
 
