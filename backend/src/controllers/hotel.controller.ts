@@ -30,13 +30,14 @@ export const saveHotel = async (req: Request, res: Response, next: NextFunction)
 export const getMerchantHotels = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const merchantId = (req as any).user.id;
-    const { page, pageSize, hotelType, status } = req.query;
+    const { page, pageSize, hotelType, status, search } = req.query;
 
     const result = await HotelService.getMerchantHotels(merchantId, {
       page: page ? Number(page) : undefined,
       pageSize: pageSize ? Number(pageSize) : undefined,
       hotelType: hotelType as string, 
-      status: status as string 
+      status: status as string,
+      search: search as string 
     });
 
     res.status(200).json({
@@ -98,13 +99,14 @@ export const updateRoomStock = async (req: Request, res: Response, next: NextFun
  */
 export const getAdminHotels = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { page, pageSize, hotelType, status } = req.query;
+    const { page, pageSize, hotelType, status, search } = req.query;
 
     const result = await HotelService.getAdminHotels({
       page: page ? Number(page) : undefined,
       pageSize: pageSize ? Number(pageSize) : undefined,
       hotelType: hotelType as string, 
-      status: status as string        
+      status: status as string,
+      search: search as string        
     });
 
     res.status(200).json({

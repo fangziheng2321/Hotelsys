@@ -7,7 +7,7 @@ class Hotel extends BaseModel<Hotel> {
   declare name_zh: string;
   declare address: string;
   declare city: string;
-  declare district?: string;
+  declare region: string;
   declare latitude?: number;
   declare longitude?: number;
   declare star_rating: number;
@@ -34,7 +34,7 @@ Hotel.initModel(
     name_zh: { type: DataTypes.STRING(100), allowNull: false },
     address: { type: DataTypes.STRING(255), allowNull: false },
     city: { type: DataTypes.STRING(50), allowNull: true },
-    district: DataTypes.STRING(50),
+    region: { type: DataTypes.STRING(50), allowNull: true },
     latitude: DataTypes.DECIMAL(10, 8),
     longitude: DataTypes.DECIMAL(11, 8),
     opening_time: DataTypes.STRING(10),

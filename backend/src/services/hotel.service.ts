@@ -53,7 +53,7 @@ export class HotelService {
    */
   static async saveHotel(payload: any, merchantId: number) {
     const { 
-      id, name, address, phone, description, opening_time, 
+      id, name, address, phone, description, city, opening_time, 
       starRating, amenities, hotelType, region, images, roomTypes 
     } = payload;
 
@@ -64,7 +64,8 @@ export class HotelService {
       const hotelData: any = {
         name_zh: name,
         address,
-        city: region,             
+        city: city,
+        region: region,             
         contact_phone: phone,
         description,
         opening_time,
@@ -165,7 +166,7 @@ export class HotelService {
    */
   static async getMerchantHotels(
   merchantId: number, 
-  query: { page?: number; pageSize?: number; hotelType?: string; status?: string }
+  query: { page?: number; pageSize?: number; hotelType?: string; status?: string; search?: string }
 ) {
   // 分页参数
   const page = Math.max(1, Number(query.page) || 1);
@@ -174,6 +175,13 @@ export class HotelService {
 
   // 构建动态 WHERE 条件
   const whereClause: any = { merchant_id: merchantId };
+
+  //酒店关键词搜索
+  if (query.search) {
+    whereClause.name_zh = {
+      [Op.like]: `%${query.search}%`
+    };
+  }
 
   // 酒店类型筛选
   if (query.hotelType) {
@@ -256,7 +264,10 @@ export class HotelService {
       starRating: h.star_rating,
       amenities: h.facilities || [],
       hotelType: h.hotel_type,
-      region: h.city || h.district, 
+      city: h.city,
+      region: h.region,
+      latitude: h.latitude,
+      longitude: h.longitude,
       images: h.images?.map((img: any) => img.image_url) || [],
       roomTypes: h.roomTypes?.map((room: any) => ({
         id: room.id.toString(),
@@ -319,7 +330,7 @@ export class HotelService {
    * 管理员获取全局酒店列表 
    * /admin/hotels?page=1&pageSize=10
    */
-  static async getAdminHotels(query: {page?: number; pageSize?: number; hotelType?: string; status?: string 
+  static async getAdminHotels(query: {page?: number; pageSize?: number; hotelType?: string; status?: string; search?: string 
   }) {
     // 分页参数
     const page = Math.max(1, Number(query.page) || 1);
@@ -327,6 +338,12 @@ export class HotelService {
     const offset = (page - 1) * pageSize;
 
     const whereClause: any = {};
+
+    if (query.search) {
+    whereClause.name_zh = {
+      [Op.like]: `%${query.search}%`
+    };
+  }
 
     // hotelType筛选条件
     if (query.hotelType) {
@@ -417,12 +434,16 @@ export class HotelService {
       address: h.address,
       phone: h.contact_phone,         // contact_phone -> phone
       description: h.description || "",
+      opening_time: h.opening_time, 
       minPrice: minPrice,
       maxPrice: maxPrice,
       starRating: h.star_rating,      // star_rating -> starRating
       amenities: h.facilities || [],  // facilities -> amenities
       hotelType: h.hotel_type,
-      region: h.city || h.district,   
+      city: h.city,
+      region: h.region,   
+      latitude: h.latitude,
+      longitude: h.longitude,
       images: h.images?.map((img: any) => img.image_url) || [],
       
       roomTypes: h.roomTypes?.map((room: any) => {
@@ -659,7 +680,9 @@ export class HotelService {
       id: h.id,
       name: h.name_zh,
       rate: h.star_rating,      
-      address: h.address,       
+      address: h.address,
+      latitude: h.latitude, 
+      longitude: h.longitude,       
       facilities: typeof h.facilities === 'string' ? JSON.parse(h.facilities) : (h.facilities || []),
       price: minPrice,
       imgUrl: h.images?.[0]?.image_url || ''
@@ -716,6 +739,8 @@ export class HotelService {
       rate: h.star_rating,
       address: h.address,
       price: minPrice,
+      latitude: h.latitude,
+      longitude: h.longitude,
       description: h.description || "", 
       contactPhone: h.contact_phone || "",
       facilities: facilitiesArray
