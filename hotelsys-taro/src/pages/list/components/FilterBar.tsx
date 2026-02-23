@@ -58,9 +58,10 @@ const FilterBar: FC<IProps> = ({ filterForm, setFilterForm }) => {
         customTitleIcon: null,
         title: t("list.filter_bar.distance"),
         options: [
-          { text: "0-100m", value: "0-100" },
-          { text: "100-500m", value: "100-500" },
-          { text: "500-1000m", value: "500-1000" },
+          { text: "0-1km", value: "0-1000" },
+          { text: "1-5km", value: "1000-5000" },
+          { text: "5-10km", value: "5000-10000" },
+          { text: "10km+", value: "10000-99999" },
         ],
       },
       {

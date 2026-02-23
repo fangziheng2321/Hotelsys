@@ -22,4 +22,6 @@ export interface hotelCardType {
   facilities: string[];
   price: number;
   imgUrl: string;
+  latitude: string;
+  longitude: string;
 }

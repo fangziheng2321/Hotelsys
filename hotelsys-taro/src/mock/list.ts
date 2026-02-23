@@ -13,6 +13,8 @@ export const MOCK_HOTEL_LIST: hotelCardType[] = Array.from({ length: 30 }).map(
       facilities: ["免费WiFi", "停车场", "健身房"],
       price: Math.floor(Math.random() * 900) + 100,
       imgUrl: hotelImg[index % hotelImg.length],
+      latitude: "39.92",
+      longitude: "116.46",
     };
   },
 );

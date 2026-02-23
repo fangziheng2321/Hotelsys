@@ -18,6 +18,7 @@ import HotelComment from "./Comment";
 interface IProps extends DetailInfoType {}
 
 const DetailInfo: FC<IProps> = ({
+  id,
   name,
   rate,
   facilities,
@@ -25,9 +26,28 @@ const DetailInfo: FC<IProps> = ({
   address,
 }) => {
   const { t } = useTranslation();
+  const [commentExpanded, setCommentExpanded] = useState(false);
+  const [commentClamp, setCommentClamp] = useState(true);
+  const [commentAutoHeight, setCommentAutoHeight] = useState(false);
+
+  // 这里需要给自动高度做一个延时，避免动画过程中被多个文本撑的过高
+  useEffect(() => {
+    if (commentExpanded) {
+      const timer = setTimeout(() => {
+        setCommentClamp(false);
+        setCommentAutoHeight(true);
+      }, 260);
+      return () => clearTimeout(timer);
+    }
+    setCommentClamp(true);
+    setCommentAutoHeight(false);
+  }, [commentExpanded]);
 
   return (
-    <View className="relative flex flex-col gap-6">
+    <View
+      className="relative flex flex-col gap-6"
+      onClick={() => setCommentExpanded(false)}
+    >
       {/* 口碑推荐 */}
       {rate >= 4 && (
         <View className="absolute right-4 -top-12 w-16 h-16 bg-gradient-to-br from-orange-100 to-amber-50 rounded-lg shadow-sm flex flex-col items-center justify-center border border-orange-200">
@@ -54,9 +74,34 @@ const DetailInfo: FC<IProps> = ({
       <Facility facilities={facilities} />
 
       {/* 评价与地址 */}
-      <View className="flex justify-between items-center h-20 gap-2">
-        <HotelComment description={description} />
-        <Address address={address} />
+      <View
+        className={[
+          "flex justify-between items-center gap-2 transition-all duration-300",
+          commentAutoHeight ? "h-auto" : "h-16",
+        ].join(" ")}
+      >
+        <View
+          className={[
+            "h-full transition-all duration-300 overflow-hidden",
+            commentExpanded ? "flex-1" : "w-1/2",
+          ].join(" ")}
+          onClick={(e) => {
+            e.stopPropagation();
+            setCommentExpanded((prev) => !prev);
+          }}
+        >
+          <HotelComment description={description} expanded={!commentClamp} />
+        </View>
+        <View
+          className={[
+            "transition-all duration-300 overflow-hidden h-full",
+            commentExpanded
+              ? "w-0 opacity-0 pointer-events-none"
+              : "flex-1 opacity-100",
+          ].join(" ")}
+        >
+          <Address address={address} hotelId={id} />
+        </View>
       </View>
     </View>
   );

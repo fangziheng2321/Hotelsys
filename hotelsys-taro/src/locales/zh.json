@@ -1,5 +1,6 @@
 {
   "home": {
+    "stay_date": "住宿时间选择",
     "setting": {
       "welcome": "欢迎您",
       "systemSetting": "系统设置",
@@ -62,7 +63,8 @@
     "score_label": "超赞",
     "hotel_card": {
       "price_prefix": "",
-      "price_suffix": "起"
+      "price_suffix": "起",
+      "last_viewed": "刚才看过"
     },
     "tips": {
       "loading": "正在拼命加载中",
@@ -104,6 +106,11 @@
       },
       "viewRoom": "查看房型"
     }
+  },
+  "map": {
+    "searchHotelOnMap": "地图寻店",
+    "showHotelLocation": "酒店位置",
+    "myLocation": "我的位置"
   },
   "language": {
     "languageChange": "切换语言"

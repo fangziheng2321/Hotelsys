@@ -8,7 +8,6 @@ import React, {
   useRef,
 } from "react";
 import { View, Text, Image, List } from "@tarojs/components";
-import { useTranslation } from "react-i18next";
 import SafeNavBar from "./components/SafeNavBar";
 import HotelBanner from "./components/HotelBanner";
 import DetailInfo from "./components/DetailInfo";
@@ -26,7 +25,7 @@ interface IProps {}
 
 const Index: FC<IProps> = () => {
   const router = useRouter();
-  const { params } = router;
+  const { id } = router.params;
   const [loading, setLoading] = useState<boolean>(false);
   const [roomListLoading, setRoomListLoading] = useState<boolean>(false);
   const { stayDate } = useSearchStore();
@@ -72,20 +71,27 @@ const Index: FC<IProps> = () => {
   };
 
   useEffect(() => {
-    const { id } = params;
     if (id) {
       // 请求接口获取酒店详情数据
       loadHotelDetail(id);
     }
-  }, [params.id]);
+  }, [id]);
 
   useEffect(() => {
-    const { id } = params;
     if (id) {
       // 请求接口获取房型数据
       loadRoomList(id);
     }
-  }, [params.id, stayDate]);
+  }, [id, stayDate]);
+
+  const { setLastViewedHotelId } = useSearchStore();
+
+  // 记录 ID
+  useEffect(() => {
+    if (id) {
+      setLastViewedHotelId(Number(id)); // 确保存进去的类型和列表里一致(number/string)
+    }
+  }, [id, setLastViewedHotelId]);
 
   if (loading) {
     return (

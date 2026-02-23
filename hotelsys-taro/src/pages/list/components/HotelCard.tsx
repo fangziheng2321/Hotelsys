@@ -20,13 +20,14 @@ import { useSearchStore } from "@/store/searchStore";
 
 interface IProps extends hotelCardType {
   customClassName?: string;
+  isVisited: boolean;
 }
 
 const HotelCard: FC<IProps> = ({
   id,
   name,
   rate,
-  score,
+  isVisited,
   address,
   facilities,
   price,
@@ -71,12 +72,19 @@ const HotelCard: FC<IProps> = ({
       className={`bg-white dark:bg-dark-card rounded-2xl p-3 h-48 flex items-center gap-3 w-full ${customClassName ?? ""}`}
       onClick={handleViewDetail}
     >
-      {/* 图片 */}
-      <Image
-        src={getValidThumbHotelImageUrl(imgUrl, id)}
-        className="h-full rounded-lg w-28 flex-shrink-0"
-        mode="aspectFill"
-      ></Image>
+      <View className="relative h-full rounded-lg w-28 flex-shrink-0 overflow-hidden">
+        {isVisited && (
+          <View className="absolute inset-0 w-full h-full bg-black text-white opacity-50 text-sm flex items-center justify-center">
+            {t("list.hotel_card.last_viewed")}
+          </View>
+        )}
+        {/* 图片 */}
+        <Image
+          src={getValidThumbHotelImageUrl(imgUrl, id)}
+          className="h-full w-full"
+          mode="aspectFill"
+        ></Image>
+      </View>
       {/* 介绍 */}
 
       <View className="h-full flex-1 flex flex-col justify-between items-start gap-2">

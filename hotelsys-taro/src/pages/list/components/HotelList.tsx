@@ -7,6 +7,7 @@ import HotelCard from "./HotelCard";
 import { More, Refresh, Top } from "@nutui/icons-react-taro";
 import { listIcon } from "@/constant/list";
 import HotelCardSkeleton from "./HotelCardSkeleton";
+import { useSearchStore } from "@/store/searchStore";
 
 interface IProps {
   loading: boolean;
@@ -25,6 +26,7 @@ const HotelList: FC<IProps> = ({
   const [show, SetShow] = useState(false);
   const [scrollTop, setScrollTop] = useState<number>();
   const [showBackTop, setShowBackTop] = useState<boolean>(false);
+  const { lastViewedHotelId } = useSearchStore();
 
   const [toastMsg, SetToastMsg] = useState("");
   const toastShow = (msg: any) => {
@@ -84,7 +86,15 @@ const HotelList: FC<IProps> = ({
           onRefresh={refresh}
         >
           {refreshList.map((item, index) => {
-            return <HotelCard key={index} {...item} customClassName="mb-2" />;
+            const isLastViewed = item.id === lastViewedHotelId;
+            return (
+              <HotelCard
+                key={index}
+                {...item}
+                customClassName="mb-2"
+                isVisited={isLastViewed}
+              />
+            );
           })}
         </InfiniteLoading>
       </View>

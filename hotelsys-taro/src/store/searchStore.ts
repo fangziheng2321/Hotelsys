@@ -20,6 +20,8 @@ interface SearchState {
   facilities: string[];
   priceRange: number[] | null;
   rate: number | null;
+  distance: number[] | null;
+  lastViewedHotelId: number | string | null;
   setLocation: (name: string, lat?: number, lng?: number) => void;
   setHotelName: (name: string | null) => void;
   setStayDate: (startDate: timeType, endDate: timeType) => void;
@@ -27,6 +29,8 @@ interface SearchState {
   setFacilities: (facilities: string[]) => void;
   setPriceRange: (priceRange: number[] | null) => void;
   setRate: (rate: number | null) => void;
+  setDistance: (distance: number[] | null) => void;
+  setLastViewedHotelId: (hotelId: number | string | null) => void;
 }
 
 export const useSearchStore = create<SearchState>()(
@@ -46,6 +50,8 @@ export const useSearchStore = create<SearchState>()(
       facilities: [],
       priceRange: null,
       rate: null,
+      distance: null,
+      lastViewedHotelId: null,
       setLocation: (name, lat, lng) =>
         set({
           location: {
@@ -84,6 +90,16 @@ export const useSearchStore = create<SearchState>()(
       setRate: (rate) => {
         set({
           rate: rate,
+        });
+      },
+      setDistance: (distance) => {
+        set({
+          distance: distance,
+        });
+      },
+      setLastViewedHotelId: (hotelId) => {
+        set({
+          lastViewedHotelId: hotelId,
         });
       },
     }),

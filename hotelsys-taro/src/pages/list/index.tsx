@@ -34,10 +34,11 @@ const List = () => {
     setFacilities,
     setPriceRange,
     setRate,
+    distance,
+    setDistance,
   } = useSearchStore();
 
   const { cityName, navigateToCitySelector } = useCitySelect();
-  const [distance, setDistance] = useState<number[] | null>(null);
   const filterForm = useMemo(() => {
     return {
       type: type,
@@ -79,7 +80,7 @@ const List = () => {
 
     try {
       const res = await getFilteredHotelListByPage({
-        location: cityName,
+        location: location.cityName,
         latitude: location.latitude,
         longitude: location.longitude,
         facilities: facilities,

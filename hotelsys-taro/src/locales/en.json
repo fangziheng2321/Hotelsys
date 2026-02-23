@@ -45,7 +45,8 @@
         "dark": "night",
         "auto": "auto"
       }
-    }
+    },
+    "stay_date": "Accommodation date selection"
   },
   "language": {
     "languageChange": "switch language"
@@ -70,7 +71,8 @@
     "score_label": "Awesome",
     "hotel_card": {
       "price_prefix": "from",
-      "price_suffix": ""
+      "price_suffix": "",
+      "last_viewed": "Just watched it"
     },
     "tips": {
       "loading": "Loading desperately",
@@ -124,5 +126,11 @@
     "gym": "GYM",
     "pool": "Pool",
     "meeting": "Meeting"
+  },
+  "map": {
+    "searchHotelOnMap": "Find Hotel",
+    "showHotelLocaction": "Hotel location",
+    "showHotelLocation": "Hotel location",
+    "myLocation": "my location"
   }
 }

@@ -3,6 +3,7 @@ import { Calendar } from "@nutui/nutui-react-taro";
 import { useTime } from "@/utils/date";
 import { timeType } from "@/types";
 import CustomPopup from "../CustomPopup/CustomPopup";
+import { useTranslation } from "react-i18next";
 
 interface IProps {
   isVisible: boolean;
@@ -20,6 +21,7 @@ const CalendarSelect: FC<IProps> = ({
   setStayDate,
 }) => {
   const { formatDate } = useTime();
+  const { t } = useTranslation();
   const format = "YYYY-MM-DD";
 
   const date = useMemo(() => {
@@ -45,6 +47,7 @@ const CalendarSelect: FC<IProps> = ({
       customClassName="h-4/5"
     >
       <Calendar
+        title={t("home.stay_date")}
         defaultValue={date}
         type="range"
         popup={false}

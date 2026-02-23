@@ -100,12 +100,12 @@ const Home = () => {
 
   return (
     <PageWrapper>
-      <View className="bg-custom-gray dark:bg-dark-bg min-h-screen">
+      <View className="bg-custom-gray dark:bg-dark-bg min-h-screen pt-32 relative box-border pb-10">
         {/* 头部背景图与Slogan */}
         <Header />
 
         {/* 剩余部分 */}
-        <View className="translate-y-32">
+        <View className="relative">
           {/* 轮播图 */}
           {/* <Banner onClick={handleClickBanner}></Banner> */}
           <SubBanner />

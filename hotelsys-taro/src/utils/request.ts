@@ -8,7 +8,7 @@ const IS_SERVER = true;
 // 🌟 关键修改 1: 适配真机调试
 const BASE_URL = IS_SERVER
   ? "http://47.110.82.228:3000" // 服务器
-  : "http://192.168.31.145:8080"; // 本地
+  : "http://192.168.31.145:3000"; // 本地
 
 const API_PREFIX = "/api/home";
 
