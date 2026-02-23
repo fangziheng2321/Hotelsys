@@ -807,10 +807,10 @@ export class HotelService {
     if (cached) return JSON.parse(cached);
 
     // 查数据库
-    const cityStats = await Hotel.findAll({
+    const regionStats = await Hotel.findAll({
       where: { merchant_id: merchantId },
-      attributes: [[sequelize.fn('COUNT', sequelize.col('id')), 'value'], [sequelize.col('city'), 'name']],
-      group: ['city'],
+      attributes: [[sequelize.fn('COUNT', sequelize.col('id')), 'value'], [sequelize.col('region'), 'name']],
+      group: ['region'],
       raw: true
     });
 
@@ -826,7 +826,7 @@ export class HotelService {
     };
 
     const result = {
-      provinceData: cityStats.map((item: any) => ({ name: item.name || '未知', value: parseInt(item.value) })),
+      provinceData: regionStats.map((item: any) => ({ name: item.name || '未知', value: parseInt(item.value) })),
       auditData: statusStats.map((item: any) => ({ name: statusMap[item.statusEnum] || item.statusEnum, value: parseInt(item.value) }))
     };
 
@@ -844,9 +844,9 @@ export class HotelService {
     const cached = await redis.get(cacheKey);
     if (cached) return JSON.parse(cached);
 
-    const cityStats = await Hotel.findAll({
-      attributes: [[sequelize.fn('COUNT', sequelize.col('id')), 'value'], [sequelize.col('city'), 'name']],
-      group: ['city'], raw: true
+    const regionStats = await Hotel.findAll({
+      attributes: [[sequelize.fn('COUNT', sequelize.col('id')), 'value'], [sequelize.col('region'), 'name']],
+      group: ['region'], raw: true
     });
 
     const statusStats = await Hotel.findAll({
@@ -859,7 +859,7 @@ export class HotelService {
     };
 
     const result = {
-      provinceData: cityStats.map((item: any) => ({ name: item.name || '未知', value: parseInt(item.value) })),
+      provinceData: regionStats.map((item: any) => ({ name: item.name || '未知', value: parseInt(item.value) })),
       auditData: statusStats.map((item: any) => ({ name: statusMap[item.statusEnum] || item.statusEnum, value: parseInt(item.value) }))
     };
 
