@@ -8,6 +8,7 @@ page {
   /* 品牌色 */
   --brand-color: #0068f7;
   --brand-color-secondary: #6d5fea;
+  --brand-color-light: #cde2ff;
 
   /* 主色调 */
   --nutui-color-primary: var(--brand-color);
@@ -15,6 +16,33 @@ page {
   /* 按钮样式 */
   --nutui-color-primary-stop-1: var(--brand-color);
   --nutui-color-primary-stop-2: var(--brand-color);
+
+  /* 日历组件 */
+  --nutui-calendar-choose-background-color: var(--brand-color-light);
+
+  /* 单选按钮背景颜色 */
+  --nutui-radio-button-background: var(--brand-color-light);
+  --nutui-color-primary-light-pressed: var(--brand-color-light);
+
+  --nutui-radiogroup-radio-margin: 0;
+  /* 2. 暗黑模式 */
+  .dark {
+    /* 
+     🌟 这里必须换一个颜色！
+     在深色背景下，原本的 #0052D9 会太暗看不清。
+     通常我们需要把主色调亮，变成“亮蓝色”或“浅蓝色”。
+  */
+    --brand-color: #4b9cff; /* 这是一个更亮的蓝色 */
+    --brand-color-secondary: #6d5fea;
+    --brand-color-light: #18181b; /* 主色调 */
+    --nutui-color-primary: var(--brand-color); /* 按钮样式 */
+    --nutui-color-primary-stop-1: var(--brand-color);
+    --nutui-color-primary-stop-2: var(--brand-color); /* 日历组件 */
+    --nutui-calendar-choose-background-color: var(--brand-color-light);
+    /* 单选按钮背景颜色 */
+    --nutui-radio-button-background: var(--brand-color-light);
+    --nutui-color-primary-light-pressed: var(--brand-color-light);
+  }
 }
 
 // 隐藏滚动条
@@ -23,4 +51,21 @@ page {
   width: 0;
   height: 0;
   color: transparent;
+}
+
+// 骨架屏
+@layer components {
+  .sk-bg {
+    /* 
+       1. bg-gray-200: 亮色模式下的浅灰
+       2. dark:bg-gray-700: 暗色模式下的深灰 (比背景色稍亮一点，才有层次感)
+       3. dark:opacity-50: (可选) 暗色模式下稍微降低点不透明度，呼吸效果更柔和
+    */
+    @apply bg-gray-200 dark:bg-gray-700 rounded animate-pulse;
+  }
+
+  /* 如果你定义了圆形变体，它会自动继承上面的颜色，不需要改 */
+  .sk-circle {
+    @apply sk-bg rounded-full;
+  }
 }

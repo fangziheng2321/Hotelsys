@@ -1,6 +1,5 @@
 export enum FilterType {
-  POPULARITY = "filter_popularity",
+  TYPE = "filter_type",
   DISTANCE = "filter_distance",
-  PRICE = "filter_price",
-  ICON = "filter_icon",
+  PRICERATE = "filter_priceRate",
 }

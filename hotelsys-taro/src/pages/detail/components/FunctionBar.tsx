@@ -12,20 +12,39 @@ import { useTranslation } from "react-i18next";
 import { Phone } from "@nutui/icons-react-taro";
 import { useCurrency } from "@/utils/currency";
 import CustomButton from "@/components/CustomButton/CustomButton";
+import Taro from "@tarojs/taro";
 
 interface IProps {
   price: number;
+  contactPhone: null | string;
 }
 
-const FunctioinBar: FC<IProps> = ({ price }) => {
+const FunctioinBar: FC<IProps> = ({ price, contactPhone }) => {
   const { t } = useTranslation();
   const { formatAmount } = useCurrency();
+
+  // 联系酒店
+  const handleContact = () => {
+    if (!contactPhone) {
+      Taro.showToast({
+        title: t("detail.function_bar.makePhoneCall.empty"),
+        icon: "error",
+      });
+      return;
+    }
+    Taro.makePhoneCall({ phoneNumber: contactPhone }).catch((error) =>
+      console.log(error),
+    );
+  };
 
   return (
     <View className="flex justify-between w-full items-center h-16">
       {/* 问酒店 */}
-      <View className="flex flex-col items-center justify-center gap-2 h-full">
-        <View className="bg-blue-50 p-2 size-8 rounded-full flex items-center justify-center">
+      <View
+        className="flex flex-col items-center justify-center gap-2 h-full"
+        onClick={handleContact}
+      >
+        <View className="bg-blue-50 dark:bg-dark-bg p-2 size-8 rounded-full flex items-center justify-center">
           <Phone color={"#0068f7"} size="1.5rem" />
         </View>
         <Text className="text-xs text-gray-500">

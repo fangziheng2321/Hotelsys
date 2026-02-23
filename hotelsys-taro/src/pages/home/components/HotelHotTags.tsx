@@ -6,49 +6,39 @@ import React, {
   useCallback,
   useContext,
   useRef,
+  Dispatch,
+  SetStateAction,
 } from "react";
-import { View, Text } from "@tarojs/components";
-import { useTranslation } from "react-i18next";
-import { HotTag } from "@/components/HotTagList/HotTagList";
-import { hotTagType } from "../types";
+import HotTagList from "@/components/HotTagList/HotTagList";
+import { HOTEL_FACILITIES } from "@/constant/facility";
+import { FacilityItem } from "@/types";
 
-const HotelHotTags = () => {
-  const [selectedList, setSelectedList] = useState<string[]>([]);
-  const hotTags = [
-    {
-      label: "免费停车场",
-      value: "free_parking",
-    },
-    {
-      label: "免费 wifi",
-      value: "free_wifi",
-    },
-    {
-      label: "免费早餐",
-      value: "free_breakfast",
-    },
-    {
-      label: "24小时服务",
-      value: "24_hour_service",
-    },
-  ];
+interface IProps {
+  selectedList: string[];
+  setSelectedList: (selecetedList: string[]) => void;
+  customClassName?: string;
+}
 
-  const handleClickTag = (tag: hotTagType) => {
-    console.log(tag);
+const HotelHotTags = ({
+  selectedList,
+  setSelectedList,
+  customClassName,
+}: IProps) => {
+  const handleClickTag = (tag: FacilityItem) => {
+    if (selectedList.includes(tag.id)) {
+      setSelectedList(selectedList.filter((item) => item !== tag.id));
+    } else {
+      setSelectedList([...selectedList, tag.id]);
+    }
   };
 
   return (
-    <View className="flex items-center gap-2 overflow-x-auto">
-      {hotTags.map((item) => {
-        return (
-          <HotTag
-            key={item.value}
-            onClick={() => handleClickTag(item)}
-            label={item.label}
-          ></HotTag>
-        );
-      })}
-    </View>
+    <HotTagList
+      customClassName={customClassName}
+      list={HOTEL_FACILITIES}
+      onTagClick={handleClickTag}
+      selectedList={selectedList}
+    />
   );
 };
 

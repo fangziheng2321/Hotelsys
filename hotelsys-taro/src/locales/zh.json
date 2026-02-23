@@ -1,5 +1,17 @@
 {
   "home": {
+    "stay_date": "住宿时间选择",
+    "setting": {
+      "welcome": "欢迎您",
+      "systemSetting": "系统设置",
+      "language": "语言设置",
+      "darkMode": "夜间模式",
+      "theme": {
+        "light": "日间",
+        "dark": "夜间",
+        "auto": "自动"
+      }
+    },
     "search_tabs": {
       "domestic": "国内",
       "overseas": "海外",
@@ -8,12 +20,28 @@
     },
     "location_bar": {
       "myLocation": "我的位置",
-      "searchTextPlaceholder": "位置/品牌/酒店",
-      "nights": "晚"
+      "searchTextPlaceholder": "酒店名称",
+      "nights": "晚",
+      "getLocation": {
+        "success": "获取位置成功",
+        "fail": "获取位置失败"
+      }
     },
     "search_button": "查 询",
     "filter_bar": {
-      "placeholder": "价格/星级"
+      "rate": "星级",
+      "placeholder": "价格/星级",
+      "price_rate_select": "价格/星级选择",
+      "price_select": {
+        "title": "价格选择",
+        "reset": "重置",
+        "confirm": "确认"
+      },
+      "rate_select": {
+        "title": "星级选择",
+        "reset": "重置",
+        "confirm": "确认"
+      }
     },
     "header": {
       "easeStay": "易宿酒店",
@@ -28,21 +56,31 @@
     },
     "filter_bar": {
       "popularity": "欢迎度排序",
+      "type": "类型筛选",
       "distance": "位置距离",
       "price": "价格星级"
     },
     "score_label": "超赞",
     "hotel_card": {
       "price_prefix": "",
-      "price_suffix": "起"
+      "price_suffix": "起",
+      "last_viewed": "刚才看过"
     },
     "tips": {
       "loading": "正在拼命加载中",
       "refresh": "下拉刷新中",
       "noMore": "哎呀，找不到更多了"
+    },
+    "refresh": {
+      "success": "刷新成功",
+      "fail": "刷新失败"
     }
   },
   "detail": {
+    "info": {
+      "wordOfMouth": "口碑",
+      "referral": "推荐"
+    },
     "facility": {
       "more": "更多"
     },
@@ -50,12 +88,29 @@
       "canCancel": "可以取消",
       "cannotCancel": "不可取消",
       "soldOut": "暂无剩余",
-      "book": "预订"
+      "book": "预订",
+      "remaining": "剩余",
+      "room": "间",
+      "onlyOneLeft": "仅剩余1间",
+      "instanceConfirm": "立即确认",
+      "bed_info": "{number}张{size}米床",
+      "area": "{val}m²",
+      "occupancy": "{count}人入住",
+      "floor_range": "{min}-{max}层",
+      "floor_single": "{val}层"
     },
     "function_bar": {
       "contact": "问酒店",
+      "makePhoneCall": {
+        "empty": "酒店暂未提供联系方式"
+      },
       "viewRoom": "查看房型"
     }
+  },
+  "map": {
+    "searchHotelOnMap": "地图寻店",
+    "showHotelLocation": "酒店位置",
+    "myLocation": "我的位置"
   },
   "language": {
     "languageChange": "切换语言"
@@ -64,5 +119,17 @@
     "sameDay": "今天",
     "nextDay": "明天",
     "yesterday": "昨天"
+  },
+  "facility": {
+    "wifi": "免费WiFi",
+    "parking": "免费停车场",
+    "restaurant": "餐厅",
+    "gym": "健身房",
+    "pool": "游泳池",
+    "meeting": "会议室"
+  },
+  "request": {
+    "success": "请求成功",
+    "error": "请求失败"
   }
 }

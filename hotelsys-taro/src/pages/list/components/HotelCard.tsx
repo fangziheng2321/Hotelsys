@@ -10,29 +10,34 @@ import React, {
 import { View, Text, Image } from "@tarojs/components";
 import { useTranslation } from "react-i18next";
 import { hotelCardType } from "../types";
-import { Rate } from "@nutui/nutui-react-taro";
 import StarRate from "@/components/StarRate/StarRate";
 import CustomTag from "@/components/CustomTag/CustomTag";
 import { useCurrency } from "@/utils/currency";
 import Taro from "@tarojs/taro";
+import { getValidThumbHotelImageUrl } from "@/utils/image";
+import { HOTEL_FACILITIES } from "@/constant/facility";
+import { useSearchStore } from "@/store/searchStore";
 
 interface IProps extends hotelCardType {
   customClassName?: string;
+  isVisited: boolean;
 }
 
 const HotelCard: FC<IProps> = ({
   id,
   name,
   rate,
-  score,
+  isVisited,
   address,
-  tagList,
+  facilities,
   price,
   imgUrl,
   customClassName,
 }) => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { formatAmount } = useCurrency();
+  // 已被选择的标签
+  const selectedFacilities = useSearchStore((state) => state.facilities);
 
   /* 查看酒店详情 */
   const handleViewDetail = () => {
@@ -41,17 +46,45 @@ const HotelCard: FC<IProps> = ({
     });
   };
 
+  // UI展示的设施
+  const UIFacilities = useMemo(() => {
+    const list = Array.isArray(facilities) ? facilities : [];
+    const selectedSet = new Set(selectedFacilities);
+    const selected: { value: string; selected: boolean }[] = [];
+    const unSelected: { value: string; selected: boolean }[] = [];
+    list.forEach((item) => {
+      if (selectedSet.has(item)) {
+        selected.push({ value: item, selected: true });
+      } else {
+        unSelected.push({ value: item, selected: false });
+      }
+    });
+    return [...selected, ...unSelected];
+  }, [facilities, selectedFacilities]);
+
+  // 获取图标
+  const getFacilityLabel = (id: string) => {
+    const item = HOTEL_FACILITIES.find((facility) => facility.id === id);
+    return item ? t(item.name) : "N/A";
+  };
   return (
     <View
-      className={`bg-white rounded-2xl p-3 h-48 flex items-center gap-3 w-full ${customClassName ?? ""}`}
+      className={`bg-white dark:bg-dark-card rounded-2xl p-3 h-48 flex items-center gap-3 w-full ${customClassName ?? ""}`}
       onClick={handleViewDetail}
     >
-      {/* 图片 */}
-      <Image
-        src={imgUrl ?? ""}
-        className="h-full rounded-lg w-28 flex-shrink-0"
-        mode="aspectFill"
-      ></Image>
+      <View className="relative h-full rounded-lg w-28 flex-shrink-0 overflow-hidden">
+        {isVisited && (
+          <View className="absolute inset-0 w-full h-full bg-black text-white opacity-50 text-sm flex items-center justify-center">
+            {t("list.hotel_card.last_viewed")}
+          </View>
+        )}
+        {/* 图片 */}
+        <Image
+          src={getValidThumbHotelImageUrl(imgUrl, id)}
+          className="h-full w-full"
+          mode="aspectFill"
+        ></Image>
+      </View>
       {/* 介绍 */}
 
       <View className="h-full flex-1 flex flex-col justify-between items-start gap-2">
@@ -61,22 +94,12 @@ const HotelCard: FC<IProps> = ({
           <Text className="flex-1 text-lg font-bold line-clamp-2 min-w-0 break-all">
             {name ?? "N/A"}
           </Text>
-          {/* 星级 */}
-          <StarRate rate={rate} size="0.7rem" />
         </View>
 
-        {/* 酒店评分 */}
+        {/* 酒店星级 */}
         <View className="flex items-center gap-2">
-          {/* 评分标签 */}
-          <CustomTag customClassName="text-white">
-            {(score ?? 0).toFixed(1)}
-          </CustomTag>
-          {/* 评分评价（如果大于等于4.7分，则显示） */}
-          {score && score >= 4.7 && (
-            <Text className="text-sm text-primary">
-              {t("list.score_label")}
-            </Text>
-          )}
+          {/* 星级 */}
+          <StarRate rate={rate} size="1rem" />
         </View>
 
         {/* 酒店地址 */}
@@ -86,12 +109,17 @@ const HotelCard: FC<IProps> = ({
 
         {/* 酒店标签 */}
         <View className="flex flex-wrap gap-2 items-center">
-          {tagList?.slice(0, 3).map((tag) => (
+          {UIFacilities?.map((tag) => (
             <CustomTag
-              key={tag}
-              customClassName="bg-transparent border-secondary border border-solid text-secondary text-xs font-normal"
+              key={tag.value}
+              customClassName={[
+                " border-secondary border border-solid  text-xs font-normal",
+                tag.selected
+                  ? "bg-secondary text-white"
+                  : "bg-transparent text-secondary",
+              ].join(" ")}
             >
-              {tag}
+              {getFacilityLabel(tag.value)}
             </CustomTag>
           ))}
         </View>

@@ -10,6 +10,7 @@ import React, {
 import { View, Text, Image } from "@tarojs/components";
 import { useTranslation } from "react-i18next";
 import { background } from "@/constant/home";
+import Setting from "./Setting";
 
 interface IProps {}
 
@@ -18,11 +19,12 @@ const Header: FC<IProps> = (props) => {
   return (
     <View className="absolute top-0 left-0 right-0">
       <Image src={background.imgUrl} className="w-full" mode="aspectFill" />
-      <View className="absolute inset-0 bg-gradient-to-b from-black/80 via-transparent to-white flex-col flex items-start py-12 px-5">
-        <Text className="text-2xl text-white font-bold">
+      <View className="absolute inset-0 bg-gradient-to-b from-black/80 via-transparent to-white dark:to-black  flex-col flex items-start py-12 px-5">
+        <View className="text-2xl text-white font-bold flex gap-2">
           {t("home.header.easeStay")}
-        </Text>
-        <Text className="text-lg text-gray-200">{t("home.header.slogan")}</Text>
+          <Setting />
+        </View>
+        <Text className="text-lg text-gray-100">{t("home.header.slogan")}</Text>
       </View>
     </View>
   );

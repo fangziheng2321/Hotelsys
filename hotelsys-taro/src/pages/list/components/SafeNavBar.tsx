@@ -13,11 +13,13 @@ import { ConfigProvider, harmony, NavBar } from "@nutui/nutui-react-taro";
 import { ArrowLeft } from "@nutui/icons-react-taro";
 import Taro from "@tarojs/taro";
 import { setStatusBarStyle } from "@/utils/style";
+import { useThemeStore } from "@/store/themeStore";
 
 interface IProps {}
 
 const SafeNavBar: FC<IProps> = (props) => {
   const { t } = useTranslation();
+  const { isDark } = useThemeStore();
   const [safeHeight, setSafeHeight] = useState<number>(0);
   const [capsuleHeight, setCapsuleHeight] = useState<number>(0);
   const customNavTheme = useMemo(() => {
@@ -28,7 +30,7 @@ const SafeNavBar: FC<IProps> = (props) => {
 
   /* 设置状态栏颜色为黑色 */
   useEffect(() => {
-    setStatusBarStyle("black");
+    isDark ? setStatusBarStyle("white") : setStatusBarStyle("black");
   }, []);
 
   useEffect(() => {

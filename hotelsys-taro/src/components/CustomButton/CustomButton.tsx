@@ -7,6 +7,7 @@ interface IProps {
   disabled?: boolean;
   useAnimation?: boolean;
   children?: ReactNode;
+  customBg?: string;
   onClick?: () => void;
 }
 
@@ -15,13 +16,17 @@ const CutomButton: FC<IProps> = ({
   disabled = false,
   useAnimation = false,
   children,
+  customBg,
   onClick,
 }) => {
   return (
     <Button
       className={[
         customClassName,
-        "bg-gradient-to-r from-primary to-secondary flex items-center justify-center shadow-lg shadow-blue-200",
+        "flex items-center justify-center",
+        customBg
+          ? customBg
+          : "bg-gradient-to-r from-primary to-secondary flex items-center justify-center shadow-lg",
         useAnimation ? "animation" : "",
       ].join(" ")}
       disabled={disabled}

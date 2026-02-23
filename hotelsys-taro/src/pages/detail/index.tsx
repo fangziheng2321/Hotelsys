@@ -8,56 +8,102 @@ import React, {
   useRef,
 } from "react";
 import { View, Text, Image, List } from "@tarojs/components";
-import { useTranslation } from "react-i18next";
 import SafeNavBar from "./components/SafeNavBar";
 import HotelBanner from "./components/HotelBanner";
 import DetailInfo from "./components/DetailInfo";
-import { DetailInfoType } from "./types";
-import { FacilityIcon } from "@/enum/detail";
+import { DetailInfoType, RoomType } from "./types";
 import Calendar from "./components/Calendar";
 import RoomList from "./components/RoomList";
 import FunctionBar from "./components/FunctionBar";
+import { useRouter } from "@tarojs/taro";
+import { getHotelDetailById, getHotelRoomListById } from "@/api/detail";
+import DetailSkeleton from "./components/DetailSkeleton";
+import { useSearchStore } from "@/store/searchStore";
+import PageWrapper from "@/components/PageWrapper/PageWrapper";
 
 interface IProps {}
 
-const Index: FC<IProps> = (props) => {
-  const { t } = useTranslation();
+const Index: FC<IProps> = () => {
+  const router = useRouter();
+  const { id } = router.params;
+  const [loading, setLoading] = useState<boolean>(false);
+  const [roomListLoading, setRoomListLoading] = useState<boolean>(false);
+  const { stayDate } = useSearchStore();
   const [hotelInfo, setHotelInfo] = useState<DetailInfoType>({
     id: 1,
-    name: "陆家嘴禧玥酒店",
-    rate: 5,
-    imgList: [
-      "https://modao.cc/agent-py/media/generated_images/2026-02-07/0f513ec570834b798774104363e44c81.jpg",
-      "https://modao.cc/agent-py/media/generated_images/2026-02-03/0356c22d93a042c794e0f0ca57400f1f.jpg",
-      "https://modao.cc/agent-py/media/generated_images/2026-02-03/6c6959e198984f0888aa0718f1bd992d.jpg",
-    ],
-    score: 4.8,
-    address: "浦东新区浦明路868弄3号楼",
-    tagList: ["免费升房", "新中式风", "一线江景"],
-    price: Math.floor(Math.random() * 900) + 100,
-    facilities: [
-      {
-        title: "2020年开业",
-        iconKey: FacilityIcon.CALENDAR,
-      },
-      {
-        title: "新中式风",
-        iconKey: FacilityIcon.HOUSE,
-      },
-      {
-        title: "免费停车",
-        iconKey: FacilityIcon.PARKING,
-      },
-      {
-        title: "一线江景",
-        iconKey: FacilityIcon.VIEW,
-      },
-    ],
+    name: "",
+    rate: 0,
+    imgList: [],
+    description: "",
+    address: "",
+    price: 0,
+    contactPhone: null,
+    facilities: [],
   });
+  const [roomList, setRoomList] = useState<RoomType[]>([]);
+
+  // 获取酒店详情
+  const loadHotelDetail = async (id: number | string) => {
+    if (!id) return;
+    setLoading(true);
+    try {
+      const res = await getHotelDetailById(id);
+      setHotelInfo(res);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 获取房型列表
+  const loadRoomList = async (id: number | string) => {
+    if (!id) return;
+    setRoomListLoading(true);
+    try {
+      const res = await getHotelRoomListById(id);
+      setRoomList(res);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setRoomListLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (id) {
+      // 请求接口获取酒店详情数据
+      loadHotelDetail(id);
+    }
+  }, [id]);
+
+  useEffect(() => {
+    if (id) {
+      // 请求接口获取房型数据
+      loadRoomList(id);
+    }
+  }, [id, stayDate]);
+
+  const { setLastViewedHotelId } = useSearchStore();
+
+  // 记录 ID
+  useEffect(() => {
+    if (id) {
+      setLastViewedHotelId(Number(id)); // 确保存进去的类型和列表里一致(number/string)
+    }
+  }, [id, setLastViewedHotelId]);
+
+  if (loading) {
+    return (
+      <PageWrapper>
+        <DetailSkeleton />
+      </PageWrapper>
+    );
+  }
 
   return (
-    <>
-      <View className="bg-custom-gray">
+    <PageWrapper>
+      <View className="bg-custom-gray dark:bg-dark-bg">
         {/* 安全导航栏 */}
         <SafeNavBar title={hotelInfo?.name} />
 
@@ -66,25 +112,28 @@ const Index: FC<IProps> = (props) => {
 
         {/* 酒店信息 */}
         <View className="-translate-y-4 pb-24">
-          <View className=" bg-white p-4 rounded-t-2xl">
+          <View className=" bg-white dark:bg-dark-card p-4 rounded-t-2xl">
             <DetailInfo {...hotelInfo} />
           </View>
 
           {/* 日历与人间夜 */}
-          <View className="bg-white p-4 mt-2">
+          <View className="bg-white dark:bg-dark-card p-4 mt-2">
             <Calendar />
           </View>
           {/* 房型价格列表 */}
-          <View className="bg-white px-4 mt-2">
-            <RoomList />
+          <View className="bg-white dark:bg-dark-card px-4 mt-2">
+            <RoomList roomList={roomList} loading={roomListLoading} />
           </View>
         </View>
       </View>
       {/* 底部栏 */}
-      <View className="fixed bottom-0 left-0 right-0 px-4 py-2 bg-white">
-        <FunctionBar price={hotelInfo.price} />
+      <View className="fixed bottom-0 left-0 right-0 px-4 py-2 bg-white dark:bg-dark-card ">
+        <FunctionBar
+          price={hotelInfo.price}
+          contactPhone={hotelInfo.contactPhone}
+        />
       </View>
-    </>
+    </PageWrapper>
   );
 };
 

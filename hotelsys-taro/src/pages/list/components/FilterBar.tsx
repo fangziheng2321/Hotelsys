@@ -1,25 +1,20 @@
-import React, {
-  FC,
-  useState,
-  useEffect,
-  useMemo,
-  useCallback,
-  useContext,
-  useRef,
-  Dispatch,
-  SetStateAction,
-} from "react";
+import React, { FC, useMemo, useRef } from "react";
 import { View, Text } from "@tarojs/components";
 import { useTranslation } from "react-i18next";
-import { ConfigProvider, Menu, Button } from "@nutui/nutui-react-taro";
+import { ConfigProvider, Menu } from "@nutui/nutui-react-taro";
 import { Filter, FilterF } from "@nutui/icons-react-taro";
 import DistanceFilterPanel from "./DistanceFilterPanel";
 import { FilterType } from "../enums";
 import { filterFormType } from "../types";
+import { SearchTabType } from "@/enum/home";
+import PriceRateFilterPanel from "./PriceRateFilterPanel";
 
 interface IProps {
   filterForm: filterFormType;
-  setFilterForm: Dispatch<SetStateAction<filterFormType>>;
+  setFilterForm: (
+    tag: "type" | "distance" | "priceRange" | "rate",
+    value: SearchTabType | number | number[] | null,
+  ) => void;
 }
 
 const FilterBar: FC<IProps> = ({ filterForm, setFilterForm }) => {
@@ -28,41 +23,57 @@ const FilterBar: FC<IProps> = ({ filterForm, setFilterForm }) => {
   const hasFiltered = useMemo(() => {
     return Object.values(filterForm).some((value) => value !== null);
   }, [filterForm]);
-  const menuList = [
-    {
-      id: "popularity",
-      type: FilterType.POPULARITY,
-      isCustom: false,
-      title: t("list.filter_bar.popularity"),
-      customTitleIcon: null,
-      options: [
-        { text: "欢迎度1", value: 1 },
-        { text: "欢迎度2", value: 2 },
-      ],
-    },
-    {
-      id: "distance",
-      isCustom: false,
-      type: FilterType.DISTANCE,
-      customTitleIcon: null,
-      title: t("list.filter_bar.distance"),
-      options: [
-        { text: "距离1", value: 1 },
-        { text: "距离2", value: 2 },
-      ],
-    },
-    {
-      id: "price",
-      isCustom: false,
-      type: FilterType.PRICE,
-      customTitleIcon: null,
-      title: t("list.filter_bar.price"),
-      options: [
-        { text: "星级1", value: 1 },
-        { text: "星级2", value: 2 },
-      ],
-    },
-  ];
+
+  const menuList = useMemo(
+    () => [
+      {
+        id: "type",
+        type: FilterType.TYPE,
+        isCustom: false,
+        title: t("list.filter_bar.type"),
+        customTitleIcon: null,
+        options: [
+          {
+            text: t("home.search_tabs.domestic"),
+            value: SearchTabType.DOMESTIC,
+          },
+          {
+            text: t("home.search_tabs.overseas"),
+            value: SearchTabType.OVERSEAS,
+          },
+          {
+            text: t("home.search_tabs.hourly"),
+            value: SearchTabType.HOURLY,
+          },
+          {
+            text: t("home.search_tabs.homestay"),
+            value: SearchTabType.HOMESTAY,
+          },
+        ],
+      },
+      {
+        id: "distance",
+        isCustom: false,
+        type: FilterType.DISTANCE,
+        customTitleIcon: null,
+        title: t("list.filter_bar.distance"),
+        options: [
+          { text: "0-1km", value: "0-1000" },
+          { text: "1-5km", value: "1000-5000" },
+          { text: "5-10km", value: "5000-10000" },
+          { text: "10km+", value: "10000-99999" },
+        ],
+      },
+      {
+        id: "priceRate",
+        isCustom: true,
+        type: FilterType.PRICERATE,
+        customTitleIcon: null,
+        title: t("list.filter_bar.price"),
+      },
+    ],
+    [],
+  );
 
   /* 关闭函数 */
   const handleClose = (id: number) => {
@@ -71,11 +82,17 @@ const FilterBar: FC<IProps> = ({ filterForm, setFilterForm }) => {
 
   /* 重置筛选 */
   const resetFilterForm = () => {
-    setFilterForm({
-      popularity: null,
-      distance: null,
-      price: null,
-    });
+    setFilterForm("type", null);
+    setFilterForm("distance", null);
+    setFilterForm("priceRange", null);
+  };
+
+  const setOuterPriceRange = (value: number[] | null) => {
+    return setFilterForm("priceRange", value);
+  };
+
+  const setOuterRate = (value: number | null) => {
+    return setFilterForm("rate", value);
   };
 
   // 组件映射字典：配置每种类型对应的组件
@@ -85,9 +102,16 @@ const FilterBar: FC<IProps> = ({ filterForm, setFilterForm }) => {
         return (
           <DistanceFilterPanel menuId={item.id} handleClose={handleClose} />
         );
-      case FilterType.PRICE:
+      case FilterType.PRICERATE:
         return (
-          <DistanceFilterPanel menuId={item.id} handleClose={handleClose} />
+          <PriceRateFilterPanel
+            menuId={item.id}
+            handleClose={handleClose}
+            rate={filterForm.rate}
+            priceRange={filterForm.priceRange}
+            setPriceRange={setOuterPriceRange}
+            setRate={setOuterRate}
+          />
         );
       default:
         return null;
@@ -98,7 +122,16 @@ const FilterBar: FC<IProps> = ({ filterForm, setFilterForm }) => {
     nutuiMenuBarBoxShadow: "none",
     nutuiMenuBarLineHeight: "auto",
     nutuiMenuItemIconMargin: "1.5rem",
+    nutuiMenuContentMaxHeight: "auto",
   };
+
+  // 避免数组比较，改成字符串`min-max`
+  const distanceValue = useMemo(() => {
+    if (!filterForm.distance) {
+      return null;
+    }
+    return `${filterForm.distance[0]}-${filterForm.distance[1]}`;
+  }, [filterForm.distance]);
 
   return (
     <View className="flex items-center justify-between">
@@ -111,15 +144,25 @@ const FilterBar: FC<IProps> = ({ filterForm, setFilterForm }) => {
               }}
               key={item.id}
               title={item.title}
-              value={filterForm[item.id]}
+              value={
+                item.id === "distance" ? distanceValue : filterForm[item.id]
+              }
               options={item.isCustom ? undefined : item.options}
               titleIcon={item.customTitleIcon ?? undefined}
-              onChange={(option) =>
-                setFilterForm((pre) => ({
-                  ...pre,
-                  [item.id]: option.value,
-                }))
-              }
+              onChange={(option) => {
+                if (item.id === "distance") {
+                  const [start, end] = String(option.value)
+                    .split("-")
+                    .map((value) => Number(value));
+                  if (Number.isFinite(start) && Number.isFinite(end)) {
+                    setFilterForm("distance", [start, end]);
+                  } else {
+                    setFilterForm("distance", null);
+                  }
+                  return;
+                }
+                setFilterForm(item.id as any, option.value);
+              }}
             >
               {item.isCustom && renderPanel(item)}
             </Menu.Item>

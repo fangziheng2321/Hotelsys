@@ -17,7 +17,12 @@ interface IProps {
 }
 
 const SearchTabs: FC<IProps> = (props) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+
+  const isEn = i18n.language.startsWith("en");
+  const fontSizeClass = isEn ? "text-sm" : "text-lg";
+  const containerClass = isEn ? "px-2 justify-around" : "px-4 justify-between";
+
   const searchTypes = [
     {
       label: t("home.search_tabs.domestic"),
@@ -38,12 +43,15 @@ const SearchTabs: FC<IProps> = (props) => {
   ];
 
   return (
-    <View className="px-4 flex justify-between items-center">
+    <View className={`flex items-center ${containerClass}`}>
       {searchTypes.map((item) => (
         <Text
           className={[
-            item.value === props.activeType ? "text-primary font-bold" : "",
-            "text-lg",
+            item.value === props.activeType
+              ? "text-primary font-bold"
+              : "text-gray-500",
+            fontSizeClass,
+            "whitespace-nowrap", // 强制不换行
           ].join(" ")}
           key={item.value}
           onClick={() => props.onChange(item.value)}

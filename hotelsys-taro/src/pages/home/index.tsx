@@ -1,69 +1,94 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { View, Text, Button, Image } from "@tarojs/components";
 import SearchTabs from "./components/SearchTabs";
 import { BannerType, dateFormType } from "./types/index";
-import Banner from "./components/Banner";
 import { SearchTabType } from "@/enum/home";
 import LocationBar from "./components/LocationBar";
 import Divide from "./components/Divide";
 import { useTranslation } from "react-i18next";
 import LanguageChange from "@/components/LanguageChange/LanguageChange";
 import DateRangeDisplay from "./components/DateRangeDisplay";
-import dayjs from "dayjs";
 import CustomButton from "@/components/CustomButton/CustomButton";
 import FilterBar from "./components/FilterBar";
 import HotelHotTags from "./components/HotelHotTags";
 import Header from "./components/Header";
 import SubBanner from "./components/SubBanner";
 import Taro from "@tarojs/taro";
+import { fetchCityByIP, useCitySelect } from "@/hooks/useCitySelect";
+import { useSearchStore } from "@/store/searchStore";
+import PageWrapper from "@/components/PageWrapper/PageWrapper";
 
 const Home = () => {
-  const { t } = useTranslation();
-  /* 顶部Tab筛选选中类型 */
-  const [activeTabType, setActiveTabType] = useState<SearchTabType>(
-    SearchTabType.DOMESTIC,
-  );
-  const [city, setCity] = useState<string | null>(null);
-  const [searchText, setSearchText] = useState<string | null>(null);
-  const [dateForm, setDateForm] = useState<dateFormType>({
-    startDate: dayjs(),
-    endDate: dayjs().add(1, "day"),
-  });
-  const [filterLabel, setFilterLabel] = useState<string | null>(null);
+  const { t, i18n } = useTranslation();
+  const { navigateToCitySelector, cityName } = useCitySelect();
+  /* 表单数据 */
+  const {
+    stayDate,
+    type,
+    hotelName,
+    facilities,
+    priceRange,
+    rate,
+    setStayDate,
+    setType,
+    setHotelName,
+    setFacilities,
+    setPriceRange,
+    setRate,
+  } = useSearchStore();
 
-  /* 点击轮播图 */
-  const handleClickBanner = (banner: BannerType) => {
-    console.log(banner);
-  };
+  /* UI控制数据 */
+  const [isCalendarVisible, setIsCalendarVisible] = useState<boolean>(false);
+
+  /* 价格/星级显示文本 */
+  const filterLabel = useMemo(() => {
+    let priceLabel = "";
+    let rateLabel = "";
+    if (priceRange) {
+      priceLabel = `￥${priceRange[0]} - ￥${priceRange[1]}`;
+    }
+    if (rate) {
+      rateLabel = `${rate} ${t("home.filter_bar.rate")}`;
+    }
+    const showLabel = priceLabel + " " + rateLabel;
+    return showLabel === " " ? null : showLabel;
+  }, [priceRange, rate, i18n.language]);
 
   /* 修改选中搜索Tabs */
   const handleChangeTab = (type: SearchTabType) => {
-    setActiveTabType(type);
+    setType(type);
+    console.log("选中的类型：", type);
   };
 
   /* 点击城市选择器 */
   const handleClickCity = () => {
     console.log("跳转修改城市页面");
+    navigateToCitySelector();
   };
 
   /* 点击定位器器 */
   const handleClickLocation = () => {
     console.log("进行定位，获取当前位置");
-  };
-
-  /* 点击搜索栏 */
-  const handleClickSearch = () => {
-    console.log("点击搜索栏");
+    Taro.showLoading();
+    try {
+      fetchCityByIP();
+      Taro.showToast({
+        title: t("home.location_bar.getLocation.success"),
+        icon: "success",
+      });
+    } catch (error) {
+      Taro.showToast({
+        title: t("home.location_bar.getLocation.fail"),
+        icon: "error",
+      });
+    } finally {
+      Taro.hideLoading();
+    }
   };
 
   /* 点击日期选择器 */
   const handleClickDateRange = () => {
-    console.log("点击日期选择器");
-  };
-
-  /* 点击筛选器 */
-  const handleClickFilterBar = () => {
-    console.log("点击筛选器");
+    setIsCalendarVisible(true);
   };
 
   /* 点击查询按钮 */
@@ -74,63 +99,77 @@ const Home = () => {
   };
 
   return (
-    <View className="bg-custom-gray min-h-screen">
-      {/* 头部背景图与Slogan */}
-      <Header />
+    <PageWrapper>
+      <View className="bg-custom-gray dark:bg-dark-bg min-h-screen pt-32 relative box-border pb-10">
+        {/* 头部背景图与Slogan */}
+        <Header />
 
-      {/* 剩余部分 */}
-      <View className="translate-y-32">
-        {/* 轮播图 */}
-        {/* <Banner onClick={handleClickBanner}></Banner> */}
-        <SubBanner />
+        {/* 剩余部分 */}
+        <View className="relative">
+          {/* 轮播图 */}
+          {/* <Banner onClick={handleClickBanner}></Banner> */}
+          <SubBanner />
 
-        {/* 查询区域 */}
-        <View className="bg-white w-[95%] rounded-xl mx-auto p-6 flex flex-col gap-6 mt-4">
-          {/* 顶部Tab筛选 */}
-          <SearchTabs activeType={activeTabType} onChange={handleChangeTab} />
-          {/* 分隔线 */}
-          <Divide></Divide>
-          {/* 位置筛选 */}
-          <LocationBar
-            cityName={city}
-            searchText={searchText}
-            onCityClick={handleClickCity}
-            onSearchClick={handleClickSearch}
-            onLocateClick={handleClickLocation}
-          />
-          {/* 分隔线 */}
-          <Divide></Divide>
-          {/* 日期选择器 */}
-          <DateRangeDisplay
-            startDate={dateForm.startDate}
-            endDate={dateForm.endDate}
-            onClick={handleClickDateRange}
-          />
-          {/* 分隔线 */}
-          <Divide></Divide>
+          {/* 查询区域 */}
+          <View className="bg-white dark:bg-dark-card w-[95%] rounded-xl mx-auto p-6 flex flex-col gap-6 mt-4">
+            {/* 顶部Tab筛选 */}
+            <SearchTabs activeType={type} onChange={handleChangeTab} />
+            {/* 分隔线 */}
+            <Divide></Divide>
+            {/* 位置筛选 */}
+            <LocationBar
+              cityName={cityName}
+              searchText={hotelName}
+              setSearchText={setHotelName}
+              onCityClick={handleClickCity}
+              onLocateClick={handleClickLocation}
+            />
+            {/* 分隔线 */}
+            <Divide></Divide>
+            {/* 日期选择器 */}
+            <DateRangeDisplay
+              startDate={stayDate.startDate}
+              endDate={stayDate.endDate}
+              isVisible={isCalendarVisible}
+              setIsVisible={setIsCalendarVisible}
+              setStayDate={setStayDate}
+              onClick={handleClickDateRange}
+            />
+            {/* 分隔线 */}
+            <Divide></Divide>
 
-          {/* 筛选器 */}
-          <FilterBar label={filterLabel} onClick={handleClickFilterBar} />
+            {/* 筛选器 */}
+            <FilterBar
+              rate={rate}
+              setRate={setRate}
+              label={filterLabel}
+              priceRange={priceRange}
+              setPricePrange={setPriceRange}
+            />
 
-          {/* 分隔线 */}
-          <Divide></Divide>
+            {/* 分隔线 */}
+            <Divide></Divide>
 
-          {/* 热门标签 */}
-          <HotelHotTags />
+            {/* 热门标签 */}
+            <HotelHotTags
+              selectedList={facilities}
+              setSelectedList={setFacilities}
+            />
 
-          {/* 查询按钮 */}
-          <CustomButton
-            onClick={handleClickSearchButton}
-            useAnimation={true}
-            customClassName="rounded-xl w-full text-white text-xl py-3 font-bold tracking-widest"
-          >
-            {t("home.search_button")}
-          </CustomButton>
+            {/* 查询按钮 */}
+            <CustomButton
+              onClick={handleClickSearchButton}
+              useAnimation={true}
+              customClassName="rounded-xl w-full text-white text-xl py-3 font-bold tracking-widest"
+            >
+              {t("home.search_button")}
+            </CustomButton>
+          </View>
         </View>
-      </View>
 
-      <LanguageChange customClassName="fixed bottom-4 right-4" />
-    </View>
+        {/* <LanguageChange customClassName="fixed bottom-4 right-4" /> */}
+      </View>
+    </PageWrapper>
   );
 };
 

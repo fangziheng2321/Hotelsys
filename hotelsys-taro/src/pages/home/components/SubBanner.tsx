@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import {
   View,
   Image,
@@ -8,20 +8,45 @@ import {
 import { Swiper, SwiperItem } from "@tarojs/components";
 import { bannerList as bannerImageList } from "@/constant/home";
 import { BannerType } from "../types";
+import { getHomeBannerList } from "@/api/home";
+import Taro from "@tarojs/taro";
+import BannerSkeleton from "./BannerSkeleton";
+import { getValidSwiperImageUrl } from "@/utils/image";
 
 const SubBanner: FC = () => {
-  const [bannerList, setBannerList] = useState<BannerType[]>(() => {
-    return bannerImageList.map((item, index) => ({
-      id: index,
-      name: `酒店${index + 1}`,
-      imgUrl: item,
-    }));
-  });
+  const [loading, setLoading] = useState<boolean>(false);
+  const [bannerList, setBannerList] = useState<BannerType[]>([]);
+
+  // 获取主页酒店轮播图
+  const loadBannerList = async () => {
+    setLoading(true);
+    try {
+      const res = await getHomeBannerList();
+      setBannerList(res);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   /* 处理点击事件 */
-  const handleClickBanner = (item: BannerType) => {
-    console.log(item);
+  const handleClickBanner = ({ id }: BannerType) => {
+    if (!id) {
+      return;
+    }
+    Taro.navigateTo({
+      url: `/pages/detail/index?id=${id}`,
+    });
   };
+
+  useEffect(() => {
+    loadBannerList();
+  }, []);
+
+  if (loading) {
+    return <BannerSkeleton />;
+  }
 
   return (
     <View className="w-full">
@@ -38,7 +63,7 @@ const SubBanner: FC = () => {
             <View className="px-1 h-full box-border">
               <Image
                 onClick={() => handleClickBanner(item)}
-                src={item?.imgUrl ?? ""}
+                src={getValidSwiperImageUrl(item?.imgUrl, item.id)}
                 className="w-full h-full rounded-xl border-4 border-white box-border"
                 mode="aspectFill"
               />

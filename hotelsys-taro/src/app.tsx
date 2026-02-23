@@ -14,10 +14,13 @@ import "./app.scss";
 import "@nutui/nutui-react-taro/dist/style.css";
 
 import { BaseLang } from "@nutui/nutui-react-taro/dist/es/locales/base";
+import { fetchCityByIP } from "./hooks/useCitySelect";
 
 function App({ children }: PropsWithChildren<any>) {
   useLaunch(() => {
     console.log("App launched.");
+    // 通过IP获取用户位置
+    // fetchCityByIP();
   });
 
   const { i18n } = useTranslation();
