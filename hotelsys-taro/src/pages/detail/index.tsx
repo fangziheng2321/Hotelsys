@@ -26,8 +26,8 @@ interface IProps {}
 const Index: FC<IProps> = () => {
   const router = useRouter();
   const { id } = router.params;
-  const [loading, setLoading] = useState<boolean>(false);
-  const [roomListLoading, setRoomListLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [roomListLoading, setRoomListLoading] = useState<boolean>(true);
   const { stayDate } = useSearchStore();
   const [hotelInfo, setHotelInfo] = useState<DetailInfoType>({
     id: 1,
