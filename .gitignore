@@ -71,3 +71,4 @@ coverage/
 
 # Backend config
 backend/src/config/
+backend/uploads

@@ -461,14 +461,17 @@ body.dark-mode .upload-hint {
 
 .role-selector {
   display: flex;
-  gap: 30px;
+  gap: 15px;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
 }
 
 .role-selector label {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   cursor: pointer;
+  white-space: nowrap;
 }
 
 .role-icon {

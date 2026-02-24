@@ -50,7 +50,8 @@ const Register: React.FC = () => {
         setError(response.message || '注册失败');
       }
     } catch (err) {
-      setError('网络错误，请稍后重试');
+      const errorMessage = (err as any)?.errorMessage || '网络错误，请稍后重试';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }

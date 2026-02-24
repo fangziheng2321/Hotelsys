@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { hotelApi, Hotel, HotelType } from '../../services/api';
 import RoomTypeForm from '../../components/form/RoomTypeForm';
 import AsyncButton from '../../components/common/AsyncButton';
+import { useHotelFormDraftStore } from '../../stores/hotelFormDraftStore';
+import { AuthService } from '../../utils/auth';
 
 const HotelForm: React.FC = () => {
   const navigate = useNavigate();
@@ -44,35 +46,64 @@ const HotelForm: React.FC = () => {
     '新疆': ['乌鲁木齐', '克拉玛依', '吐鲁番', '哈密', '昌吉回族自治州', '博尔塔拉蒙古自治州', '巴音郭楞蒙古自治州', '阿克苏', '克孜勒苏柯尔克孜自治州', '喀什', '和田', '伊犁哈萨克自治州', '塔城', '阿勒泰', '石河子', '阿拉尔', '图木舒克', '五家渠', '北屯', '铁门关', '双河', '可克达拉', '昆玉', '胡杨河', '新星']
   };
 
-  const [formData, setFormData] = useState<Partial<Hotel> & { city?: string; opening_time?: string }>({
-    name: '',
-    address: '',
-    phone: '',
-    description: '',
-    minPrice: 0,
-    maxPrice: 0,
-    starRating: 5,
-    amenities: [],
-    hotelType: 'domestic',
-    region: '',
-    city: '',
-    opening_time: '',
-    images: [],
-    roomTypes: []
-  });
+  // 使用酒店表单草稿 store 管理表单数据
+  const {
+    draft,
+    editData,
+    currentMode,
+    isSubmitting,
+    submitError,
+    lastSaved,
+    hasDraft,
+    updateDraft,
+    updateEditData,
+    resetDraft,
+    resetEditData,
+    submitDraft,
+    submitEdit,
+    clearError,
+    loadHotelData,
+    setMode,
+    setUserId
+  } = useHotelFormDraftStore();
+  
+  // 根据当前模式选择表单数据
+  const formData = isEdit ? editData : draft;
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [imageUrl, setImageUrl] = useState('');
+  const [showDraftNotice, setShowDraftNotice] = useState(true); // 控制草稿提示的显示
+  const hasInitialized = useRef(false); // 标记是否已初始化
 
   // 判断是否为审核中状态（只读模式）
   const isReadOnly = isEdit && formData.status === 'pending';
 
   useEffect(() => {
-    if (isEdit && id) {
-      fetchHotelDetail(id);
+    // 避免重复初始化
+    if (hasInitialized.current) return;
+    hasInitialized.current = true;
+    
+    // 获取当前用户
+    const currentUser = AuthService.getCurrentUser();
+    if (currentUser?.id) {
+      // 设置当前用户ID
+      setUserId(currentUser.id);
+      
+      // 设置当前模式
+      setMode(isEdit ? 'edit' : 'add');
+      
+      // 检查是否有草稿并导入（仅在非编辑模式时）
+      if (!isEdit && hasDraft) {
+        // 草稿已经自动加载，无需额外操作
+      }
+      
+      // 编辑模式下加载酒店详情
+      if (isEdit && id) {
+        fetchHotelDetail(id);
+      }
     }
-  }, [isEdit, id]);
+  }, [isEdit, id, hasDraft, setMode, setUserId]);
 
   const fetchHotelDetail = async (hotelId: string) => {
     setLoading(true);
@@ -88,7 +119,8 @@ const HotelForm: React.FC = () => {
             maxFloor: Number(room.maxFloor) || 1
           }));
         }
-        setFormData(hotelData);
+        // 使用 loadHotelData 替代 setFormData
+        loadHotelData(hotelData);
       } else {
         setError(response.message || '获取酒店信息失败');
       }
@@ -102,20 +134,32 @@ const HotelForm: React.FC = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     
+    // 当用户开始编辑时，隐藏草稿提示
+    if (showDraftNotice) {
+      setShowDraftNotice(false);
+    }
+    
+    const updateFn = isEdit ? updateEditData : updateDraft;
+    
     if (name === 'region') {
       // 当省份变化时，重置城市
-      setFormData(prev => ({ 
-        ...prev, 
+      updateFn({ 
         region: value,
         city: '' // 重置城市
-      }));
+      });
     } else {
-      setFormData(prev => ({ ...prev, [name]: value }));
+      updateFn({ [name]: value });
     }
   };
 
   const handleStarRatingChange = (rating: number) => {
-    setFormData(prev => ({ ...prev, starRating: rating }));
+    // 当用户开始编辑时，隐藏草稿提示
+    if (showDraftNotice) {
+      setShowDraftNotice(false);
+    }
+    
+    const updateFn = isEdit ? updateEditData : updateDraft;
+    updateFn({ starRating: rating });
   };
 
   // 预设设施选项
@@ -129,35 +173,55 @@ const HotelForm: React.FC = () => {
   ];
 
   const handleAmenityToggle = (amenity: string) => {
-    setFormData(prev => {
-      const currentAmenities = prev.amenities || [];
-      if (currentAmenities.includes(amenity)) {
-        return { ...prev, amenities: currentAmenities.filter(a => a !== amenity) };
-      } else {
-        return { ...prev, amenities: [...currentAmenities, amenity] };
-      }
-    });
+    // 当用户开始编辑时，隐藏草稿提示
+    if (showDraftNotice) {
+      setShowDraftNotice(false);
+    }
+    
+    const currentAmenities = formData.amenities || [];
+    const updateFn = isEdit ? updateEditData : updateDraft;
+    if (currentAmenities.includes(amenity)) {
+      updateFn({ amenities: currentAmenities.filter(a => a !== amenity) });
+    } else {
+      updateFn({ amenities: [...currentAmenities, amenity] });
+    }
   };
 
   const handleAddImage = () => {
     if (imageUrl.trim()) {
-      setFormData(prev => ({
-        ...prev,
-        images: [...(prev.images || []), imageUrl.trim()]
-      }));
+      // 当用户开始编辑时，隐藏草稿提示
+      if (showDraftNotice) {
+        setShowDraftNotice(false);
+      }
+      
+      const updateFn = isEdit ? updateEditData : updateDraft;
+      updateFn({
+        images: [...(formData.images || []), imageUrl.trim()]
+      });
       setImageUrl('');
     }
   };
 
   const handleRemoveImage = (index: number) => {
-    setFormData(prev => ({
-      ...prev,
-      images: prev.images?.filter((_, i) => i !== index) || []
-    }));
+    // 当用户开始编辑时，隐藏草稿提示
+    if (showDraftNotice) {
+      setShowDraftNotice(false);
+    }
+    
+    const updateFn = isEdit ? updateEditData : updateDraft;
+    updateFn({
+      images: formData.images ? formData.images.filter((_, i) => i !== index) : []
+    });
   };
 
   const handleRoomTypesChange = (roomTypes: Hotel['roomTypes']) => {
-    setFormData(prev => ({ ...prev, roomTypes }));
+    // 当用户开始编辑时，隐藏草稿提示
+    if (showDraftNotice) {
+      setShowDraftNotice(false);
+    }
+    
+    const updateFn = isEdit ? updateEditData : updateDraft;
+    updateFn({ roomTypes });
   };
 
   const validateForm = () => {
@@ -185,13 +249,21 @@ const HotelForm: React.FC = () => {
     setError('');
 
     try {
-      const response = await hotelApi.saveHotel(formData);
+      // 根据当前模式使用正确的提交函数
+      const submitFn = isEdit ? submitEdit : submitDraft;
+      const success = await submitFn();
 
-      if (response.success) {
+      if (success) {
         alert(isEdit ? '酒店更新成功' : '酒店创建成功');
+        // 根据模式重置相应的数据
+        if (isEdit) {
+          resetEditData();
+        } else {
+          resetDraft();
+        }
         navigate('/hotel');
-      } else {
-        setError(response.message || '保存失败');
+      } else if (submitError) {
+        setError(submitError);
       }
     } catch (err) {
       setError('网络错误，请稍后重试');
@@ -208,6 +280,24 @@ const HotelForm: React.FC = () => {
     <div className="hotel-form-container">
       <h2>{isEdit ? '编辑酒店' : '添加酒店'}</h2>
       {error && <div className="error-message">{error}</div>}
+      
+      {/* 草稿状态提示 - 仅在添加模式显示 */}
+      {!isEdit && hasDraft && showDraftNotice && (
+        <div style={{ 
+          backgroundColor: '#FFF8E1', 
+          color: '#FF8F00', 
+          padding: '12px', 
+          borderRadius: '4px', 
+          marginBottom: '16px',
+          border: '1px solid #FFE082'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span>⚠️</span>
+            <span>已导入草稿数据，上次保存时间：{lastSaved || '未知'}</span>
+          </div>
+        </div>
+      )}
+      
       <form onSubmit={handleSubmit}>
         {isReadOnly && (
           <div className="info-message" style={{ backgroundColor: '#FFF3E0', color: '#E65100', padding: '10px', borderRadius: '4px', marginBottom: '20px' }}>
@@ -355,7 +445,8 @@ const HotelForm: React.FC = () => {
                   name="opening_time"
                   value={formData.opening_time}
                   onChange={(e) => {
-                    setFormData(prev => ({ ...prev, opening_time: e.target.value }));
+                    const updateFn = isEdit ? updateEditData : updateDraft;
+                    updateFn({ opening_time: e.target.value });
                   }}
                   disabled={isReadOnly}
                   style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ddd' }}
@@ -483,25 +574,34 @@ const HotelForm: React.FC = () => {
                     type="file"
                     accept="image/*"
                     multiple
-                    onChange={(e) => {
+                    onChange={async (e) => {
                       const files = e.target.files;
                       if (files) {
-                        Array.from(files).forEach((file) => {
-                          const reader = new FileReader();
-                          reader.onload = (event) => {
-                            if (event.target?.result) {
-                              setFormData(prev => ({
-                                ...prev,
-                                images: [...(prev.images || []), event.target.result as string]
-                              }));
+                        Array.from(files).forEach(async (file) => {
+                          try {
+                            setLoading(true);
+                            const uploadFormData = new FormData();
+                            uploadFormData.append('files', file);
+                            
+                            const response = await hotelApi.uploadImage(uploadFormData);
+                            if (response.success) {
+                              const imageUrl = response.data.urls[0];
+                              const updateFn = isEdit ? updateEditData : updateDraft;
+                              updateFn({
+                                images: [...(formData.images || []), imageUrl]
+                              });
                             }
-                          };
-                          reader.readAsDataURL(file);
+                          } catch (error) {
+                            console.error('上传图片失败:', error);
+                            setError('上传图片失败，请重试');
+                          } finally {
+                            setLoading(false);
+                          }
                         });
                       }
                     }}
                   />
-                  <p className="upload-hint">支持批量上传，图片将自动转换为Base64格式</p>
+                  <p className="upload-hint">支持批量上传，图片将上传至服务器并返回访问URL</p>
                 </div>
               </>
             )}

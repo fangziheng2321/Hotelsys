@@ -220,6 +220,7 @@ export class HotelService {
       phone: h.contact_phone,
       hotelType: h.hotel_type,
       status: h.status,
+      rejectReason: h.rejection_reason || null,
       firstImage: h.images?.[0]?.image_url || ""
     };
   });

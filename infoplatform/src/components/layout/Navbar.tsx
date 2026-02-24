@@ -22,7 +22,7 @@ const Navbar: React.FC = () => {
     <nav className="navbar">
       <div className="navbar-container">
         <div className="navbar-logo">
-          <Link to="/">酒店信息管理系统</Link>
+          <Link to="/">易宿酒店信息管理系统</Link>
         </div>
         <div className="navbar-links">
           {!isAuthenticated ? (
