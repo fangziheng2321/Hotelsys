@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { hotelApi, Hotel, HotelType } from '../../services/api';
 import RoomTypeForm from '../../components/form/RoomTypeForm';
 import AsyncButton from '../../components/common/AsyncButton';
 import { useHotelFormDraftStore } from '../../stores/hotelFormDraftStore';
+import { AuthService } from '../../utils/auth';
 
 const HotelForm: React.FC = () => {
   const navigate = useNavigate();
@@ -62,7 +63,8 @@ const HotelForm: React.FC = () => {
     submitEdit,
     clearError,
     loadHotelData,
-    setMode
+    setMode,
+    setUserId
   } = useHotelFormDraftStore();
   
   // 根据当前模式选择表单数据
@@ -71,33 +73,37 @@ const HotelForm: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [imageUrl, setImageUrl] = useState('');
-  const [draftImported, setDraftImported] = useState(false); // 标记是否已导入草稿
+  const [showDraftNotice, setShowDraftNotice] = useState(true); // 控制草稿提示的显示
+  const hasInitialized = useRef(false); // 标记是否已初始化
 
   // 判断是否为审核中状态（只读模式）
   const isReadOnly = isEdit && formData.status === 'pending';
 
   useEffect(() => {
-    // 设置当前模式
-    setMode(isEdit ? 'edit' : 'add');
+    // 避免重复初始化
+    if (hasInitialized.current) return;
+    hasInitialized.current = true;
     
-    // 检查是否有草稿并导入（仅在非编辑模式且未导入过草稿时）
-    if (!isEdit && hasDraft && !draftImported) {
-      setDraftImported(true);
-    }
-    
-    // 编辑模式下加载酒店详情
-    if (isEdit && id) {
-      fetchHotelDetail(id);
-    }
-    
-    // 组件卸载时重置状态
-    return () => {
-      if (!isEdit) {
-        // 仅在添加模式下重置草稿（如果用户取消添加）
-        // 注意：不要在编辑模式下重置，以免丢失未保存的编辑
+    // 获取当前用户
+    const currentUser = AuthService.getCurrentUser();
+    if (currentUser?.id) {
+      // 设置当前用户ID
+      setUserId(currentUser.id);
+      
+      // 设置当前模式
+      setMode(isEdit ? 'edit' : 'add');
+      
+      // 检查是否有草稿并导入（仅在非编辑模式时）
+      if (!isEdit && hasDraft) {
+        // 草稿已经自动加载，无需额外操作
       }
-    };
-  }, [isEdit, id, hasDraft, draftImported, setMode]);
+      
+      // 编辑模式下加载酒店详情
+      if (isEdit && id) {
+        fetchHotelDetail(id);
+      }
+    }
+  }, [isEdit, id, hasDraft, setMode, setUserId]);
 
   const fetchHotelDetail = async (hotelId: string) => {
     setLoading(true);
@@ -128,6 +134,11 @@ const HotelForm: React.FC = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     
+    // 当用户开始编辑时，隐藏草稿提示
+    if (showDraftNotice) {
+      setShowDraftNotice(false);
+    }
+    
     const updateFn = isEdit ? updateEditData : updateDraft;
     
     if (name === 'region') {
@@ -142,6 +153,11 @@ const HotelForm: React.FC = () => {
   };
 
   const handleStarRatingChange = (rating: number) => {
+    // 当用户开始编辑时，隐藏草稿提示
+    if (showDraftNotice) {
+      setShowDraftNotice(false);
+    }
+    
     const updateFn = isEdit ? updateEditData : updateDraft;
     updateFn({ starRating: rating });
   };
@@ -157,6 +173,11 @@ const HotelForm: React.FC = () => {
   ];
 
   const handleAmenityToggle = (amenity: string) => {
+    // 当用户开始编辑时，隐藏草稿提示
+    if (showDraftNotice) {
+      setShowDraftNotice(false);
+    }
+    
     const currentAmenities = formData.amenities || [];
     const updateFn = isEdit ? updateEditData : updateDraft;
     if (currentAmenities.includes(amenity)) {
@@ -168,6 +189,11 @@ const HotelForm: React.FC = () => {
 
   const handleAddImage = () => {
     if (imageUrl.trim()) {
+      // 当用户开始编辑时，隐藏草稿提示
+      if (showDraftNotice) {
+        setShowDraftNotice(false);
+      }
+      
       const updateFn = isEdit ? updateEditData : updateDraft;
       updateFn({
         images: [...(formData.images || []), imageUrl.trim()]
@@ -177,6 +203,11 @@ const HotelForm: React.FC = () => {
   };
 
   const handleRemoveImage = (index: number) => {
+    // 当用户开始编辑时，隐藏草稿提示
+    if (showDraftNotice) {
+      setShowDraftNotice(false);
+    }
+    
     const updateFn = isEdit ? updateEditData : updateDraft;
     updateFn({
       images: formData.images ? formData.images.filter((_, i) => i !== index) : []
@@ -184,6 +215,11 @@ const HotelForm: React.FC = () => {
   };
 
   const handleRoomTypesChange = (roomTypes: Hotel['roomTypes']) => {
+    // 当用户开始编辑时，隐藏草稿提示
+    if (showDraftNotice) {
+      setShowDraftNotice(false);
+    }
+    
     const updateFn = isEdit ? updateEditData : updateDraft;
     updateFn({ roomTypes });
   };
@@ -246,7 +282,7 @@ const HotelForm: React.FC = () => {
       {error && <div className="error-message">{error}</div>}
       
       {/* 草稿状态提示 - 仅在添加模式显示 */}
-      {!isEdit && hasDraft && (
+      {!isEdit && hasDraft && showDraftNotice && (
         <div style={{ 
           backgroundColor: '#FFF8E1', 
           color: '#FF8F00', 
@@ -409,7 +445,8 @@ const HotelForm: React.FC = () => {
                   name="opening_time"
                   value={formData.opening_time}
                   onChange={(e) => {
-                    updateDraft({ opening_time: e.target.value });
+                    const updateFn = isEdit ? updateEditData : updateDraft;
+                    updateFn({ opening_time: e.target.value });
                   }}
                   disabled={isReadOnly}
                   style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ddd' }}
@@ -537,25 +574,34 @@ const HotelForm: React.FC = () => {
                     type="file"
                     accept="image/*"
                     multiple
-                    onChange={(e) => {
+                    onChange={async (e) => {
                       const files = e.target.files;
                       if (files) {
-                        Array.from(files).forEach((file) => {
-                          const reader = new FileReader();
-                          reader.onload = (event) => {
-                            if (event.target?.result) {
-                              setFormData(prev => ({
-                                ...prev,
-                                images: [...(prev.images || []), event.target.result as string]
-                              }));
+                        Array.from(files).forEach(async (file) => {
+                          try {
+                            setLoading(true);
+                            const uploadFormData = new FormData();
+                            uploadFormData.append('files', file);
+                            
+                            const response = await hotelApi.uploadImage(uploadFormData);
+                            if (response.success) {
+                              const imageUrl = response.data.urls[0];
+                              const updateFn = isEdit ? updateEditData : updateDraft;
+                              updateFn({
+                                images: [...(formData.images || []), imageUrl]
+                              });
                             }
-                          };
-                          reader.readAsDataURL(file);
+                          } catch (error) {
+                            console.error('上传图片失败:', error);
+                            setError('上传图片失败，请重试');
+                          } finally {
+                            setLoading(false);
+                          }
                         });
                       }
                     }}
                   />
-                  <p className="upload-hint">支持批量上传，图片将自动转换为Base64格式</p>
+                  <p className="upload-hint">支持批量上传，图片将上传至服务器并返回访问URL</p>
                 </div>
               </>
             )}

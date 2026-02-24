@@ -139,8 +139,17 @@ api.interceptors.response.use(
   (error: AxiosError) => {
     if (error.response) {
       const status = error.response.status;
+      const responseData = error.response.data as any;
       // 检查是否是登录请求
       const isLoginRequest = error.config?.url?.includes('/PClogin');
+      
+      // 提取错误信息
+      let errorMessage = '请求失败';
+      if (responseData?.error?.message) {
+        errorMessage = responseData.error.message;
+      } else if (responseData?.message) {
+        errorMessage = responseData.message;
+      }
       
       switch (status) {
         case 401:
@@ -153,21 +162,29 @@ api.interceptors.response.use(
           }
           break;
         case 403:
-          console.error('权限不足');
+          console.error('权限不足:', errorMessage);
           break;
         case 404:
-          console.error('资源不存在');
+          console.error('资源不存在:', errorMessage);
+          break;
+        case 409:
+          console.error('冲突:', errorMessage);
           break;
         case 500:
-          console.error('服务器内部错误');
+          console.error('服务器内部错误:', errorMessage);
           break;
         default:
-          console.error('请求失败:', error.response.data);
+          console.error('请求失败:', errorMessage);
       }
+      
+      // 将错误信息附加到 error 对象上，方便调用方使用
+      (error as any).errorMessage = errorMessage;
     } else if (error.request) {
       console.error('网络错误，请检查网络连接');
+      (error as any).errorMessage = '网络错误，请检查网络连接';
     } else {
       console.error('请求配置错误:', error.message);
+      (error as any).errorMessage = error.message;
     }
     return Promise.reject(error);
   }
@@ -244,6 +261,19 @@ export const hotelApi = {
     auditData: Array<{ name: string; value: number }>;
   }>> => {
     const response = await api.get('/hotels/visualization');
+    return response.data;
+  },
+
+  /**
+   * 上传图片
+   * POST /upload/image
+   */
+  uploadImage: async (files: FormData): Promise<ApiResponse<{ url: string }>> => {
+    const response = await api.post('merchant/upload', files, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
     return response.data;
   }
 };

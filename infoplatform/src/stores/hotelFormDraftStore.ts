@@ -9,6 +9,10 @@ interface HotelFormDraftStore {
   editData: Partial<Hotel> & { city?: string; opening_time?: string };
   // 当前模式
   currentMode: 'add' | 'edit' | null;
+  // 当前用户ID
+  currentUserId: number | null;
+  // 草稿所属用户ID
+  draftUserId: number | null;
   // 表单状态
   isSubmitting: boolean;
   submitError: string | null;
@@ -25,6 +29,7 @@ interface HotelFormDraftStore {
   clearError: () => void;
   loadHotelData: (hotelData: Partial<Hotel> & { city?: string; opening_time?: string }) => void;
   setMode: (mode: 'add' | 'edit') => void;
+  setUserId: (userId: number) => void;
   checkHasDraft: () => boolean;
 }
 
@@ -70,6 +75,8 @@ export const useHotelFormDraftStore = create<HotelFormDraftStore>()(
       draft: { ...defaultDraft },
       editData: { ...defaultDraft },
       currentMode: null,
+      currentUserId: null,
+      draftUserId: null,
       isSubmitting: false,
       submitError: null,
       lastSaved: null,
@@ -119,8 +126,11 @@ export const useHotelFormDraftStore = create<HotelFormDraftStore>()(
           // 导入 API 服务（避免循环依赖）
           const { hotelApi } = await import('../services/api');
           
+          // 移除草稿中的 id 字段，确保是添加操作而非编辑操作
+          const { id, ...draftData } = draft;
+          
           // 发送保存请求
-          const response = await hotelApi.saveHotel(draft);
+          const response = await hotelApi.saveHotel(draftData);
           
           if (response.success) {
             // 保存成功，更新最后保存时间
@@ -204,6 +214,27 @@ export const useHotelFormDraftStore = create<HotelFormDraftStore>()(
         set({ currentMode: mode });
       },
       
+      // 设置当前用户ID
+      setUserId: (userId) => {
+        const { currentUserId, draftUserId } = get();
+        
+        // 如果用户ID变化，清空草稿
+        if (currentUserId !== null && currentUserId !== userId) {
+          set({
+            currentUserId: userId,
+            draftUserId: userId,
+            draft: { ...defaultDraft },
+            lastSaved: null,
+            hasDraft: false
+          });
+        } else {
+          set({
+            currentUserId: userId,
+            draftUserId: userId
+          });
+        }
+      },
+      
       // 检查是否有草稿
       checkHasDraft: () => {
         const hasDraft = isDraftNotEmpty(get().draft);
@@ -215,7 +246,8 @@ export const useHotelFormDraftStore = create<HotelFormDraftStore>()(
       name: 'hotel-form-draft', // 持久化到 localStorage 的键名
       partialize: (state) => ({
         draft: state.draft,
-        lastSaved: state.lastSaved
+        lastSaved: state.lastSaved,
+        draftUserId: state.draftUserId
       }),
       // 持久化加载后检查是否有草稿
       onRehydrateStorage: () => (state) => {

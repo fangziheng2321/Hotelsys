@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { RoomType } from '../../mock/data';
 import AsyncButton from '../common/AsyncButton';
+import { hotelApi } from '../../services/api';
 
 interface RoomTypeFormProps {
   roomTypes: RoomType[];
@@ -73,17 +74,23 @@ const RoomTypeForm: React.FC<RoomTypeFormProps> = ({ roomTypes, onChange, disabl
   };
 
   // 处理房型图片上传
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !editingRoom) return;
 
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      if (event.target?.result) {
-        setEditingRoom({ ...editingRoom, image: event.target.result as string });
+    try {
+      const uploadFormData = new FormData();
+      uploadFormData.append('files', file);
+      
+      const response = await hotelApi.uploadImage(uploadFormData);
+      if (response.success) {
+        const imageUrl = response.data.urls[0];
+        setEditingRoom({ ...editingRoom, image: imageUrl });
       }
-    };
-    reader.readAsDataURL(file);
+    } catch (error) {
+      console.error('上传房型图片失败:', error);
+      alert('上传房型图片失败，请重试');
+    }
   };
 
   // 处理输入变化
