@@ -15,6 +15,8 @@ import { SearchTabType } from "@/enum/home";
 import { useDebounce } from "@/hooks/useDebounce";
 import PageWrapper from "@/components/PageWrapper/PageWrapper";
 import ListSkeleton from "./components/ListSkeleton";
+import { useDidShow } from "@tarojs/taro";
+import { useAppStore } from "@/store/appStore";
 
 const List = () => {
   const pageSize = 10;
@@ -39,7 +41,7 @@ const List = () => {
     distance,
     setDistance,
   } = useSearchStore();
-
+  const { removeHotelIdSignal, setRemoveHotelIdSignal } = useAppStore();
   const { cityName, navigateToCitySelector } = useCitySelect();
   const filterForm = useMemo(() => {
     return {
@@ -118,6 +120,16 @@ const List = () => {
     setRefreshHasMore(true);
     refreshLoadMore(true);
   }, [stayDate, cityName, filterForm, facilities, debouncedHotelName]);
+
+  // 处理下线逻辑
+  useDidShow(() => {
+    if (removeHotelIdSignal) {
+      // 执行静默移除逻辑
+      setRefreshList((pre) => pre.filter((i) => i.id !== removeHotelIdSignal));
+      // 归零信号
+      setRemoveHotelIdSignal(null);
+    }
+  });
 
   if (loading) {
     return (

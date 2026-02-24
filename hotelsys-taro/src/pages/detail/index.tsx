@@ -20,15 +20,20 @@ import { getHotelDetailById, getHotelRoomListById } from "@/api/detail";
 import DetailSkeleton from "./components/DetailSkeleton";
 import { useSearchStore } from "@/store/searchStore";
 import PageWrapper from "@/components/PageWrapper/PageWrapper";
+import { useTranslation } from "react-i18next";
+import Taro from "@tarojs/taro";
+import { useAppStore } from "@/store/appStore";
 
 interface IProps {}
 
-const Index: FC<IProps> = () => {
+const Detail: FC<IProps> = () => {
   const router = useRouter();
+  const { t } = useTranslation();
   const { id } = router.params;
   const [loading, setLoading] = useState<boolean>(true);
   const [roomListLoading, setRoomListLoading] = useState<boolean>(true);
   const { stayDate } = useSearchStore();
+  const { setRemoveHotelIdSignal } = useAppStore();
   const [hotelInfo, setHotelInfo] = useState<DetailInfoType>({
     id: 1,
     name: "",
@@ -43,16 +48,35 @@ const Index: FC<IProps> = () => {
   const [roomList, setRoomList] = useState<RoomType[]>([]);
 
   // 获取酒店详情
-  const loadHotelDetail = async (id: number | string) => {
+  const loadHotelDetail = async (id: number | string | null) => {
     if (!id) return;
     setLoading(true);
     try {
       const res = await getHotelDetailById(id);
       setHotelInfo(res);
+      setLoading(false);
     } catch (error) {
       console.error(error);
-    } finally {
-      setLoading(false);
+
+      // 判断是否下线了
+      if (error?.statusCode === 404 || error?.code === 404) {
+        Taro.showToast({
+          title: t("request.offline"),
+          icon: "error",
+          duration: 2000,
+        });
+        setRemoveHotelIdSignal(Number(id));
+        setTimeout(() => {
+          const pages = Taro.getCurrentPages();
+          if (pages.length > 1) {
+            // 有上一页，返回
+            Taro.navigateBack();
+          } else {
+            // 没有上一页（可能是分享进来的），重定向到首页
+            Taro.reLaunch({ url: "/pages/home/index" });
+          }
+        }, 1500);
+      }
     }
   };
 
@@ -137,4 +161,4 @@ const Index: FC<IProps> = () => {
   );
 };
 
-export default Index;
+export default Detail;
