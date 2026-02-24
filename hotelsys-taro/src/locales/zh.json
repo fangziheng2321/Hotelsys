@@ -130,6 +130,9 @@
   },
   "request": {
     "success": "请求成功",
-    "error": "请求失败"
+    "error": "请求失败",
+    "internet_error": "网络错误",
+    "internet_timeout": "网络请求超时",
+    "offline": "酒店已下线"
   }
 }

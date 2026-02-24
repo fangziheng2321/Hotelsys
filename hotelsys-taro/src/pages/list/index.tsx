@@ -14,10 +14,14 @@ import { useSearchStore } from "@/store/searchStore";
 import { SearchTabType } from "@/enum/home";
 import { useDebounce } from "@/hooks/useDebounce";
 import PageWrapper from "@/components/PageWrapper/PageWrapper";
+import ListSkeleton from "./components/ListSkeleton";
+import { useDidShow } from "@tarojs/taro";
+import { useAppStore } from "@/store/appStore";
 
 const List = () => {
   const pageSize = 10;
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [listLoading, setListLoading] = useState<boolean>(false);
   const [page, setPage] = useState<number>(1);
   /* 表单数据 */
   const {
@@ -37,7 +41,7 @@ const List = () => {
     distance,
     setDistance,
   } = useSearchStore();
-
+  const { removeHotelIdSignal, setRemoveHotelIdSignal } = useAppStore();
   const { cityName, navigateToCitySelector } = useCitySelect();
   const filterForm = useMemo(() => {
     return {
@@ -71,12 +75,12 @@ const List = () => {
 
   /* 获取酒店列表 */
   const refreshLoadMore = async (isRefresh = false) => {
-    if (loading) return;
+    if (listLoading) return;
     if (!isRefresh && !refreshHasMore) return;
 
     const currentPage = isRefresh ? 1 : page;
 
-    if (isRefresh) setLoading(true);
+    if (isRefresh) setListLoading(true);
 
     try {
       const res = await getFilteredHotelListByPage({
@@ -101,7 +105,8 @@ const List = () => {
     } catch (error) {
       console.error(error);
     } finally {
-      setLoading(false);
+      if (loading) setLoading(false);
+      setListLoading(false);
     }
   };
 
@@ -115,6 +120,24 @@ const List = () => {
     setRefreshHasMore(true);
     refreshLoadMore(true);
   }, [stayDate, cityName, filterForm, facilities, debouncedHotelName]);
+
+  // 处理下线逻辑
+  useDidShow(() => {
+    if (removeHotelIdSignal) {
+      // 执行静默移除逻辑
+      setRefreshList((pre) => pre.filter((i) => i.id !== removeHotelIdSignal));
+      // 归零信号
+      setRemoveHotelIdSignal(null);
+    }
+  });
+
+  if (loading) {
+    return (
+      <PageWrapper>
+        <ListSkeleton />
+      </PageWrapper>
+    );
+  }
 
   return (
     <PageWrapper>
@@ -152,7 +175,7 @@ const List = () => {
         {/* 列表 */}
         <View className="px-2 py-2 pb-4 flex-1 overflow-y-auto">
           <HotelList
-            loading={loading}
+            loading={listLoading}
             refreshHasMore={refreshHasMore}
             refreshList={refreshList}
             refreshLoadMore={refreshLoadMore}

@@ -1,4 +1,5 @@
 import Taro from "@tarojs/taro";
+import i18n from "@/i18n";
 
 // 是否使用MOCK数据
 const IS_MOCK = false;
@@ -25,10 +26,11 @@ interface RequestOptions {
   method?: "GET" | "POST" | "PUT" | "DELETE";
   data?: any;
   mockData?: any;
+  skipErrorHandler: boolean; //是否跳过默认的错误处理
 }
 
 export const request = async <T>(options: RequestOptions): Promise<T> => {
-  const { url, method = "GET", data, mockData } = options;
+  const { url, method = "GET", data, mockData, skipErrorHandler } = options;
 
   // Mock 逻辑，返回假数据
   if (IS_MOCK && mockData) {
@@ -58,18 +60,32 @@ export const request = async <T>(options: RequestOptions): Promise<T> => {
       if (backendRes.success) {
         return backendRes.data;
       } else {
-        const errorMsg = backendRes.message || "请求失败";
-        Taro.showToast({ title: errorMsg, icon: "none" });
-        return Promise.reject(new Error(errorMsg));
+        // 业务错误
+        const errorMsg = backendRes.message || i18n.t("request.error");
+        if (!skipErrorHandler) {
+          Taro.showToast({ title: errorMsg, icon: "none" });
+        }
+        // 把后端结果抛出去，让外面拿到
+        return Promise.reject(backendRes);
       }
     } else {
       // HTTP 错误 (404, 500 等)
-      Taro.showToast({ title: `网络错误 ${res.statusCode}`, icon: "none" });
+      if (!skipErrorHandler) {
+        Taro.showToast({
+          title: `${i18n.t("request.internet_error")}${res.statusCode}`,
+          icon: "none",
+        });
+      }
       return Promise.reject(res);
     }
   } catch (err) {
     // 网络连不上等底层错误
-    Taro.showToast({ title: "网络连接超时", icon: "none" });
+    if (!skipErrorHandler) {
+      Taro.showToast({
+        title: i18n.t("request.internet_timeout"),
+        icon: "none",
+      });
+    }
     return Promise.reject(err);
   }
 };
