@@ -73,6 +73,8 @@ app.use(`${API_PREFIX}/health`, healthRouter);
 // 3. 认证相关路由 (登录/注册)
 app.use(`${API_PREFIX}`, authRouter);
 
+
+app.use('/public/uploads', express.static(path.join(__dirname, '../uploads')));
 // 4. 图片上传接口
 // 必须登录(protect)且角色为商户(restrictTo)，允许并发上传10张名为 'files' 的字段
 app.post(

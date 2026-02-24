@@ -19,7 +19,7 @@ export const uploadImages = (req: Request, res: Response, next: NextFunction): v
     // 2. 构造可供前端访问的 URL 数组 
     const urls = files.map(file => {
       // 路径对应 app.ts 中配置的静态资源托管路径
-      return `/uploads/hotels/${file.filename}`;
+      return `/public/uploads/hotels/${file.filename}`;
     });
 
     // 3. 成功响应
