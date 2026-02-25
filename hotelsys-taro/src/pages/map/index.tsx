@@ -7,6 +7,7 @@ import { hotelIcon } from "@/constant/map";
 import { useTranslation } from "react-i18next";
 import { getHotelDetailById } from "@/api/detail";
 import { hotelCardType } from "../list/types";
+import hotelMarkerIcon from "@/assets/map/hotel.png";
 
 const MapPage = () => {
   const { t } = useTranslation();
