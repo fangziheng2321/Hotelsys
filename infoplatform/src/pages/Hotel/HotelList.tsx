@@ -221,7 +221,7 @@ const HotelList: React.FC = () => {
         onFilterChange={setFilters}
         renderActions={(hotel, loadingDetail) => (
           <>
-            <Link to={`/hotel/edit/${hotel.id}`} style={{ textDecoration: 'none' }}>
+            <Link to={`/hotel/edit/${hotel.id}${hotel.status === 'pending' ? '?readonly=true' : ''}`} style={{ textDecoration: 'none' }}>
               <AsyncButton variant={hotel.status === 'pending' ? 'info' : 'primary'}>
                 {hotel.status === 'pending' ? '查看' : '编辑'}
               </AsyncButton>
