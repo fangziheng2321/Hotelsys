@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { hotelApi, Hotel, HotelType } from '../../services/api';
 import RoomTypeForm from '../../components/form/RoomTypeForm';
 import AsyncButton from '../../components/common/AsyncButton';
@@ -9,7 +9,12 @@ import { AuthService } from '../../utils/auth';
 const HotelForm: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
+  const [searchParams] = useSearchParams();
   const isEdit = !!id;
+  
+  // 从 URL 参数中获取 readonly 值
+  const readonlyParam = searchParams.get('readonly');
+  const isReadOnlyFromUrl = readonlyParam === 'true';
 
   // 省份和城市映射
   const provinceCityMap: { [key: string]: string[] } = {
@@ -76,8 +81,8 @@ const HotelForm: React.FC = () => {
   const [showDraftNotice, setShowDraftNotice] = useState(true); // 控制草稿提示的显示
   const hasInitialized = useRef(false); // 标记是否已初始化
 
-  // 判断是否为审核中状态（只读模式）
-  const isReadOnly = isEdit && formData.status === 'pending';
+  // 判断是否为只读模式（从 URL 参数获取）
+  const isReadOnly = isEdit && isReadOnlyFromUrl;
 
   useEffect(() => {
     // 避免重复初始化
@@ -301,7 +306,7 @@ const HotelForm: React.FC = () => {
       <form onSubmit={handleSubmit}>
         {isReadOnly && (
           <div className="info-message" style={{ backgroundColor: '#FFF3E0', color: '#E65100', padding: '10px', borderRadius: '4px', marginBottom: '20px' }}>
-            当前酒店正在审核中，仅支持查看，无法编辑
+            当前酒店仅支持查看，无法编辑
           </div>
         )}
 
@@ -330,7 +335,8 @@ const HotelForm: React.FC = () => {
                     handleChange(e);
                     // 当选择海外时，自动设置地区为海外
                     if (e.target.value === 'overseas') {
-                      setFormData(prev => ({ ...prev, region: '海外' }));
+                      const updateFn = isEdit ? updateEditData : updateDraft;
+                      updateFn({ region: '海外' });
                     }
                   }}
                   required
