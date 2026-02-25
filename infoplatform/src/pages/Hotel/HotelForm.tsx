@@ -165,7 +165,7 @@ const HotelForm: React.FC = () => {
   // 预设设施选项
   const amenityOptions = [
     '免费WiFi',
-    '停车场',
+    '免费停车场',
     '餐厅',
     '健身房',
     '游泳池',
