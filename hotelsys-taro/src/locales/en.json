@@ -117,7 +117,10 @@
   },
   "request": {
     "success": "Request successful",
-    "error": "Request failed"
+    "error": "Request failed",
+    "internet_error": "network error",
+    "internet_timeout": "Network request timeout",
+    "offline": "The hotel is offline"
   },
   "facility": {
     "wifi": "Free Wifi",
@@ -132,5 +135,9 @@
     "showHotelLocaction": "Hotel location",
     "showHotelLocation": "Hotel location",
     "myLocation": "my location"
+  },
+  "calendar": {
+    "check-in": "Enter",
+    "check-out": "Leave"
   }
 }

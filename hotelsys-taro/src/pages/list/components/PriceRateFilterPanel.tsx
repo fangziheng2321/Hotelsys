@@ -11,7 +11,7 @@ import React, {
 } from "react";
 import { View, Text } from "@tarojs/components";
 import { useTranslation } from "react-i18next";
-import PriceRateSelect from "@/pages/home/components/PriceRateSelect";
+import PriceRateSelect from "@/components/PriceRateSelect/PriceRateSelect";
 
 interface IProps {
   priceRange: number[] | null;

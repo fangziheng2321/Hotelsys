@@ -25,6 +25,13 @@ page {
   --nutui-color-primary-light-pressed: var(--brand-color-light);
 
   --nutui-radiogroup-radio-margin: 0;
+
+  /* 弹窗圆角 */
+  --nutui-popup-border-radius: 1rem;
+  /* 弹窗遮罩层颜色 */
+  --nutui-overlay-bg-color: rgb(0 0 0 / 0.4);
+  /* 日历组件标题字重 */
+  --nutui-calendar-title-font-weight: 700;
   /* 2. 暗黑模式 */
   .dark {
     /* 
@@ -34,7 +41,8 @@ page {
   */
     --brand-color: #4b9cff; /* 这是一个更亮的蓝色 */
     --brand-color-secondary: #6d5fea;
-    --brand-color-light: #18181b; /* 主色调 */
+    --brand-color-light: #18181b;
+    /* 主色调 */
     --nutui-color-primary: var(--brand-color); /* 按钮样式 */
     --nutui-color-primary-stop-1: var(--brand-color);
     --nutui-color-primary-stop-2: var(--brand-color); /* 日历组件 */
@@ -43,6 +51,10 @@ page {
     --nutui-radio-button-background: var(--brand-color-light);
     --nutui-color-primary-light-pressed: var(--brand-color-light);
   }
+}
+
+.nut-popup {
+  overflow: hidden;
 }
 
 // 隐藏滚动条

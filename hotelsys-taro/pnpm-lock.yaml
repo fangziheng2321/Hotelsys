@@ -15,8 +15,8 @@ importers:
         specifier: 3.0.2-cpp.3.beta.5
         version: 3.0.2-cpp.3.beta.5
       '@nutui/nutui-react-taro':
-        specifier: 3.0.19-cpp.25
-        version: 3.0.19-cpp.25(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: 3.0.18
+        version: 3.0.18(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@tarojs/components':
         specifier: 4.1.11
         version: 4.1.11(@tarojs/helper@4.1.11(@swc/helpers@0.5.18))(@types/react@18.3.27)(postcss@8.5.6)(rollup@3.29.5)(webpack@5.104.1(@swc/core@1.3.96(@swc/helpers@0.5.18)))
@@ -1607,8 +1607,8 @@ packages:
   '@nutui/lottie-miniprogram@1.0.2':
     resolution: {integrity: sha512-6xV+uW8VK1hT8QfjqfNlURTiQijb/dEEl/AeOudMwOB55Fr2+TdxoOAks5d8vnYBTYDZyOUlcsGNgoAkXKz8Qg==}
 
-  '@nutui/nutui-react-taro@3.0.19-cpp.25':
-    resolution: {integrity: sha512-KkhNvOE/U69Ps/D0IOIwgRQdelx0FkTJpIBSnr8psfYgbssXSFkVJoVAM87JUXZXYH6aTyGRqP/Tr2ny6RBLgg==}
+  '@nutui/nutui-react-taro@3.0.18':
+    resolution: {integrity: sha512-qDDP92eat3CwfCsvvWt+MYwjN4Sh/J+q4fiq/a5WWSgWEn9BROujctuqymPch3K0vBWRfCPpnNPGO9+JVqjdeQ==}
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0
 
@@ -6239,8 +6239,8 @@ packages:
   spdx-expression-parse@3.0.1:
     resolution: {integrity: sha512-cbqHunsQWnJNE6KhVSMsMeH5H/L9EpymbzqTQ3uLwNCLZ1Q481oWaofqH7nO6V07xlXwY6PhQdQ2IedWx/ZK4Q==}
 
-  spdx-license-ids@3.0.22:
-    resolution: {integrity: sha512-4PRT4nh1EImPbt2jASOKHX7PB7I+e4IWNLvkKFDxNhJlfjbYlleYQh285Z/3mPTHSAK/AvdMmw5BNNuYH8ShgQ==}
+  spdx-license-ids@3.0.23:
+    resolution: {integrity: sha512-CWLcCCH7VLu13TgOH+r8p1O/Znwhqv/dbb6lqWy67G+pT1kHmeD/+V36AVb/vq8QMIQwVShJ6Ssl5FPh0fuSdw==}
 
   split-on-first@3.0.0:
     resolution: {integrity: sha512-qxQJTx2ryR0Dw0ITYyekNQWpz6f8dGd7vffGNflQQ3Iqj9NJ6qiZ7ELpZsJ/QBhIVAiDfXdag3+Gp8RvWa62AA==}
@@ -8527,7 +8527,7 @@ snapshots:
 
   '@nutui/lottie-miniprogram@1.0.2': {}
 
-  '@nutui/nutui-react-taro@3.0.19-cpp.25(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@nutui/nutui-react-taro@3.0.18(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@babel/runtime': 7.28.6
       '@nutui/icons-react-taro': 3.0.2-cpp.3.beta.5
@@ -13876,16 +13876,16 @@ snapshots:
   spdx-correct@3.2.0:
     dependencies:
       spdx-expression-parse: 3.0.1
-      spdx-license-ids: 3.0.22
+      spdx-license-ids: 3.0.23
 
   spdx-exceptions@2.5.0: {}
 
   spdx-expression-parse@3.0.1:
     dependencies:
       spdx-exceptions: 2.5.0
-      spdx-license-ids: 3.0.22
+      spdx-license-ids: 3.0.23
 
-  spdx-license-ids@3.0.22: {}
+  spdx-license-ids@3.0.23: {}
 
   split-on-first@3.0.0: {}
 
