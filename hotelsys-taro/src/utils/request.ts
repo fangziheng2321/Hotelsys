@@ -11,6 +11,8 @@ const BASE_URL = IS_SERVER
   ? "http://47.110.82.228:3000" // 服务器
   : "http://192.168.31.145:3000"; // 本地
 
+export const IMG_BASE_URL = BASE_URL;
+
 const API_PREFIX = "/api/home";
 
 // 定义后端返回的标准结构

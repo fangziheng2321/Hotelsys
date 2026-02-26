@@ -12,7 +12,7 @@ import { useTranslation } from "react-i18next";
 import { RoomType } from "../types";
 import { Button } from "@nutui/nutui-react-taro";
 import { useCurrency } from "@/utils/currency";
-import { getValidRoomImageUrl } from "@/utils/image";
+import { resolveImageUrl } from "@/utils/image";
 import { formatStr } from "@/utils/i18nHelper";
 
 interface IProps extends RoomType {}
@@ -83,7 +83,7 @@ const RoomCard: FC<IProps> = ({
     <View className="w-full flex justify-between py-4 h-fit gap-2">
       {/* 房型图片 */}
       <Image
-        src={getValidRoomImageUrl(imageUrl, id)}
+        src={resolveImageUrl(imageUrl)}
         className="w-20 h-24 object-cover rounded-lg flex-shrink-0"
         mode="aspectFill"
       />
