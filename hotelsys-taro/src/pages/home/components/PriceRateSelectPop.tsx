@@ -11,15 +11,8 @@ import React, {
 } from "react";
 import { View, Text, RootPortal } from "@tarojs/components";
 import { useTranslation } from "react-i18next";
-import { Popup } from "@nutui/nutui-react-taro";
-import { Close } from "@nutui/icons-react-taro";
-import RangeSelector from "@/components/RangeSelector/RangeSelector";
 import CustomPopup from "@/components/CustomPopup/CustomPopup";
-import Divide from "./Divide";
-import StarRateSelector from "@/components/StarRateSelector/StarRateSelector";
-import CustomButton from "@/components/CustomButton/CustomButton";
-import { priceRange as priceRangeValue } from "@/constant/home";
-import PriceRateSelect from "./PriceRateSelect";
+import PriceRateSelect from "@/components/PriceRateSelect/PriceRateSelect";
 
 interface IProps {
   priceRange: number[] | null;

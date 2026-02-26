@@ -107,6 +107,10 @@
       "viewRoom": "查看房型"
     }
   },
+  "calendar": {
+    "check-in": "入住",
+    "check-out": "离店"
+  },
   "map": {
     "searchHotelOnMap": "地图寻店",
     "showHotelLocation": "酒店位置",

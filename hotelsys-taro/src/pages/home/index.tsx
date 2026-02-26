@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { View, Text, Button, Image } from "@tarojs/components";
 import SearchTabs from "./components/SearchTabs";
 import { BannerType, dateFormType } from "./types/index";
@@ -17,6 +17,8 @@ import Taro from "@tarojs/taro";
 import { fetchCityByIP, useCitySelect } from "@/hooks/useCitySelect";
 import { useSearchStore } from "@/store/searchStore";
 import PageWrapper from "@/components/PageWrapper/PageWrapper";
+import { Calendar } from "@nutui/nutui-react-taro";
+import { useTime } from "@/utils/date";
 
 const Home = () => {
   const { t, i18n } = useTranslation();
@@ -97,6 +99,23 @@ const Home = () => {
       url: "/pages/list/index",
     });
   };
+  const [isVisible, setIsVisible] = useState<boolean>(false);
+  const format = "YYYY-MM-DD";
+  const { formatDate } = useTime();
+  const date = useMemo(() => {
+    return [
+      formatDate(stayDate.startDate, format),
+      formatDate(stayDate.endDate, format),
+    ];
+  }, [stayDate.startDate, stayDate.endDate]);
+
+  const closeSwitch = useCallback(() => {
+    setIsVisible(false);
+  }, []);
+
+  const setChooseValue = useCallback((param: string) => {
+    setStayDate(param[0][3], param[1][3]);
+  }, []);
 
   return (
     <PageWrapper>
@@ -166,6 +185,15 @@ const Home = () => {
             </CustomButton>
           </View>
         </View>
+
+        <Calendar
+          title={t("home.stay_date")}
+          defaultValue="2026-02-26"
+          type="range"
+          visible={isVisible}
+          onClose={closeSwitch}
+          onConfirm={setChooseValue}
+        />
 
         {/* <LanguageChange customClassName="fixed bottom-4 right-4" /> */}
       </View>

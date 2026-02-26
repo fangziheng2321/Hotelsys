@@ -8,7 +8,7 @@ import React, {
 import { View, Text } from "@tarojs/components";
 import { useTranslation } from "react-i18next";
 import RangeSelector from "@/components/RangeSelector/RangeSelector";
-import Divide from "./Divide";
+import Divide from "../../pages/home/components/Divide";
 import StarRateSelector from "@/components/StarRateSelector/StarRateSelector";
 import CustomButton from "@/components/CustomButton/CustomButton";
 import { priceRange as priceRangeValue } from "@/constant/home";

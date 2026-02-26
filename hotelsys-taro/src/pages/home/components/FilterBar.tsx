@@ -11,7 +11,6 @@ import React, {
 } from "react";
 import { View, Text } from "@tarojs/components";
 import { useTranslation } from "react-i18next";
-import PriceRateSelect from "./PriceRateSelect";
 import PriceRateSelectPop from "./PriceRateSelectPop";
 
 interface IProps {

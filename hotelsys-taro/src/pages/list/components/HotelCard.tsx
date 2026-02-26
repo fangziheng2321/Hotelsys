@@ -14,7 +14,7 @@ import StarRate from "@/components/StarRate/StarRate";
 import CustomTag from "@/components/CustomTag/CustomTag";
 import { useCurrency } from "@/utils/currency";
 import Taro from "@tarojs/taro";
-import { getValidThumbHotelImageUrl } from "@/utils/image";
+import { getValidThumbHotelImageUrl, resolveImageUrl } from "@/utils/image";
 import { HOTEL_FACILITIES } from "@/constant/facility";
 import { useSearchStore } from "@/store/searchStore";
 
@@ -80,7 +80,7 @@ const HotelCard: FC<IProps> = ({
         )}
         {/* 图片 */}
         <Image
-          src={getValidThumbHotelImageUrl(imgUrl, id)}
+          src={resolveImageUrl(imgUrl)}
           className="h-full w-full"
           mode="aspectFill"
         ></Image>

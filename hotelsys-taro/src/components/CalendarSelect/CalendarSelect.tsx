@@ -4,6 +4,8 @@ import { useTime } from "@/utils/date";
 import { timeType } from "@/types";
 import CustomPopup from "../CustomPopup/CustomPopup";
 import { useTranslation } from "react-i18next";
+import { RootPortal } from "@tarojs/components";
+import PageWrapper from "../PageWrapper/PageWrapper";
 
 interface IProps {
   isVisible: boolean;
@@ -36,26 +38,23 @@ const CalendarSelect: FC<IProps> = ({
     setStayDate(param[0][3], param[1][3]);
   };
 
-  const select = (param: string[]) => {
-    console.log(param);
-  };
-
   return (
-    <CustomPopup
-      isVisible={isVisible}
-      onClose={closeSwitch}
-      customClassName="h-4/5"
-    >
-      <Calendar
-        title={t("home.stay_date")}
-        defaultValue={date}
-        type="range"
-        popup={false}
-        onClose={closeSwitch}
-        onConfirm={setChooseValue}
-        onDayClick={select}
-      />
-    </CustomPopup>
+    <RootPortal>
+      <PageWrapper>
+        <Calendar
+          title={t("home.stay_date")}
+          defaultValue={date}
+          autoBackfill
+          closeIcon={<></>}
+          startText={t("calendar.check-in")}
+          endText={t("calendar.check-out")}
+          type="range"
+          visible={isVisible}
+          onClose={closeSwitch}
+          onConfirm={setChooseValue}
+        />
+      </PageWrapper>
+    </RootPortal>
   );
 };
 
