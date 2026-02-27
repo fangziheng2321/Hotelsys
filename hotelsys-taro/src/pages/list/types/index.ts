@@ -10,6 +10,8 @@ export interface filterFormType {
   distance: number[] | null;
   priceRange: number[] | null;
   rate: number | null;
+  sortOrder: "asc" | "desc" | null;
+  sortBy: string | null;
 }
 
 /* 酒店卡片 */

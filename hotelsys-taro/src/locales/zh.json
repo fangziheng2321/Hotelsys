@@ -55,10 +55,16 @@
       "map": "地图"
     },
     "filter_bar": {
-      "popularity": "欢迎度排序",
-      "type": "类型筛选",
+      "order": "排序",
+      "type": "类型",
       "distance": "位置距离",
       "price": "价格星级"
+    },
+    "order": {
+      "price_asc": "根据价格升序",
+      "price_desc": "根据价格降序",
+      "rate_asc": "根据星级升序",
+      "rate_desc": "根据星级降序"
     },
     "score_label": "超赞",
     "hotel_card": {
