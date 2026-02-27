@@ -8,7 +8,7 @@
     },
     "location_bar": {
       "myLocation": "My Location",
-      "searchTextPlaceholder": "Hotel",
+      "searchTextPlaceholder": "Hotel Name",
       "nights": "Night",
       "getLocation": {
         "success": "Obtained location successfully",
@@ -66,7 +66,8 @@
       "popularity": "Popularity",
       "distance": "Distance",
       "price": "Price",
-      "type": "Type filter"
+      "type": "Type",
+      "order": "Sort"
     },
     "score_label": "Awesome",
     "hotel_card": {
@@ -82,6 +83,12 @@
     "refresh": {
       "success": "Refresh successful",
       "fail": "Refresh failed"
+    },
+    "order": {
+      "price_asc": "Sort by price in ascending order",
+      "price_desc": "Sort by price in descending order",
+      "rate_asc": "Sort by star rating in ascending order",
+      "rate_desc": "Sort by star rating in descending order"
     }
   },
   "detail": {

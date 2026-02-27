@@ -67,7 +67,9 @@ interface ApiResponse<T> {
   "priceRange": [0, 1000],  // (可选) 价格区间 [min, max]
   "distance": [0, 500],     // (可选) 距离区间 [min, max] (单位：米)
   "facilities": ["免费WiFi"], // (可选) 设施列表
-  "type": "domestic"        // (可选) 酒店类型
+  "type": "domestic",        // (可选) 酒店类型
+  "sortOrder": "desc",           // (可选) 排序为降序，"asc"或"desc"
+  "sortBy": "price",          // （可选） 排序依据，"price"或"rate"
 }
 ```
 

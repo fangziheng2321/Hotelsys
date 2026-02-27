@@ -32,28 +32,34 @@ const List = () => {
     facilities,
     priceRange,
     rate,
+    distance,
+    sortBy,
+    sortOrder,
     setStayDate,
     setType,
     setHotelName,
     setFacilities,
     setPriceRange,
     setRate,
-    distance,
     setDistance,
+    setSortOrder,
+    setSortBy,
   } = useSearchStore();
   const { removeHotelIdSignal, setRemoveHotelIdSignal } = useAppStore();
   const { cityName, navigateToCitySelector } = useCitySelect();
   const filterForm = useMemo(() => {
     return {
-      type: type,
-      distance: distance,
-      priceRange: priceRange,
-      rate: rate,
+      type,
+      distance,
+      priceRange,
+      rate,
+      sortBy,
+      sortOrder,
     };
-  }, [type, priceRange, distance, rate]);
+  }, [type, priceRange, distance, rate, sortBy, sortOrder]);
   const setFilterForm = (
-    tag: "type" | "distance" | "priceRange" | "rate",
-    value: SearchTabType | number | number[] | null,
+    tag: "type" | "distance" | "priceRange" | "rate" | "sortOrder" | "sortBy",
+    value: SearchTabType | number | number[] | string | "asc" | "desc" | null,
   ) => {
     switch (tag) {
       case "type":
@@ -64,8 +70,15 @@ const List = () => {
         break;
       case "priceRange":
         setPriceRange(value as number[]);
+        break;
       case "rate":
         setRate(value as number);
+        break;
+      case "sortOrder":
+        setSortOrder(value as "desc" | "asc");
+        break;
+      case "sortBy":
+        setSortBy(value as string);
     }
   };
   const [refreshList, setRefreshList] = useState<hotelCardType[]>([]);
