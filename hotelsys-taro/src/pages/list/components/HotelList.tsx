@@ -85,11 +85,11 @@ const HotelList: FC<IProps> = ({
           onLoadMore={() => refreshLoadMore(false)}
           onRefresh={refresh}
         >
-          {refreshList.map((item, index) => {
+          {refreshList.map((item) => {
             const isLastViewed = item.id === lastViewedHotelId;
             return (
               <HotelCard
-                key={index}
+                key={item.id}
                 {...item}
                 customClassName="mb-2"
                 isVisited={isLastViewed}
