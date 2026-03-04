@@ -9,7 +9,7 @@ const IS_SERVER = true;
 // 🌟 关键修改 1: 适配真机调试
 const BASE_URL = IS_SERVER
   ? "http://47.110.82.228:3000" // 服务器
-  : "http://192.168.31.145:3000"; // 本地
+  : "http://10.118.172.225:3000"; // 本地
 
 export const IMG_BASE_URL = BASE_URL;
 

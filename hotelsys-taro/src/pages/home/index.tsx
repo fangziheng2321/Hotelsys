@@ -99,19 +99,6 @@ const Home = () => {
       url: "/pages/list/index",
     });
   };
-  const [isVisible, setIsVisible] = useState<boolean>(false);
-  const format = "YYYY-MM-DD";
-  const { formatDate } = useTime();
-  const date = useMemo(() => {
-    return [
-      formatDate(stayDate.startDate, format),
-      formatDate(stayDate.endDate, format),
-    ];
-  }, [stayDate.startDate, stayDate.endDate]);
-
-  const closeSwitch = useCallback(() => {
-    setIsVisible(false);
-  }, []);
 
   const setChooseValue = useCallback((param: string) => {
     setStayDate(param[0][3], param[1][3]);
@@ -185,15 +172,6 @@ const Home = () => {
             </CustomButton>
           </View>
         </View>
-
-        <Calendar
-          title={t("home.stay_date")}
-          defaultValue="2026-02-26"
-          type="range"
-          visible={isVisible}
-          onClose={closeSwitch}
-          onConfirm={setChooseValue}
-        />
 
         {/* <LanguageChange customClassName="fixed bottom-4 right-4" /> */}
       </View>

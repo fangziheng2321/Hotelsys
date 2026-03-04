@@ -34,7 +34,7 @@ const CustomRange: React.FC<IProps> = ({
     const query = Taro.createSelectorQuery();
 
     query
-      .select(`#${ancestorId} >>> .${trackId}`)
+      .select(ancestorId ? `#${ancestorId} >>> .${trackId}` : `.${trackId}`)
       .boundingClientRect((res) => {
         if (res && (res as { width: number }).width > 0) {
           setRect({

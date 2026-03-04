@@ -1,5 +1,5 @@
-import React, { FC, useState } from "react";
-import { View, Text, Image, ScrollView } from "@tarojs/components";
+import React, { FC, useEffect, useRef, useState } from "react";
+import { View, Text, Image } from "@tarojs/components";
 import { useTranslation } from "react-i18next";
 import { InfiniteLoading, Loading, Toast } from "@nutui/nutui-react-taro";
 import { hotelCardType } from "../types";
@@ -8,6 +8,7 @@ import { More, Refresh, Top } from "@nutui/icons-react-taro";
 import { listIcon } from "@/constant/list";
 import HotelCardSkeleton from "./HotelCardSkeleton";
 import { useSearchStore } from "@/store/searchStore";
+import Taro from "@tarojs/taro";
 
 interface IProps {
   loading: boolean;
@@ -26,6 +27,7 @@ const HotelList: FC<IProps> = ({
   const [show, SetShow] = useState(false);
   const [scrollTop, setScrollTop] = useState<number>();
   const [showBackTop, setShowBackTop] = useState<boolean>(false);
+  const observerRef = useRef<Taro.IntersectionObserver | null>(null);
   const { lastViewedHotelId } = useSearchStore();
 
   const [toastMsg, SetToastMsg] = useState("");
@@ -35,30 +37,58 @@ const HotelList: FC<IProps> = ({
   };
   const refresh = async () => {
     refreshLoadMore(true);
+    setShowBackTop(false);
     toastShow(t("list.refresh.success"));
   };
 
-  const onScroll = (height: number) => {
-    if (height > 300 && !showBackTop) {
-      setShowBackTop(true);
-    } else if (height <= 300 && showBackTop) {
-      setShowBackTop(false);
-    }
-  };
+  // 监听滚动
+  // const onScroll = (height: number) => {
+  //   if (height > 300 && !showBackTop) {
+  //     setShowBackTop(true);
+  //   } else if (height <= 300 && showBackTop) {
+  //     setShowBackTop(false);
+  //   }
+  // };
 
   const handleBackToTop = () => {
     setScrollTop(Math.random() * 0.001);
   };
+
+  // IntersectionObserver 监听滚动，优化监听
+  useEffect(() => {
+    if (loading) return;
+
+    Taro.nextTick(() => {
+      const observer = Taro.createIntersectionObserver(null as any);
+
+      observer
+        .relativeToViewport()
+        // 监听列表最上方的锚点
+        .observe("#top-anchor", (res) => {
+          // 如果 top < 0，说明锚点已经滚出视野上方，即滚动超过了 0px
+          if (res.boundingClientRect!.top < 0) {
+            setShowBackTop(true);
+          } else {
+            setShowBackTop(false);
+          }
+        });
+
+      observerRef.current = observer;
+    });
+
+    return () => observerRef.current?.disconnect();
+  }, [loading]);
 
   if (loading) {
     return <HotelCardSkeleton />;
   }
 
   return (
-    <>
+    <View className="h-full">
       <View id="refreshScroll" className="h-full">
+        {/* 无限列表 */}
         <InfiniteLoading
-          onScroll={onScroll}
+          // onScroll={onScroll}
           scrollTop={scrollTop}
           scrollWithAnimation
           pullingText={
@@ -85,11 +115,13 @@ const HotelList: FC<IProps> = ({
           onLoadMore={() => refreshLoadMore(false)}
           onRefresh={refresh}
         >
+          {/* 哨兵放在列表最前面，直接作为第一个元素 */}
+          <View id="top-anchor" className="h-px w-full" />
           {refreshList.map((item, index) => {
             const isLastViewed = item.id === lastViewedHotelId;
             return (
               <HotelCard
-                key={index}
+                key={item.id}
                 {...item}
                 customClassName="mb-2"
                 isVisited={isLastViewed}
@@ -128,7 +160,7 @@ const HotelList: FC<IProps> = ({
           SetShow(false);
         }}
       />
-    </>
+    </View>
   );
 };
 

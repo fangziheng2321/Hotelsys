@@ -186,7 +186,7 @@ const List = () => {
         </View>
 
         {/* 列表 */}
-        <View className="px-2 py-2 pb-4 flex-1 overflow-y-auto">
+        <View className="px-2 py-2 pb-4 flex-1 overflow-hidden">
           <HotelList
             loading={listLoading}
             refreshHasMore={refreshHasMore}
